@@ -5,6 +5,59 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 Le format est basé sur [Keep a Changelog](https://keepachangelog.com/fr/1.0.0/),
 et ce projet adhère au [Semantic Versioning](https://semver.org/lang/fr/).
 
+## [1.1.0] - 2024-11-17
+
+### 🚀 Nouveau : Workflow Git complet !
+
+#### Ajouté
+
+**Workflow en 5 étapes :**
+- **Sélection de branche** :
+  - Choisissez ou changez de branche avant de commiter
+  - **NOUVEAU** : Créez une nouvelle branche directement
+  - **NOUVEAU** : Confirmez votre choix avec possibilité de revenir en arrière
+  - Boucle interactive jusqu'à satisfaction
+- **Sélection de fichiers** : Ajoutez tous les fichiers ou sélectionnez-les individuellement
+- **Message de commit** : Interface simplifiée (breaking changes retirés du flow principal)
+- **Confirmation** : Récapitulatif avant création du commit
+- **Push automatique** : Option de push vers le remote après le commit
+
+**Nouvelles fonctions Git :**
+- `getCurrentBranch()` : Récupération de la branche actuelle
+- `getAllBranches()` : Liste toutes les branches locales
+- `checkoutBranch()` : Changement de branche
+- `createAndCheckoutBranch()` : **NOUVEAU** - Création et bascule sur nouvelle branche
+- `branchExists()` : **NOUVEAU** - Vérification de l'existence d'une branche
+- `getModifiedFilesWithStatus()` : Fichiers avec leur statut (nouveau, modifié, supprimé)
+- `stageFiles()` : Stage de fichiers spécifiques
+- `hasRemote()` : Vérification de l'existence d'un remote
+- `getDefaultRemote()` : Récupération du remote par défaut
+- `pushToRemote()` : Push vers le remote avec gestion de l'upstream
+- `hasUpstream()` : Vérification du tracking de branche
+
+#### Modifié
+
+- CLI simplifié : Questions sur les breaking changes retirées du flow principal
+- Meilleure expérience utilisateur avec progression claire (Étape X/5)
+- Messages plus clairs et émojis pour chaque étape
+- Gestion d'erreurs améliorée pour le push
+
+#### Avantages
+
+**Avant :**
+```bash
+git checkout ma-branche
+git add file1.ts file2.ts
+git commit -m "feat: ma feature"
+git push
+```
+
+**Maintenant :**
+```bash
+commitformat
+# Tout se fait en une seule commande interactive ! 🎉
+```
+
 ## [1.0.0] - 2024-11-17
 
 ### Ajouté

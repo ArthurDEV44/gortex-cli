@@ -1,7 +1,7 @@
 {
   "name": "commitformat",
-  "version": "1.0.0",
-  "description": "CLI interactif pour créer des commits conventionnels avec validation et statistiques",
+  "version": "1.1.0",
+  "description": "CLI interactif pour un workflow Git complet : sélection branche, fichiers, commit conventionnel et push - tout en une commande !",
   "type": "module",
   "main": "dist/index.js",
   "bin": {

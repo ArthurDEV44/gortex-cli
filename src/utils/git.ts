@@ -96,3 +96,121 @@ export async function getGitDir(): Promise<string> {
   const gitDir = await git.revparse(['--git-dir']);
   return gitDir.trim();
 }
+
+/**
+ * Récupère la branche actuelle
+ */
+export async function getCurrentBranch(): Promise<string> {
+  const branch = await git.revparse(['--abbrev-ref', 'HEAD']);
+  return branch.trim();
+}
+
+/**
+ * Récupère toutes les branches locales
+ */
+export async function getAllBranches(): Promise<string[]> {
+  const result = await git.branchLocal();
+  return result.all;
+}
+
+/**
+ * Change de branche
+ */
+export async function checkoutBranch(branch: string): Promise<void> {
+  await git.checkout(branch);
+}
+
+/**
+ * Crée une nouvelle branche et bascule dessus
+ */
+export async function createAndCheckoutBranch(branchName: string): Promise<void> {
+  await git.checkoutLocalBranch(branchName);
+}
+
+/**
+ * Vérifie si une branche existe
+ */
+export async function branchExists(branchName: string): Promise<boolean> {
+  const branches = await getAllBranches();
+  return branches.includes(branchName);
+}
+
+/**
+ * Récupère les fichiers modifiés avec leur statut
+ */
+export async function getModifiedFilesWithStatus(): Promise<Array<{ path: string; status: string }>> {
+  const status = await git.status();
+  return status.files.map(file => ({
+    path: file.path,
+    status: getStatusLabel(file.working_dir, file.index),
+  }));
+}
+
+/**
+ * Convertit les codes de statut Git en labels lisibles
+ */
+function getStatusLabel(workingDir: string, index: string): string {
+  if (index === 'A') return 'nouveau';
+  if (index === 'M') return 'modifié';
+  if (index === 'D') return 'supprimé';
+  if (workingDir === 'M') return 'modifié';
+  if (workingDir === 'D') return 'supprimé';
+  if (workingDir === '?') return 'non suivi';
+  return 'modifié';
+}
+
+/**
+ * Stage des fichiers spécifiques
+ */
+export async function stageFiles(files: string[]): Promise<void> {
+  if (files.length === 0) return;
+  await git.add(files);
+}
+
+/**
+ * Vérifie si le remote existe
+ */
+export async function hasRemote(): Promise<boolean> {
+  try {
+    const remotes = await git.getRemotes();
+    return remotes.length > 0;
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Récupère le nom du remote par défaut (généralement 'origin')
+ */
+export async function getDefaultRemote(): Promise<string> {
+  const remotes = await git.getRemotes();
+  if (remotes.length === 0) {
+    throw new Error('Aucun remote configuré');
+  }
+  // Chercher 'origin' en priorité
+  const origin = remotes.find(r => r.name === 'origin');
+  return origin ? origin.name : remotes[0].name;
+}
+
+/**
+ * Push la branche actuelle vers le remote
+ */
+export async function pushToRemote(remote: string, branch: string, setUpstream: boolean = false): Promise<void> {
+  if (setUpstream) {
+    await git.push(['-u', remote, branch]);
+  } else {
+    await git.push(remote, branch);
+  }
+}
+
+/**
+ * Vérifie si la branche actuelle track un remote
+ */
+export async function hasUpstream(): Promise<boolean> {
+  try {
+    await git.revparse(['--abbrev-ref', '@{upstream}']);
+    return true;
+  } catch {
+    return false;
+  }
+}

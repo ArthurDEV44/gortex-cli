@@ -97,7 +97,9 @@ Puis ajoutez un script dans votre `package.json` :
 
 ## Utilisation
 
-### Créer un commit interactif
+### Workflow Git complet en 5 étapes
+
+CommitFormat gère tout votre workflow Git de A à Z !
 
 ```bash
 npx commitformat
@@ -105,17 +107,47 @@ npx commitformat
 commitformat
 ```
 
-Le CLI vous guidera à travers :
-1. **Type de commit** (feat, fix, docs, etc.)
-2. **Scope** (partie du code affectée)
-3. **Description** courte et claire
-4. **Corps** du message (optionnel)
-5. **Breaking changes** (optionnel)
+Le CLI vous guidera à travers **5 étapes** :
 
-Exemple de résultat :
+#### 🚀 Étape 1 : Sélection de la branche
+- Affiche la branche actuelle
+- Permet de changer de branche si besoin
+- Branche actuelle sélectionnée par défaut
+
+#### 📝 Étape 2 : Sélection des fichiers
+- Liste tous les fichiers modifiés avec leur statut
+- **Option 1** : Ajouter tous les fichiers (`git add .`)
+- **Option 2** : Sélectionner fichier par fichier (checkbox interactif)
+
+#### 💬 Étape 3 : Message de commit
+- **Type** (feat, fix, docs, etc.)
+- **Scope** (optionnel - partie du code affectée)
+- **Description** courte et claire
+- **Corps** du message (optionnel)
+
+#### 📋 Étape 4 : Confirmation
+- Récapitulatif des fichiers à commiter
+- Aperçu du message de commit
+- Création du commit après confirmation
+
+#### 🚀 Étape 5 : Push
+- Option de push automatique vers le remote
+- Configuration automatique de l'upstream si nécessaire
+- Gestion des erreurs avec suggestions
+
+**Exemple de résultat :**
 ```
 feat(auth): add password reset functionality
 ```
+
+**Workflow complet en une seule commande !**
+Plus besoin de :
+- `git checkout branch`
+- `git add file1 file2...`
+- `git commit -m "message"`
+- `git push`
+
+Tout se fait de manière interactive et guidée ! 🎯
 
 ### Installer les hooks Git
 
