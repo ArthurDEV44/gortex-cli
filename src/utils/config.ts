@@ -2,16 +2,16 @@ import { cosmiconfig } from 'cosmiconfig';
 import type { CommitConfig } from '../types.js';
 import { DEFAULT_CONFIG } from '../types.js';
 
-const explorer = cosmiconfig('commitformat');
+const explorer = cosmiconfig('gortex');
 
 /**
  * Charge la configuration depuis les fichiers de config
  * Cherche dans l'ordre:
- * - .commitformatrc
- * - .commitformatrc.json
- * - .commitformatrc.js
- * - commitformat.config.js
- * - package.json (clé "commitformat")
+ * - .gortexrc
+ * - .gortexrc.json
+ * - .gortexrc.js
+ * - gortex.config.js
+ * - package.json (clé "gortex")
  */
 export async function loadConfig(): Promise<CommitConfig> {
   try {

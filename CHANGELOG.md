@@ -54,7 +54,7 @@ git push
 
 **Maintenant :**
 ```bash
-commitformat
+gortex
 # Tout se fait en une seule commande interactive ! 🎉
 ```
 
@@ -83,7 +83,7 @@ commitformat
 
 #### Configuration
 - Système de configuration flexible avec cosmiconfig
-- Support de multiples formats : `.commitformatrc`, `.commitformatrc.json`, `.commitformatrc.js`, etc.
+- Support de multiples formats : `.gortexrc`, `.gortexrc.json`, `.gortexrc.js`, etc.
 - Types de commits personnalisables
 - Scopes prédéfinis ou libres
 - Limites de longueur configurables
@@ -161,4 +161,4 @@ Les suggestions de fonctionnalités sont les bienvenues ! Ouvrez une issue pour 
 - **Corrigé** : Corrections de bugs
 - **Sécurité** : Vulnérabilités corrigées
 
-[1.0.0]: https://github.com/username/commitformat/releases/tag/v1.0.0
+[1.0.0]: https://github.com/username/gortex/releases/tag/v1.0.0

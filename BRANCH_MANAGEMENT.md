@@ -180,7 +180,7 @@ Le CLI valide automatiquement votre nom de branche :
 ### 🎯 Cas 1 : Feature rapide
 
 ```bash
-commitformat
+gortex
 
 # Étape 1
 ? Que voulez-vous faire ? ➕ Créer une nouvelle branche
@@ -197,7 +197,7 @@ commitformat
 ### 🎯 Cas 2 : Tester différentes branches
 
 ```bash
-commitformat
+gortex
 
 # Test branche 1
 ? Que voulez-vous faire ? feature/a
@@ -219,7 +219,7 @@ commitformat
 ### 🎯 Cas 3 : Création puis annulation
 
 ```bash
-commitformat
+gortex
 
 # Création
 ? Que voulez-vous faire ? ➕ Créer une nouvelle branche
@@ -323,7 +323,7 @@ git checkout feature/new      # Enfin la bonne !
 ### ✅ Maintenant (CommitFormat)
 
 ```bash
-commitformat
+gortex
 
 # Interface interactive
 # Essayer plusieurs branches

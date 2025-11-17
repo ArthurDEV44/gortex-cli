@@ -1,11 +1,11 @@
 {
-  "name": "commitformat",
+  "name": "gortex-cli",
   "version": "1.1.0",
   "description": "CLI interactif pour un workflow Git complet : sélection branche, fichiers, commit conventionnel et push - tout en une commande !",
   "type": "module",
   "main": "dist/index.js",
   "bin": {
-    "commitformat": "./dist/index.js"
+    "gortex": "./dist/index.js"
   },
   "scripts": {
     "dev": "tsx src/index.ts",
@@ -28,18 +28,18 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/username/commitformat.git"
+    "url": "git+https://github.com/username/gortex-cli.git"
   },
   "bugs": {
-    "url": "https://github.com/username/commitformat/issues"
+    "url": "https://github.com/username/gortex-cli/issues"
   },
-  "homepage": "https://github.com/username/commitformat#readme",
+  "homepage": "https://github.com/username/gortex-cli#readme",
   "files": [
     "dist",
     "README.md",
     "LICENSE",
     "CHANGELOG.md",
-    ".commitformatrc.example"
+    ".gortexrc.example"
   ],
   "dependencies": {
     "chalk": "^5.3.0",

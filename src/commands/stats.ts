@@ -51,8 +51,8 @@ export async function statsCommand(maxCount: number = 100): Promise<void> {
     if (stats.percentage < 80) {
       console.log(chalk.yellow('💡 Recommandations:'));
       console.log(chalk.gray('─'.repeat(50)));
-      console.log('  • Utilisez "npx commitformat" pour créer des commits guidés');
-      console.log('  • Installez le hook Git: "npx commitformat hooks install"');
+      console.log('  • Utilisez "npx gortex" pour créer des commits guidés');
+      console.log('  • Installez le hook Git: "npx gortex hooks install"');
       console.log('  • Partagez les bonnes pratiques avec votre équipe\n');
     } else {
       console.log(chalk.green('🎉 Excellent travail ! Votre repo suit bien les conventions de commits.\n'));

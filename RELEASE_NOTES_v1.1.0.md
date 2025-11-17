@@ -8,7 +8,7 @@ CommitFormat ne se contente plus de créer des commits ! **Il gère maintenant T
 
 #### Avant (v1.0.0)
 ```bash
-commitformat  # Juste le commit
+gortex  # Juste le commit
 ```
 
 Vous deviez toujours faire :
@@ -18,7 +18,7 @@ Vous deviez toujours faire :
 
 #### Maintenant (v1.1.0)
 ```bash
-commitformat  # TOUT le workflow !
+gortex  # TOUT le workflow !
 ```
 
 **Workflow complet en 5 étapes :**
@@ -34,7 +34,7 @@ commitformat  # TOUT le workflow !
 ### Exemple complet
 
 ```bash
-$ commitformat
+$ gortex
 
 🚀 CommitFormat - Workflow Git complet
 
@@ -174,16 +174,16 @@ hasUpstream()                   // Vérifier tracking branche
 **Nouvelles fonctionnalités :**
 - Si vous utilisez CommitFormat comme avant, vous bénéficiez automatiquement du nouveau workflow
 - Toutes les commandes existantes fonctionnent toujours :
-  - `commitformat` ou `commitformat commit`
-  - `commitformat hooks install`
-  - `commitformat stats`
+  - `gortex` ou `gortex commit`
+  - `gortex hooks install`
+  - `gortex stats`
 
 ## Cas d'Usage
 
 ### 1. Feature rapide
 
 ```bash
-commitformat
+gortex
 # Sélection branche → Tous les fichiers → Message → Push
 # Total: ~30 secondes
 ```
@@ -191,7 +191,7 @@ commitformat
 ### 2. Commit partiel
 
 ```bash
-commitformat
+gortex
 # Sélection branche → 🎯 Sélectionner fichiers → Message → Push
 # Parfait pour commiter seulement certains changements
 ```
@@ -199,7 +199,7 @@ commitformat
 ### 3. Commit sans push
 
 ```bash
-commitformat
+gortex
 # Workflow normal
 # Étape 5: "Voulez-vous push ?" → Non
 # Commit local, push plus tard
@@ -208,7 +208,7 @@ commitformat
 ### 4. Changement de branche au vol
 
 ```bash
-commitformat
+gortex
 # Étape 1: Choisir autre branche
 # Le reste se fait automatiquement
 ```
@@ -231,40 +231,40 @@ commitformat
 
 ```bash
 # npm
-npm install -g commitformat
+npm install -g gortex
 
 # pnpm
-pnpm add -g commitformat
+pnpm add -g gortex
 
 # yarn
-yarn global add commitformat
+yarn global add gortex
 
 # bun
-bun add -g commitformat
+bun add -g gortex
 ```
 
 ### Mise à jour depuis v1.0.0
 
 ```bash
 # npm
-npm update -g commitformat
+npm update -g gortex
 
 # pnpm
-pnpm update -g commitformat
+pnpm update -g gortex
 
 # yarn
-yarn global upgrade commitformat
+yarn global upgrade gortex
 
 # bun
-bun update -g commitformat
+bun update -g gortex
 ```
 
 ### Utilisation sans installation
 
 ```bash
-npx commitformat@latest
+npx gortex@latest
 # ou
-pnpm dlx commitformat@latest
+pnpm dlx gortex@latest
 ```
 
 ## Remerciements
@@ -284,7 +284,7 @@ Idées pour les prochaines versions :
 ## Feedback
 
 Des idées ? Des bugs ? Ouvrez une issue :
-👉 https://github.com/username/commitformat/issues
+👉 https://github.com/username/gortex/issues
 
 ---
 
@@ -292,5 +292,5 @@ Des idées ? Des bugs ? Ouvrez une issue :
 
 Faites un commit avec la nouvelle version :
 ```bash
-commitformat
+gortex
 ```

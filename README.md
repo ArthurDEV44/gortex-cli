@@ -26,22 +26,22 @@ Choisissez votre gestionnaire de paquets préféré :
 
 #### NPM
 ```bash
-npm install -g commitformat
+npm install -g gortex
 ```
 
 #### PNPM
 ```bash
-pnpm add -g commitformat
+pnpm add -g gortex
 ```
 
 #### Yarn
 ```bash
-yarn global add commitformat
+yarn global add gortex
 ```
 
 #### Bun
 ```bash
-bun add -g commitformat
+bun add -g gortex
 ```
 
 ### Utilisation sans installation
@@ -50,22 +50,22 @@ Vous pouvez également utiliser CommitFormat directement sans installation :
 
 #### NPX (npm)
 ```bash
-npx commitformat
+npx gortex
 ```
 
 #### PNPM
 ```bash
-pnpm dlx commitformat
+pnpm dlx gortex
 ```
 
 #### Yarn
 ```bash
-yarn dlx commitformat
+yarn dlx gortex
 ```
 
 #### Bunx (Bun)
 ```bash
-bunx commitformat
+bunx gortex
 ```
 
 ### Installation en tant que dépendance de développement
@@ -74,23 +74,23 @@ Pour l'ajouter à un projet spécifique :
 
 ```bash
 # npm
-npm install -D commitformat
+npm install -D gortex
 
 # pnpm
-pnpm add -D commitformat
+pnpm add -D gortex
 
 # yarn
-yarn add -D commitformat
+yarn add -D gortex
 
 # bun
-bun add -D commitformat
+bun add -D gortex
 ```
 
 Puis ajoutez un script dans votre `package.json` :
 ```json
 {
   "scripts": {
-    "commit": "commitformat"
+    "commit": "gortex"
   }
 }
 ```
@@ -102,9 +102,9 @@ Puis ajoutez un script dans votre `package.json` :
 CommitFormat gère tout votre workflow Git de A à Z !
 
 ```bash
-npx commitformat
+npx gortex
 # ou simplement
-commitformat
+gortex
 ```
 
 Le CLI vous guidera à travers **5 étapes** :
@@ -154,14 +154,14 @@ Tout se fait de manière interactive et guidée ! 🎯
 Pour valider automatiquement le format des commits :
 
 ```bash
-commitformat hooks install
+gortex hooks install
 ```
 
 Cela créera un hook `commit-msg` qui validera tous vos commits.
 
 Pour désinstaller :
 ```bash
-commitformat hooks uninstall
+gortex hooks uninstall
 ```
 
 ### Analyser les statistiques du repo
@@ -169,12 +169,12 @@ commitformat hooks uninstall
 Voyez combien de vos commits suivent les conventions :
 
 ```bash
-commitformat stats
+gortex stats
 ```
 
 Analyser les 200 derniers commits :
 ```bash
-commitformat stats -n 200
+gortex stats -n 200
 ```
 
 Exemple de sortie :
@@ -200,7 +200,7 @@ Répartition par type:
 
 ## Configuration personnalisée
 
-Créez un fichier `.commitformatrc` à la racine de votre projet :
+Créez un fichier `.gortexrc` à la racine de votre projet :
 
 ```json
 {
@@ -224,11 +224,11 @@ Créez un fichier `.commitformatrc` à la racine de votre projet :
 ```
 
 Formats de configuration supportés :
-- `.commitformatrc`
-- `.commitformatrc.json`
-- `.commitformatrc.js`
-- `commitformat.config.js`
-- Clé `commitformat` dans `package.json`
+- `.gortexrc`
+- `.gortexrc.json`
+- `.gortexrc.js`
+- `gortex.config.js`
+- Clé `gortex` dans `package.json`
 
 ## Format des commits
 
@@ -291,11 +291,11 @@ refactor(core): simplify error handling
 ### Commit
 
 ```bash
-commitformat
+gortex
 # ou
-commitformat commit
+gortex commit
 # ou
-commitformat c
+gortex c
 ```
 
 Crée un commit interactif au format conventionnel.
@@ -304,12 +304,12 @@ Crée un commit interactif au format conventionnel.
 
 ```bash
 # Installer le hook
-commitformat hooks install
-commitformat hooks i
+gortex hooks install
+gortex hooks i
 
 # Désinstaller le hook
-commitformat hooks uninstall
-commitformat hooks u
+gortex hooks uninstall
+gortex hooks u
 ```
 
 Gère les hooks Git pour valider automatiquement le format.
@@ -318,14 +318,14 @@ Gère les hooks Git pour valider automatiquement le format.
 
 ```bash
 # Analyser les 100 derniers commits (par défaut)
-commitformat stats
+gortex stats
 
 # Analyser un nombre spécifique de commits
-commitformat stats -n 200
-commitformat stats --number 200
+gortex stats -n 200
+gortex stats --number 200
 
 # Alias
-commitformat s -n 50
+gortex s -n 50
 ```
 
 Affiche les statistiques de conformité du repository.
@@ -334,10 +334,10 @@ Affiche les statistiques de conformité du repository.
 
 ```bash
 # Aide générale
-commitformat --help
+gortex --help
 
 # Aide sur le format
-commitformat help-format
+gortex help-format
 ```
 
 ## Intégration avec des outils existants
@@ -348,16 +348,16 @@ Si vous utilisez déjà Husky, vous pouvez ajouter la validation selon votre pac
 
 ```bash
 # npm
-npx husky add .husky/commit-msg 'npx commitformat hooks install'
+npx husky add .husky/commit-msg 'npx gortex hooks install'
 
 # pnpm
-pnpm exec husky add .husky/commit-msg 'pnpm dlx commitformat hooks install'
+pnpm exec husky add .husky/commit-msg 'pnpm dlx gortex hooks install'
 
 # yarn
-yarn husky add .husky/commit-msg 'yarn dlx commitformat hooks install'
+yarn husky add .husky/commit-msg 'yarn dlx gortex hooks install'
 
 # bun
-bunx husky add .husky/commit-msg 'bunx commitformat hooks install'
+bunx husky add .husky/commit-msg 'bunx gortex hooks install'
 ```
 
 ### Commitlint

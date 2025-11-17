@@ -102,16 +102,16 @@ bun link
 Ensuite testez :
 
 ```bash
-commitformat --help
-commitformat help-format
+gortex --help
+gortex help-format
 ```
 
 ### Option C : Tester dans un repo Git de test
 
 ```bash
 # Créez un repo de test
-mkdir /tmp/test-commitformat
-cd /tmp/test-commitformat
+mkdir /tmp/test-gortex
+cd /tmp/test-gortex
 git init
 
 # Créez un fichier de test
@@ -122,7 +122,7 @@ git add test.txt
 /home/sauron/code/CommitFormat/dist/index.js
 
 # Ou si vous avez fait npm link
-commitformat
+gortex
 ```
 
 ## Étape 5 : Tests des fonctionnalités
@@ -130,9 +130,9 @@ commitformat
 ### Test 1 : Créer un commit
 
 ```bash
-cd /tmp/test-commitformat
+cd /tmp/test-gortex
 echo "modification" >> test.txt
-commitformat
+gortex
 ```
 
 Vérifiez que :
@@ -144,7 +144,7 @@ Vérifiez que :
 ### Test 2 : Installer les hooks
 
 ```bash
-commitformat hooks install
+gortex hooks install
 ```
 
 Vérifiez :
@@ -176,7 +176,7 @@ git commit -m "feat: add test feature"
 ### Test 4 : Statistiques
 
 ```bash
-commitformat stats
+gortex stats
 ```
 
 Vérifiez :
@@ -199,12 +199,12 @@ Ajoutez vos informations :
   "author": "Votre Nom <email@example.com>",
   "repository": {
     "type": "git",
-    "url": "https://github.com/username/commitformat.git"
+    "url": "https://github.com/username/gortex.git"
   },
   "bugs": {
-    "url": "https://github.com/username/commitformat/issues"
+    "url": "https://github.com/username/gortex/issues"
   },
-  "homepage": "https://github.com/username/commitformat#readme"
+  "homepage": "https://github.com/username/gortex#readme"
 }
 ```
 
@@ -259,13 +259,13 @@ Cela montre ce qui sera publié.
 npm publish
 ```
 
-**Important** : Vérifiez que le nom "commitformat" est disponible sur npm. Sinon, changez le nom dans `package.json`.
+**Important** : Vérifiez que le nom "gortex" est disponible sur npm. Sinon, changez le nom dans `package.json`.
 
 ### 7.4 Tester l'installation depuis npm
 
 ```bash
 # Dans un autre terminal
-npx commitformat@latest
+npx gortex@latest
 ```
 
 ## Étape 8 : Maintenance continue

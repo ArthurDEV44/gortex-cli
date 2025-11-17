@@ -4,7 +4,7 @@ import chalk from 'chalk';
 import { getGitDir, isGitRepository } from '../utils/git.js';
 
 const COMMIT_MSG_HOOK = `#!/bin/sh
-# commitformat hook - valide le format des commits
+# gortex hook - valide le format des commits
 
 # Lire le message de commit
 commit_msg_file=$1
@@ -26,7 +26,7 @@ if ! echo "$commit_msg" | grep -qE "$pattern"; then
     echo "  fix: resolve crash on startup"
     echo "  docs(readme): update installation steps"
     echo ""
-    echo "💡 Utilisez 'npx commitformat' pour créer un commit guidé"
+    echo "💡 Utilisez 'npx gortex' pour créer un commit guidé"
     echo ""
     exit 1
 fi
@@ -104,9 +104,9 @@ export async function uninstallHooks(): Promise<void> {
       const content = await fs.readFile(hookPath, 'utf-8');
 
       // Vérifier que c'est bien notre hook
-      if (!content.includes('commitformat hook')) {
+      if (!content.includes('gortex hook')) {
         console.log(
-          chalk.yellow('⚠️  Le hook commit-msg n\'a pas été créé par commitformat')
+          chalk.yellow('⚠️  Le hook commit-msg n\'a pas été créé par gortex')
         );
         const { default: inquirer } = await import('inquirer');
         const { confirm } = await inquirer.prompt([

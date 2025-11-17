@@ -20,7 +20,7 @@ Avant de publier, vérifiez que :
 
 ## Étape 1 : Vérifier la disponibilité du nom
 
-Le nom "commitformat" pourrait être déjà pris. Vérifiez sur https://www.npmjs.com/package/commitformat
+Le nom "gortex" pourrait être déjà pris. Vérifiez sur https://www.npmjs.com/package/gortex
 
 ### Si le nom est pris
 
@@ -28,9 +28,9 @@ Choisissez un autre nom et modifiez `package.json` :
 
 ```json
 {
-  "name": "@votre-username/commitformat",
+  "name": "@votre-username/gortex",
   // ou
-  "name": "commitformat-cli",
+  "name": "gortex-cli",
   // ou
   "name": "commit-format-tool"
 }
@@ -75,12 +75,12 @@ npm whoami
   "author": "Votre Nom <votre@email.com>",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/VOTRE-USERNAME/commitformat.git"
+    "url": "git+https://github.com/VOTRE-USERNAME/gortex.git"
   },
   "bugs": {
-    "url": "https://github.com/VOTRE-USERNAME/commitformat/issues"
+    "url": "https://github.com/VOTRE-USERNAME/gortex/issues"
   },
-  "homepage": "https://github.com/VOTRE-USERNAME/commitformat#readme"
+  "homepage": "https://github.com/VOTRE-USERNAME/gortex#readme"
 }
 ```
 
@@ -94,7 +94,7 @@ npm pack --dry-run
 
 Vous devriez voir :
 ```
-✓ .commitformatrc.example
+✓ .gortexrc.example
 ✓ CHANGELOG.md
 ✓ LICENSE
 ✓ README.md
@@ -116,17 +116,17 @@ Créez un package local :
 npm pack
 ```
 
-Cela crée `commitformat-1.0.0.tgz`
+Cela crée `gortex-1.0.0.tgz`
 
 Testez-le dans un autre dossier :
 ```bash
 cd /tmp
 mkdir test-install
 cd test-install
-npm install /home/sauron/code/CommitFormat/commitformat-1.0.0.tgz
+npm install /home/sauron/code/CommitFormat/gortex-1.0.0.tgz
 
 # Testez
-npx commitformat --help
+npx gortex --help
 ```
 
 ## Étape 6 : Initialiser Git (important pour la publication)
@@ -135,7 +135,7 @@ npx commitformat --help
 cd /home/sauron/code/CommitFormat
 git init
 git add .
-git commit -m "feat: initial release of commitformat CLI"
+git commit -m "feat: initial release of gortex CLI"
 ```
 
 ## Étape 7 : Publier sur npm
@@ -155,7 +155,7 @@ npm publish --access public
 ### Voir la publication
 
 Votre package sera disponible à :
-- https://www.npmjs.com/package/commitformat (ou votre nom)
+- https://www.npmjs.com/package/gortex (ou votre nom)
 
 ## Étape 8 : Vérification post-publication
 
@@ -165,17 +165,17 @@ Dans un nouveau terminal :
 
 ```bash
 # Test global
-npm install -g commitformat
-commitformat --help
+npm install -g gortex
+gortex --help
 
 # Test npx
-npx commitformat --help
+npx gortex --help
 
 # Test avec pnpm
-pnpm dlx commitformat --help
+pnpm dlx gortex --help
 
 # Test avec bun
-bunx commitformat --help
+bunx gortex --help
 ```
 
 ### Tester dans un vrai repo
@@ -186,13 +186,13 @@ mkdir test-repo
 cd test-repo
 git init
 echo "test" > file.txt
-npx commitformat
+npx gortex
 ```
 
 ## Étape 9 : Créer un repo GitHub (optionnel mais recommandé)
 
 1. Créez un repo sur GitHub : https://github.com/new
-2. Nom : `commitformat`
+2. Nom : `gortex`
 3. Public
 4. Sans README (vous en avez déjà un)
 
@@ -200,7 +200,7 @@ Puis poussez votre code :
 
 ```bash
 cd /home/sauron/code/CommitFormat
-git remote add origin https://github.com/VOTRE-USERNAME/commitformat.git
+git remote add origin https://github.com/VOTRE-USERNAME/gortex.git
 git branch -M main
 git push -u origin main
 ```
@@ -252,12 +252,12 @@ git push && git push --tags
 **Attention** : Vous avez 72h pour dépublier une version.
 
 ```bash
-npm unpublish commitformat@1.0.0
+npm unpublish gortex@1.0.0
 ```
 
 Pour supprimer complètement le package :
 ```bash
-npm unpublish commitformat --force
+npm unpublish gortex --force
 ```
 
 ## Troubleshooting
@@ -265,8 +265,8 @@ npm unpublish commitformat --force
 ### Erreur "package name already exists"
 
 Le nom est pris. Utilisez :
-- Un package scoped : `@votre-username/commitformat`
-- Un autre nom : `commitformat-cli`, `commit-formatter`, etc.
+- Un package scoped : `@votre-username/gortex`
+- Un autre nom : `gortex-cli`, `commit-formatter`, etc.
 
 ### Erreur "You do not have permission to publish"
 
@@ -295,16 +295,16 @@ Vérifiez :
 Ajoutez ces badges dans votre README.md :
 
 ```markdown
-[![npm version](https://badge.fury.io/js/commitformat.svg)](https://www.npmjs.com/package/commitformat)
-[![npm downloads](https://img.shields.io/npm/dm/commitformat.svg)](https://www.npmjs.com/package/commitformat)
+[![npm version](https://badge.fury.io/js/gortex.svg)](https://www.npmjs.com/package/gortex)
+[![npm downloads](https://img.shields.io/npm/dm/gortex.svg)](https://www.npmjs.com/package/gortex)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 ```
 
 ## Analytics et statistiques
 
 Consultez les stats de votre package :
-- https://www.npmjs.com/package/commitformat
-- https://npm-stat.com/charts.html?package=commitformat
+- https://www.npmjs.com/package/gortex
+- https://npm-stat.com/charts.html?package=gortex
 
 ## Support
 

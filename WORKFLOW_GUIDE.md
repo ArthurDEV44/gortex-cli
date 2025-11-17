@@ -30,7 +30,7 @@ git push origin feature/ma-branche
 ### ✅ Maintenant (avec CommitFormat)
 
 ```bash
-commitformat
+gortex
 ```
 
 **Une seule commande !** Tout le reste se fait de manière interactive et guidée. 🎉
@@ -258,7 +258,7 @@ feat(api): add user authentication endpoint
 
 ```bash
 # Vous êtes sur main, vous voulez créer une feature
-commitformat
+gortex
 
 # Étape 1: Rester sur main (ou changer vers feature/xyz)
 # Étape 2: Tous les fichiers
@@ -273,7 +273,7 @@ commitformat
 
 ```bash
 # Vous avez modifié 5 fichiers mais ne voulez en commiter que 2
-commitformat
+gortex
 
 # Étape 1: Branche actuelle
 # Étape 2: 🎯 Sélectionner les fichiers → Choisir 2 fichiers
@@ -288,7 +288,7 @@ commitformat
 
 ```bash
 # Vous voulez commiter mais pas encore push
-commitformat
+gortex
 
 # Étape 1-4: Normalement
 # Étape 5: Voulez-vous push ? → Non (n)
@@ -300,7 +300,7 @@ commitformat
 
 ```bash
 # Vous êtes sur main mais voulez commiter sur develop
-commitformat
+gortex
 
 # Étape 1: develop (change automatiquement)
 # Étape 2-5: Normalement
@@ -314,7 +314,7 @@ commitformat
 
 ### Personnaliser les types et scopes
 
-Créez `.commitformatrc` :
+Créez `.gortexrc` :
 
 ```json
 {
@@ -344,8 +344,8 @@ Ajoutez dans votre `package.json` :
 ```json
 {
   "scripts": {
-    "commit": "commitformat",
-    "c": "commitformat"
+    "commit": "gortex",
+    "c": "gortex"
   }
 }
 ```
@@ -438,12 +438,12 @@ Vous avez maintenant compris le workflow complet ! 🎉
 
 ```bash
 # C'est parti !
-commitformat
+gortex
 ```
 
 ---
 
 **Questions ou suggestions ?**
-Ouvrez une issue sur GitHub : https://github.com/username/commitformat/issues
+Ouvrez une issue sur GitHub : https://github.com/username/gortex/issues
 
 **Bon workflow ! 🚀**

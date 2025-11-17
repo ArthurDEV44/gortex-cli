@@ -21,8 +21,8 @@ pnpm run build
 
 ```bash
 # Créer un repo de test
-mkdir /tmp/test-commitformat
-cd /tmp/test-commitformat
+mkdir /tmp/test-gortex
+cd /tmp/test-gortex
 git init
 echo "test" > test.txt
 
@@ -37,7 +37,7 @@ cd /home/sauron/code/CommitFormat
 pnpm link --global
 
 # Maintenant utilisable partout
-commitformat --help
+gortex --help
 ```
 
 ## 📝 Commandes principales
@@ -63,9 +63,9 @@ node dist/index.js
 ### Test 1 : Créer un commit
 
 ```bash
-cd /tmp/test-commitformat
+cd /tmp/test-gortex
 echo "modification" >> test.txt
-commitformat
+gortex
 ```
 
 Suivez les prompts et créez un commit.
@@ -73,7 +73,7 @@ Suivez les prompts et créez un commit.
 ### Test 2 : Installer les hooks
 
 ```bash
-commitformat hooks install
+gortex hooks install
 ```
 
 Essayez de créer un commit invalide :
@@ -88,14 +88,14 @@ git commit -m "feat: valid commit"  # ✅ Devrait passer
 ### Test 3 : Voir les stats
 
 ```bash
-commitformat stats
+gortex stats
 ```
 
 ### Test 4 : Aide
 
 ```bash
-commitformat --help
-commitformat help-format
+gortex --help
+gortex help-format
 ```
 
 ## 📦 Avant publication
@@ -128,7 +128,7 @@ npm login
 npm publish
 
 # 4. Tester
-npx commitformat@latest --help
+npx gortex@latest --help
 ```
 
 ## 📚 Documentation
@@ -157,7 +157,7 @@ CommitFormat/
 
 Fichiers importants :
 ├── .npmignore             # Fichiers exclus du package npm
-├── .commitformatrc.example # Exemple de config
+├── .gortexrc.example # Exemple de config
 ├── LICENSE                # Licence MIT
 ├── CHANGELOG.md           # Historique
 └── README.md              # Documentation
@@ -209,7 +209,7 @@ Utilisez le script intelligent :
 Ajoutez dans `~/.bashrc` ou `~/.zshrc` :
 
 ```bash
-alias cf='commitformat'
+alias cf='gortex'
 ```
 
 Puis :
@@ -253,7 +253,7 @@ Pour contribuer : Utilisez CommitFormat pour vos commits ! 😉
 ```bash
 # Dans le repo CommitFormat lui-même
 git add .
-commitformat
+gortex
 ```
 
 ---

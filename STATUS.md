@@ -23,7 +23,7 @@
 - [x] Installation/désinstallation de hooks Git
 - [x] Validation automatique des commits
 - [x] Analyse des statistiques du repo
-- [x] Configuration personnalisable (.commitformatrc)
+- [x] Configuration personnalisable (.gortexrc)
 - [x] Support de tous les types de commits
 - [x] Messages en français avec émojis
 - [x] Aide détaillée (help-format)
@@ -54,7 +54,7 @@
 - [x] QUICK_START.md (démarrage rapide)
 - [x] CHANGELOG.md (historique)
 - [x] LICENSE (MIT)
-- [x] .commitformatrc.example
+- [x] .gortexrc.example
 - [x] STATUS.md (ce fichier)
 
 ### Qualité
@@ -88,7 +88,7 @@
 ## 🎯 Prochaines étapes recommandées
 
 ### Immédiat (avant publication)
-1. ⚠️ Vérifier que le nom "commitformat" est disponible sur npm
+1. ⚠️ Vérifier que le nom "gortex" est disponible sur npm
 2. ⚠️ Mettre à jour package.json avec vos vraies informations :
    - author
    - repository URL

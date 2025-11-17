@@ -128,14 +128,14 @@ Tout fonctionne comme avant. Les nouvelles fonctionnalités sont additives.
 Installez simplement la nouvelle version :
 
 ```bash
-npm update -g commitformat
+npm update -g gortex
 ```
 
 ### Rétrocompatibilité
 
 ✅ Toutes les commandes existantes fonctionnent  
 ✅ Même comportement si vous skipper les nouvelles étapes  
-✅ Configuration `.commitformatrc` compatible
+✅ Configuration `.gortexrc` compatible
 
 ---
 
@@ -146,7 +146,7 @@ npm update -g commitformat
 ```bash
 git checkout feature-branch
 git add file1.ts file2.ts
-commitformat  # Juste le message de commit
+gortex  # Juste le message de commit
 git push origin feature-branch
 ```
 
@@ -155,7 +155,7 @@ git push origin feature-branch
 ### Workflow v1.1.0
 
 ```bash
-commitformat  # Tout en une !
+gortex  # Tout en une !
 ```
 
 **1 seule commande, 5 étapes interactives**
@@ -177,7 +177,7 @@ commitformat  # Tout en une !
 
 ```bash
 # 1. Mettre à jour
-pnpm update -g commitformat
+pnpm update -g gortex
 
 # 2. Aller dans un repo Git
 cd mon-projet
@@ -186,7 +186,7 @@ cd mon-projet
 echo "test" >> file.txt
 
 # 4. Lancer le nouveau workflow
-commitformat
+gortex
 ```
 
 ### Pour Publier
@@ -207,7 +207,7 @@ npm publish
 ## Questions Fréquentes
 
 **Q: Dois-je réinstaller ?**  
-R: Non, juste mettre à jour avec `npm update -g commitformat`
+R: Non, juste mettre à jour avec `npm update -g gortex`
 
 **Q: Mes configs vont casser ?**  
 R: Non, tout est compatible.

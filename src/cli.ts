@@ -7,9 +7,9 @@ import { statsCommand } from './commands/stats.js';
 const program = new Command();
 
 program
-  .name('commitformat')
+  .name('gortex')
   .description('CLI interactif pour créer des commits conventionnels')
-  .version('1.0.0');
+  .version('1.1.0');
 
 // Commande par défaut (commit interactif)
 program
@@ -96,7 +96,7 @@ program
     console.log(chalk.gray('  Ajoutez ! après le type/scope:'));
     console.log(chalk.yellow('  feat(api)!: change authentication method\n'));
 
-    console.log(chalk.blue('💡 Utilisez "npx commitformat" pour un assistant interactif\n'));
+    console.log(chalk.blue('💡 Utilisez "npx gortex" pour un assistant interactif\n'));
   });
 
 export function runCLI(): void {

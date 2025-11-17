@@ -11,8 +11,8 @@ Le gestionnaire par défaut de Node.js, largement utilisé et stable.
 
 **Utilisation :**
 ```bash
-npm install -g commitformat
-npx commitformat
+npm install -g gortex
+npx gortex
 ```
 
 ### ⚡ pnpm (Performant npm)
@@ -25,8 +25,8 @@ npm install -g pnpm
 
 **Utilisation :**
 ```bash
-pnpm add -g commitformat
-pnpm dlx commitformat
+pnpm add -g gortex
+pnpm dlx gortex
 ```
 
 **Avantages :**
@@ -44,8 +44,8 @@ npm install -g yarn
 
 **Utilisation :**
 ```bash
-yarn global add commitformat
-yarn dlx commitformat
+yarn global add gortex
+yarn dlx gortex
 ```
 
 **Avantages :**
@@ -63,8 +63,8 @@ curl -fsSL https://bun.sh/install | bash
 
 **Utilisation :**
 ```bash
-bun add -g commitformat
-bunx commitformat
+bun add -g gortex
+bunx gortex
 ```
 
 **Avantages :**
@@ -212,7 +212,7 @@ Supprimez les fichiers de lock non désirés ou installez le package manager sou
 Sur Linux/macOS, vous pourriez avoir besoin de `sudo` :
 
 ```bash
-sudo npm install -g commitformat
+sudo npm install -g gortex
 ```
 
 Ou configurez npm pour installer dans votre home :
