@@ -29,7 +29,7 @@ export const Brand: React.FC<BrandProps> = ({ variant = 'small', tagline = false
   return (
     <Box marginBottom={1}>
       <Text bold>
-        {createGradient.spice('▸ GORTEX')}
+        {createGradient.spice(`${icons.pointer} GORTEX`)}
       </Text>
       <Text dimColor> {icons.desert} Git Workflow CLI</Text>
     </Box>

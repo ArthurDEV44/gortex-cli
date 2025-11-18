@@ -3,6 +3,7 @@ import { Box, Text } from 'ink';
 import Gradient from 'ink-gradient';
 import { Select, Confirm, TextInput, type SelectItem } from '../ui/index.js';
 import { LoadingSpinner } from './LoadingSpinner.js';
+import { icons, commitIcons } from '../theme/colors.js';
 import {
   getCurrentBranch,
   getAllBranches,
@@ -100,7 +101,7 @@ export const BranchSelector: React.FC<BranchSelectorProps> = ({ onComplete }) =>
               description: b === currentBranch ? 'Current branch' : undefined,
             })),
             {
-              label: '✨ Create new branch',
+              label: `${commitIcons.feat} Create new branch`,
               value: '__CREATE_NEW__',
               description: 'Create and switch to a new branch',
             },

@@ -134,46 +134,127 @@ export const boxStyles = {
   classic: 'classic' as const,
 };
 
-// Icônes avec thème Dune
+/**
+ * Icônes professionnelles Unicode pour CLI
+ * Utilise des caractères Unicode élégants compatibles avec tous les terminaux
+ */
 export const icons = {
-  // Statuts
-  success: '✓',
-  error: '✖',
-  warning: '⚠',
-  info: 'ℹ',
+  // Statuts (symboles professionnels)
+  success: '✔',        // Checkmark élégant
+  error: '✖',          // Croix fine
+  warning: '⚠',        // Triangle d'avertissement
+  info: 'ℹ',           // Information
+  question: '?',       // Question
 
-  // Gortex/Dune themed
-  desert: '🏜️',
-  spice: '✨',
-  sand: '🌊',
-  sun: '☀️',
+  // Indicateurs de statut alternatifs
+  tick: '✓',           // Tick simple
+  cross: '✗',          // Croix simple
+  bullet: '•',         // Point
+  circle: '◯',         // Cercle vide
+  circleFilled: '●',   // Cercle plein
+  square: '▢',         // Carré vide
+  squareFilled: '◼',   // Carré plein
 
-  // Git operations
-  rocket: '🚀',
-  branch: '🌿',
-  commit: '💾',
-  push: '⬆️',
-  pull: '⬇️',
-  merge: '🔀',
+  // Flèches et directions
+  arrowRight: '→',     // Flèche droite
+  arrowLeft: '←',      // Flèche gauche
+  arrowUp: '↑',        // Flèche haut
+  arrowDown: '↓',      // Flèche bas
+  pointer: '▸',        // Pointeur triangle
+  chevronRight: '›',   // Chevron droit
+  chevronLeft: '‹',    // Chevron gauche
 
-  // UI elements
-  check: '✅',
-  cross: '❌',
-  package: '📦',
-  gear: '⚙️',
-  lock: '🔒',
-  key: '🔑',
-  star: '⭐',
-  lightning: '⚡',
-  fire: '🔥',
-  crown: '👑',
-  target: '🎯',
-  sparkles: '✨',
+  // Git operations (symboles professionnels)
+  branch: '⎇',         // Symbole Git branch (Option-Shift-7 on Mac)
+  commit: '◉',         // Commit (cercle avec point)
+  merge: '⎇',          // Merge
+  tag: '⚑',            // Tag/Flag
+  pull: '↓',           // Pull
+  push: '↑',           // Push
+  fetch: '⇣',          // Fetch
+  diff: '±',           // Diff
+
+  // États et progressions
+  pending: '○',        // En attente
+  inProgress: '◐',     // En cours
+  loading: '◌',        // Chargement
+  spinner: '◠',        // Spinner
+
+  // Workflow et processus
+  step: '▸',           // Étape
+  substep: '▹',        // Sous-étape
+  completed: '✔',      // Complété
+  skipped: '−',        // Sauté
+
+  // UI et navigation
+  menu: '☰',           // Menu hamburger
+  settings: '⚙',       // Paramètres
+  search: '⌕',         // Recherche
+  filter: '⚑',         // Filtre
+  sort: '⇅',           // Tri
+  stats: '◫',          // Statistiques (barres)
+
+  // Priorités et importance
+  high: '⬆',           // Haute
+  medium: '▬',         // Moyenne
+  low: '⬇',            // Basse
+  star: '★',           // Étoile pleine
+  starEmpty: '☆',      // Étoile vide
+
+  // Fichiers et dossiers
+  folder: '▣',         // Dossier
+  file: '▢',           // Fichier
+  fileChanged: '◆',    // Fichier modifié
+  fileAdded: '✚',      // Fichier ajouté
+  fileDeleted: '✖',    // Fichier supprimé
+
+  // Statut de build/CI
+  building: '⚒',       // En construction
+  deployed: '◉',       // Déployé
+  failed: '✖',         // Échoué
+  passed: '✔',         // Réussi
+
+  // Notifications
+  alert: '⚠',          // Alerte
+  notice: 'ⓘ',         // Notice
+  bell: '🔔',          // Cloche (si emoji accepté)
+
+  // Séparateurs et décorations
+  separator: '─',      // Ligne horizontale
+  ellipsis: '…',       // Points de suspension
+  middot: '·',         // Point médian
+
+  // Thème Dune (caractères élégants)
+  sand: '∼',           // Vague de sable
+  spice: '✦',          // Étoile à 4 branches (épice)
+  desert: '▭',         // Désert stylisé
+};
+
+/**
+ * Icônes colorées pour les types de commit (conventional commits)
+ */
+export const commitIcons = {
+  feat: '✦',      // Feature - Étoile épice
+  fix: '◆',       // Fix - Diamant
+  docs: '◈',      // Documentation - Diamant vide
+  style: '◇',     // Style - Losange
+  refactor: '⟲',  // Refactor - Cercle flèche
+  perf: '⚡',     // Performance - Éclair
+  test: '✓',      // Test - Check
+  build: '▣',     // Build - Carré avec point
+  ci: '⚙',        // CI - Engrenage
+  chore: '○',     // Chore - Cercle
+  revert: '↶',    // Revert - Flèche retour
 };
 
 // Helper pour obtenir la couleur d'un type de commit
 export function getCommitColor(type: string): string {
   return commitColors[type as keyof typeof commitColors] || colors.muted;
+}
+
+// Helper pour obtenir l'icône d'un type de commit
+export function getCommitIcon(type: string): string {
+  return commitIcons[type as keyof typeof commitIcons] || icons.commit;
 }
 
 // Helper pour obtenir la couleur d'une branche
@@ -191,3 +272,4 @@ export function getBranchColor(branch: string): string {
 export type ColorName = keyof typeof colors;
 export type CommitType = keyof typeof commitColors;
 export type BranchType = keyof typeof branchColors;
+export type IconName = keyof typeof icons;

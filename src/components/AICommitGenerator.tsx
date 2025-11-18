@@ -6,6 +6,7 @@ import { Confirm } from '../ui/Confirm.js';
 import type { AIProvider as AIProviderType, AIGeneratedCommit, CommitConfig } from '../types.js';
 import { AICommitService, analyzeStagedChanges } from '../ai/index.js';
 import { formatCommitMessage } from '../utils/validate.js';
+import { icons, commitIcons } from '../theme/colors.js';
 
 type Step = 'analyzing' | 'generating' | 'preview' | 'error';
 
@@ -143,7 +144,7 @@ export const AICommitGenerator: React.FC<Props> = ({ provider, config, onComplet
       <Box flexDirection="column" padding={1}>
         <Box marginBottom={1}>
           <Gradient name="cristal">
-            <Text bold>✨ Suggestion AI ({providerName})</Text>
+            <Text bold>{commitIcons.feat} Suggestion AI ({providerName})</Text>
           </Gradient>
         </Box>
 

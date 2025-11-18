@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Box, Text } from 'ink';
 import Spinner from 'ink-spinner';
 import { analyzeCommitStats } from '../utils/git.js';
-import { colors } from '../theme/colors.js';
+import { colors, icons, getCommitIcon } from '../theme/colors.js';
 
 interface StatsData {
   total: number;
@@ -18,22 +18,7 @@ function getProgressBar(percentage: number, length: number = 30): string {
   return '█'.repeat(filled) + '░'.repeat(empty);
 }
 
-function getTypeEmoji(type: string): string {
-  const emojis: Record<string, string> = {
-    feat: '✨',
-    fix: '🐛',
-    docs: '📝',
-    style: '💄',
-    refactor: '♻️',
-    perf: '⚡️',
-    test: '✅',
-    build: '📦',
-    ci: '👷',
-    chore: '🔧',
-    revert: '⏪',
-  };
-  return emojis[type] || '📌';
-}
+// Supprimé - on utilise maintenant getCommitIcon() du thème
 
 export const StatsTab: React.FC = () => {
   const [stats, setStats] = useState<StatsData | null>(null);
@@ -69,7 +54,7 @@ export const StatsTab: React.FC = () => {
   if (error || !stats) {
     return (
       <Box padding={1}>
-        <Text color={colors.error}>❌ Error loading stats: {error || 'Unknown error'}</Text>
+        <Text color={colors.error}>{icons.error} Error loading stats: {error || 'Unknown error'}</Text>
       </Box>
     );
   }
@@ -91,7 +76,7 @@ export const StatsTab: React.FC = () => {
         flexDirection="column"
       >
         <Box marginBottom={1}>
-          <Text bold color={colors.primary}>📊 Summary</Text>
+          <Text bold color={colors.primary}>{icons.stats} Summary</Text>
         </Box>
 
         <Box flexDirection="column">
@@ -120,7 +105,7 @@ export const StatsTab: React.FC = () => {
         flexDirection="column"
       >
         <Box marginBottom={1}>
-          <Text bold color={percentageColor}>📈 Compliance Rate</Text>
+          <Text bold color={percentageColor}>{icons.arrowUp} Compliance Rate</Text>
         </Box>
         <Box>
           <Text color={percentageColor}>
@@ -140,7 +125,7 @@ export const StatsTab: React.FC = () => {
           flexDirection="column"
         >
           <Box marginBottom={1}>
-            <Text bold color={colors.primaryLight}>📋 Type Breakdown</Text>
+            <Text bold color={colors.primaryLight}>{icons.menu} Type Breakdown</Text>
           </Box>
 
           <Box flexDirection="column">
@@ -152,7 +137,7 @@ export const StatsTab: React.FC = () => {
                 return (
                   <Box key={type}>
                     <Text>
-                      {getTypeEmoji(type)} {type.padEnd(10)} {count.toString().padStart(3)} ({typePercentage}%) <Text dimColor>{bar}</Text>
+                      {getCommitIcon(type)} {type.padEnd(10)} {count.toString().padStart(3)} ({typePercentage}%) <Text dimColor>{bar}</Text>
                     </Text>
                   </Box>
                 );
@@ -172,7 +157,7 @@ export const StatsTab: React.FC = () => {
             flexDirection="column"
           >
             <Box marginBottom={1}>
-              <Text bold color={colors.warning}>💡 Recommendations</Text>
+              <Text bold color={colors.warning}>{icons.info} Recommendations</Text>
             </Box>
             <Box flexDirection="column">
               <Text dimColor>• Use "gortex commit" for guided commits</Text>
@@ -187,7 +172,7 @@ export const StatsTab: React.FC = () => {
             paddingX={2}
             paddingY={1}
           >
-            <Text color={colors.success}>🎉 Excellent work! Your repo follows commit conventions well.</Text>
+            <Text color={colors.success}>{icons.success} Excellent work! Your repo follows commit conventions well.</Text>
           </Box>
         )}
       </Box>

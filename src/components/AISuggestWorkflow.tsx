@@ -7,6 +7,7 @@ import { ErrorMessage } from './ErrorMessage.js';
 import { formatCommitMessage } from '../utils/validate.js';
 import { Confirm } from '../ui/Confirm.js';
 import { isGitRepository, createCommit } from '../utils/git.js';
+import { commitIcons } from '../theme/colors.js';
 
 interface Props {
   config: CommitConfig;
@@ -168,7 +169,7 @@ export function AISuggestWorkflow({ config }: Props) {
         <Box borderStyle="round" borderColor="green" padding={1} flexDirection="column">
           <Box marginBottom={1}>
             <Text bold color="green">
-              ✨ Suggestion générée par {providerName}
+              {commitIcons.feat} Suggestion générée par {providerName}
             </Text>
           </Box>
 

@@ -1,5 +1,6 @@
 import React from 'react';
 import { Box, Text } from 'ink';
+import { icons } from '../theme/colors.js';
 
 interface ErrorMessageProps {
   title: string;
@@ -18,7 +19,7 @@ export const ErrorMessage: React.FC<ErrorMessageProps> = ({ title, message, sugg
         flexDirection="column"
       >
         <Box marginBottom={message || suggestions ? 1 : 0}>
-          <Text bold color="red">✖ {title}</Text>
+          <Text bold color="red">{icons.error} {title}</Text>
         </Box>
 
         {message && (
@@ -30,11 +31,11 @@ export const ErrorMessage: React.FC<ErrorMessageProps> = ({ title, message, sugg
         {suggestions && suggestions.length > 0 && (
           <Box flexDirection="column">
             <Box marginBottom={1}>
-              <Text bold color="yellow">💡 Suggestions:</Text>
+              <Text bold color="yellow">{icons.info} Suggestions:</Text>
             </Box>
             {suggestions.map((suggestion, i) => (
               <Box key={i}>
-                <Text color="yellow">▸</Text>
+                <Text color="yellow">{icons.pointer}</Text>
                 <Text dimColor> {suggestion}</Text>
               </Box>
             ))}

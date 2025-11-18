@@ -3,6 +3,7 @@ import { Box, Text } from 'ink';
 import Spinner from 'ink-spinner';
 import { Confirm } from '../ui/index.js';
 import { hasRemote, getDefaultRemote, hasUpstream, pushToRemote, getRemoteUrl } from '../utils/git.js';
+import { icons } from '../theme/colors.js';
 
 interface PushPromptProps {
   branch: string;
@@ -68,7 +69,7 @@ export const PushPrompt: React.FC<PushPromptProps> = ({ branch, onComplete }) =>
     return (
       <Box flexDirection="column">
         <Box marginBottom={1}>
-          <Text bold color="blue">🚀 Étape 5/5: Push vers le remote</Text>
+          <Text bold color="blue">{icons.push} Étape 5/5: Push vers le remote</Text>
         </Box>
         <Text color="cyan">
           <Spinner type="dots" /> Vérification du remote...
@@ -82,11 +83,11 @@ export const PushPrompt: React.FC<PushPromptProps> = ({ branch, onComplete }) =>
     return (
       <Box flexDirection="column">
         <Box marginBottom={1}>
-          <Text bold color="blue">🚀 Étape 5/5: Push vers le remote</Text>
+          <Text bold color="blue">{icons.push} Étape 5/5: Push vers le remote</Text>
         </Box>
         <Text color="yellow">⚠️  Aucun remote configuré, impossible de push</Text>
         <Box marginTop={1}>
-          <Text dimColor>💡 Configurez un remote avec : git remote add origin &lt;url&gt;</Text>
+          <Text dimColor>{icons.info} Configurez un remote avec : git remote add origin &lt;url&gt;</Text>
         </Box>
       </Box>
     );
@@ -97,7 +98,7 @@ export const PushPrompt: React.FC<PushPromptProps> = ({ branch, onComplete }) =>
     return (
       <Box flexDirection="column">
         <Box marginBottom={1}>
-          <Text bold color="blue">🚀 Étape 5/5: Push vers le remote</Text>
+          <Text bold color="blue">{icons.push} Étape 5/5: Push vers le remote</Text>
         </Box>
         <Box marginBottom={1}>
           <Text>Remote: <Text dimColor>{remoteUrl}</Text></Text>
@@ -112,7 +113,7 @@ export const PushPrompt: React.FC<PushPromptProps> = ({ branch, onComplete }) =>
     return (
       <Box flexDirection="column">
         <Box marginBottom={1}>
-          <Text bold color="blue">🚀 Étape 5/5: Push vers le remote</Text>
+          <Text bold color="blue">{icons.push} Étape 5/5: Push vers le remote</Text>
         </Box>
         <Text color="cyan">
           <Spinner type="dots" /> Push en cours vers {remoteUrl}...
@@ -126,7 +127,7 @@ export const PushPrompt: React.FC<PushPromptProps> = ({ branch, onComplete }) =>
     return (
       <Box flexDirection="column">
         <Box marginBottom={1}>
-          <Text bold color="blue">🚀 Étape 5/5: Push vers le remote</Text>
+          <Text bold color="blue">{icons.push} Étape 5/5: Push vers le remote</Text>
         </Box>
         <Text color="green">✓ Push réussi vers {remoteUrl}</Text>
       </Box>
@@ -138,11 +139,11 @@ export const PushPrompt: React.FC<PushPromptProps> = ({ branch, onComplete }) =>
     return (
       <Box flexDirection="column">
         <Box marginBottom={1}>
-          <Text bold color="blue">🚀 Étape 5/5: Push vers le remote</Text>
+          <Text bold color="blue">{icons.push} Étape 5/5: Push vers le remote</Text>
         </Box>
-        <Text color="red">❌ Erreur lors du push: {error}</Text>
+        <Text color="red">{icons.error} Erreur lors du push: {error}</Text>
         <Box marginTop={1} flexDirection="column">
-          <Text color="yellow">💡 Push manuellement avec: git push origin {branch}</Text>
+          <Text color="yellow">{icons.info} Push manuellement avec: git push origin {branch}</Text>
           <Box marginTop={1}>
             <Text dimColor bold>Configuration requise :</Text>
           </Box>

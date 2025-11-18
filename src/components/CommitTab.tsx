@@ -15,6 +15,7 @@ import { StepIndicator } from './StepIndicator.js';
 import type { AIProvider, CommitConfig } from '../types.js';
 import { stageFiles } from '../utils/git.js';
 import { useApp } from 'ink';
+import { icons, commitIcons } from '../theme/colors.js';
 
 type Step =
   | 'idle'
@@ -30,17 +31,17 @@ type Step =
   | 'continue';
 
 const STEP_NAMES: Record<Step, { number: number; name: string; icon: string }> = {
-  idle: { number: 0, name: 'Ready', icon: '🏠' },
-  branch: { number: 1, name: 'Branch Selection', icon: '🌿' },
-  files: { number: 2, name: 'File Selection', icon: '📦' },
-  staging: { number: 3, name: 'Staging Files', icon: '📥' },
-  mode: { number: 4, name: 'Generation Mode', icon: '🤖' },
-  'ai-generate': { number: 5, name: 'AI Generation', icon: '✨' },
-  'manual-message': { number: 5, name: 'Commit Message', icon: '💬' },
-  confirm: { number: 6, name: 'Confirmation', icon: '✓' },
-  push: { number: 7, name: 'Push to Remote', icon: '🚀' },
-  success: { number: 8, name: 'Complete', icon: '🎉' },
-  continue: { number: 9, name: 'Continue', icon: '🔄' },
+  idle: { number: 0, name: 'Ready', icon: icons.circle },
+  branch: { number: 1, name: 'Branch Selection', icon: icons.branch },
+  files: { number: 2, name: 'File Selection', icon: icons.fileChanged },
+  staging: { number: 3, name: 'Staging Files', icon: icons.fileAdded },
+  mode: { number: 4, name: 'Generation Mode', icon: icons.settings },
+  'ai-generate': { number: 5, name: 'AI Generation', icon: commitIcons.feat },
+  'manual-message': { number: 5, name: 'Commit Message', icon: icons.step },
+  confirm: { number: 6, name: 'Confirmation', icon: icons.success },
+  push: { number: 7, name: 'Push to Remote', icon: icons.push },
+  success: { number: 8, name: 'Complete', icon: icons.completed },
+  continue: { number: 9, name: 'Continue', icon: icons.arrowRight },
 };
 
 interface Props {

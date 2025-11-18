@@ -1,6 +1,7 @@
 import React from 'react';
 import { Box, Text } from 'ink';
 import Gradient from 'ink-gradient';
+import { icons } from '../theme/colors.js';
 
 interface FileDiffPreviewProps {
   files: Array<{
@@ -12,9 +13,9 @@ interface FileDiffPreviewProps {
 
 export const FileDiffPreview: React.FC<FileDiffPreviewProps> = ({ files, maxDisplay = 5 }) => {
   const statusIcons: Record<string, { icon: string; color: string }> = {
-    nouveau: { icon: '✚', color: 'green' },
-    modifié: { icon: '●', color: 'yellow' },
-    supprimé: { icon: '✖', color: 'red' },
+    nouveau: { icon: icons.fileAdded, color: 'green' },
+    modifié: { icon: icons.fileChanged, color: 'yellow' },
+    supprimé: { icon: icons.fileDeleted, color: 'red' },
   };
 
   const displayFiles = files.slice(0, maxDisplay);
@@ -24,7 +25,7 @@ export const FileDiffPreview: React.FC<FileDiffPreviewProps> = ({ files, maxDisp
     <Box flexDirection="column" marginY={1}>
       <Box marginBottom={1}>
         <Gradient name="cristal">
-          <Text bold>📝 Changed Files</Text>
+          <Text bold>{icons.fileChanged} Changed Files</Text>
         </Gradient>
         <Text dimColor> ({files.length} total)</Text>
       </Box>

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Box, Text, useInput } from 'ink';
 import Gradient from 'ink-gradient';
-import { colors, createGradient } from '../theme/colors.js';
+import { colors, createGradient, icons } from '../theme/colors.js';
 
 export type TabId = 'commit' | 'stats';
 
@@ -16,13 +16,13 @@ const TABS: Tab[] = [
   {
     id: 'commit',
     label: 'Commit',
-    icon: '📝',
+    icon: icons.commit,
     description: 'Create commits with AI or manually',
   },
   {
     id: 'stats',
     label: 'Stats',
-    icon: '📊',
+    icon: icons.stats,
     description: 'View repository commit statistics',
   },
 ];

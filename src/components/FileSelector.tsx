@@ -5,6 +5,7 @@ import { FileDiffPreview } from './FileDiffPreview.js';
 import { LoadingSpinner } from './LoadingSpinner.js';
 import { getModifiedFilesWithStatus } from '../utils/git.js';
 import chalk from 'chalk';
+import { icons } from '../theme/colors.js';
 
 interface FileSelectorProps {
   onComplete: (files: string[]) => void;
@@ -65,7 +66,7 @@ export const FileSelector: React.FC<FileSelectorProps> = ({ onComplete }) => {
           message="Which files do you want to include?"
           items={[
             {
-              label: '📦 All files',
+              label: `${icons.fileChanged} All files`,
               value: 'all',
               description: `Stage all ${files.length} changed file${files.length > 1 ? 's' : ''}`,
             },

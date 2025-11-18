@@ -6,6 +6,7 @@ import type { AIProvider as AIProviderType, CommitConfig } from '../types.js';
 import { OllamaProvider } from '../ai/providers/ollama.js';
 import { MistralProvider } from '../ai/providers/mistral.js';
 import { OpenAIProvider } from '../ai/providers/openai.js';
+import { icons } from '../theme/colors.js';
 
 export type CommitMode = 'ai' | 'manual';
 
@@ -70,7 +71,7 @@ export const CommitModeSelector: React.FC<Props> = ({ config, onComplete }) => {
       <Box flexDirection="column" padding={1}>
         <Box marginBottom={1}>
           <Gradient name="cristal">
-            <Text bold>🤖 Mode de Génération du Commit</Text>
+            <Text bold>{icons.settings} Mode de Génération du Commit</Text>
           </Gradient>
         </Box>
 
@@ -86,7 +87,7 @@ export const CommitModeSelector: React.FC<Props> = ({ config, onComplete }) => {
 
   if (availableProviders.ollama) {
     aiProviders.push({
-      label: '🤖 AI - Ollama (Local)',
+      label: `${icons.settings} AI - Ollama (Local)`,
       value: 'ollama',
       description: `Génération avec Ollama - ${config.ai?.ollama?.model || 'mistral:7b'}`,
     });
@@ -94,7 +95,7 @@ export const CommitModeSelector: React.FC<Props> = ({ config, onComplete }) => {
 
   if (availableProviders.mistral) {
     aiProviders.push({
-      label: '🤖 AI - Mistral',
+      label: `${icons.settings} AI - Mistral`,
       value: 'mistral',
       description: `Génération avec Mistral AI - ${config.ai?.mistral?.model || 'mistral-small-latest'}`,
     });
@@ -102,7 +103,7 @@ export const CommitModeSelector: React.FC<Props> = ({ config, onComplete }) => {
 
   if (availableProviders.openai) {
     aiProviders.push({
-      label: '🤖 AI - OpenAI',
+      label: `${icons.settings} AI - OpenAI`,
       value: 'openai',
       description: `Génération avec OpenAI - ${config.ai?.openai?.model || 'gpt-4o-mini'}`,
     });
