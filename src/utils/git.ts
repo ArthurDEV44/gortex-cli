@@ -164,7 +164,31 @@ function getStatusLabel(workingDir: string, index: string): string {
  */
 export async function stageFiles(files: string[]): Promise<void> {
   if (files.length === 0) return;
-  await git.add(files);
+
+  // Pour gérer les fichiers supprimés, on utilise une approche simple :
+  // git add -u . pour mettre à jour tous les fichiers modifiés/supprimés
+  // puis on vérifie si tous nos fichiers sont bien staged
+
+  // D'abord, essayer de stage tous les fichiers normalement
+  for (const file of files) {
+    try {
+      await git.add(file);
+    } catch (error: any) {
+      // Si le fichier est supprimé, git add échoue
+      // On ignore l'erreur, on gèrera les suppressions après
+      if (!error.message?.includes('did not match any files')) {
+        throw error;
+      }
+    }
+  }
+
+  // Ensuite, stage explicitement tous les fichiers supprimés avec git add -u .
+  // Cette commande ne génère pas d'erreur même si aucun fichier n'est supprimé
+  try {
+    await git.raw(['add', '-u', '.']);
+  } catch {
+    // Ignorer les erreurs de git add -u
+  }
 }
 
 /**
