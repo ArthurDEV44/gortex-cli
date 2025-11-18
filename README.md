@@ -189,6 +189,167 @@ gortex commit
 
 **Note:** The standalone `gortex ai-suggest` command is deprecated but still works.
 
+---
+
+### 🤖 Using Ollama with Gortex CLI
+
+Ollama is the **recommended AI provider** for Gortex CLI - it's free, fast, and 100% private.
+
+#### Installation
+
+**macOS & Linux:**
+```bash
+curl -fsSL https://ollama.com/install.sh | sh
+```
+
+**Windows:**
+Download from [ollama.com/download](https://ollama.com/download)
+
+#### Essential Commands for Gortex
+
+**1. Download a model (required before first use):**
+```bash
+# Recommended for Gortex (4GB RAM)
+ollama pull mistral:7b
+
+# Alternative - lighter model (1.6GB RAM)
+ollama pull phi:2.7b
+
+# Alternative - larger model (7GB RAM, better quality)
+ollama pull mistral-nemo:12b
+```
+
+**2. Start Ollama service:**
+```bash
+ollama serve
+```
+> **Note:** Ollama must be running for Gortex to use it. The service runs on `http://localhost:11434`
+
+**3. Verify your models:**
+```bash
+ollama ls
+```
+Output:
+```
+NAME              ID              SIZE    MODIFIED
+mistral:7b        abc123def456    4.1 GB  2 hours ago
+phi:2.7b          def789ghi012    1.6 GB  1 day ago
+```
+
+**4. Test a model:**
+```bash
+ollama run mistral:7b "Generate a git commit message for adding user authentication"
+```
+
+**5. Check running models:**
+```bash
+ollama ps
+```
+
+**6. Stop a model (free memory):**
+```bash
+ollama stop mistral:7b
+```
+
+**7. Remove a model:**
+```bash
+ollama rm mistral:7b
+```
+
+#### Recommended Models for Gortex
+
+| Model | Size | RAM Required | Quality | Use Case |
+|-------|------|--------------|---------|----------|
+| **mistral:7b** | 4.1 GB | 8 GB | ⭐⭐⭐⭐ | **Recommended** - Best balance |
+| phi:2.7b | 1.6 GB | 4 GB | ⭐⭐⭐ | Laptops with limited RAM |
+| mistral-nemo:12b | 7 GB | 16 GB | ⭐⭐⭐⭐⭐ | Powerful workstations |
+| codestral:22b | 13 GB | 24 GB | ⭐⭐⭐⭐⭐ | Code-focused (larger commits) |
+
+#### Configuration in Gortex
+
+Create a `.gortexrc` file in your project root:
+
+```json
+{
+  "ai": {
+    "enabled": true,
+    "provider": "ollama",
+    "ollama": {
+      "model": "mistral:7b",
+      "baseUrl": "http://localhost:11434",
+      "timeout": 30000
+    }
+  }
+}
+```
+
+**Advanced configuration:**
+
+```json
+{
+  "ai": {
+    "enabled": true,
+    "provider": "ollama",
+    "ollama": {
+      "model": "mistral:7b",
+      "baseUrl": "http://localhost:11434",
+      "timeout": 30000
+    },
+    "temperature": 0.3,
+    "maxTokens": 500
+  }
+}
+```
+
+#### Troubleshooting Ollama
+
+**Problem: "Ollama not available"**
+```bash
+# Check if Ollama is running
+ollama ps
+
+# If not running, start it
+ollama serve
+```
+
+**Problem: "Model not found"**
+```bash
+# List installed models
+ollama ls
+
+# Pull the model if missing
+ollama pull mistral:7b
+```
+
+**Problem: "Connection refused"**
+```bash
+# Check Ollama is running on default port
+curl http://localhost:11434/api/tags
+
+# If different port, update .gortexrc baseUrl
+```
+
+**Problem: "Slow generation"**
+- Use a smaller model: `phi:2.7b`
+- Increase timeout in config: `"timeout": 60000`
+- Check CPU usage: Ollama uses CPU if no GPU
+
+#### Tips for Best Results
+
+1. **Keep Ollama running**: Start `ollama serve` in background
+2. **Use appropriate model**: Match model size to your machine
+3. **Clear commits**: Smaller, focused changes = better AI suggestions
+4. **First run is slower**: Model loads on first use (cached after)
+
+#### Why Ollama for Gortex?
+
+✅ **100% Private** - Your code never leaves your machine
+✅ **Free** - No API costs
+✅ **Fast** - Local generation (1-3s on average CPU)
+✅ **Offline** - Works without internet
+✅ **No limits** - Unlimited commits
+✅ **No API keys** - Zero configuration hassle
+
 ### Help
 
 ```bash
