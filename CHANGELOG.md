@@ -2,6 +2,62 @@
 
 All notable changes to Gortex CLI will be documented in this file.
 
+## [3.0.1] - 2025-11-18
+
+### 🐛 Bug Fixes
+
+#### Push Authentication Blocking (CRITICAL)
+- **Fixed**: Push step no longer hangs when using HTTPS remotes that require authentication
+- **Root Cause**: Ink framework cannot handle interactive authentication prompts from child git processes
+- **Solution**: Detect HTTPS remotes and display guidance instead of attempting interactive push
+- **Impact**: Workflow now completes successfully for HTTPS remotes
+- **Changes**:
+  - Added `getRemoteUrl()` and `isHttpsRemote()` utility functions in `src/utils/git.ts`
+  - Enhanced `PushPrompt` component to detect and handle HTTPS remotes gracefully
+  - Display clear instructions for manual push: `git push origin <branch>`
+  - Provide guidance for long-term solutions (SSH setup or credential helper)
+- **Files Modified**:
+  - `src/utils/git.ts` - Added remote URL detection functions
+  - `src/components/PushPrompt.tsx` - Added HTTPS detection and guidance display
+- **Documentation**: See `HTTPS_PUSH_FIX.md` for complete details
+
+### 📖 User Experience
+
+**Before v3.0.1:**
+```
+Push en cours...
+Username for 'https://github.com':
+[FROZEN - Application hangs indefinitely]
+```
+
+**After v3.0.1:**
+```
+⚠️  Remote HTTPS détecté
+URL: https://github.com/user/repo.git
+
+L'interface interactive ne peut pas gérer l'authentification HTTPS.
+Veuillez push manuellement avec :
+
+    git push origin branch
+
+💡 Pour éviter ce problème à l'avenir :
+• Option 1 : Configurez SSH (recommandé)
+  → https://docs.github.com/en/authentication/connecting-to-github-with-ssh
+• Option 2 : Configurez un credential helper
+  → git config --global credential.helper store
+
+[Workflow completes successfully]
+```
+
+### 🎯 Recommendations
+
+For the best experience with Gortex CLI, we recommend:
+1. **Use SSH authentication** (fully supported, no prompts)
+2. **Configure credential helper** if you prefer HTTPS
+3. See `HTTPS_PUSH_FIX.md` for detailed setup instructions
+
+---
+
 ## [3.0.0] - 2025-11-18
 
 ### 🚨 BREAKING CHANGES

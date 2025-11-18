@@ -1,6 +1,6 @@
 {
   "name": "gortex-cli",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "description": "CLI interactif avec interface à onglets et IA intégrée : workflow Git complet avec génération intelligente de commits conventionnels",
   "type": "module",
   "main": "dist/index.js",

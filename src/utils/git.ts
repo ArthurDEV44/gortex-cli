@@ -193,6 +193,27 @@ export async function getDefaultRemote(): Promise<string> {
 }
 
 /**
+ * Récupère l'URL du remote
+ */
+export async function getRemoteUrl(remote: string = 'origin'): Promise<string | null> {
+  try {
+    const remotes = await git.getRemotes(true);
+    const remoteObj = remotes.find(r => r.name === remote);
+    return remoteObj?.refs.push || null;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Vérifie si l'URL du remote est en HTTPS
+ */
+export async function isHttpsRemote(remote: string = 'origin'): Promise<boolean> {
+  const url = await getRemoteUrl(remote);
+  return url ? url.startsWith('https://') : false;
+}
+
+/**
  * Push la branche actuelle vers le remote
  */
 export async function pushToRemote(remote: string, branch: string, setUpstream: boolean = false): Promise<void> {
