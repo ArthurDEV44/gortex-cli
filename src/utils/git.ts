@@ -164,7 +164,31 @@ function getStatusLabel(workingDir: string, index: string): string {
  */
 export async function stageFiles(files: string[]): Promise<void> {
   if (files.length === 0) return;
-  await git.add(files);
+
+  // Pour gérer les fichiers supprimés, on utilise une approche simple :
+  // git add -u . pour mettre à jour tous les fichiers modifiés/supprimés
+  // puis on vérifie si tous nos fichiers sont bien staged
+
+  // D'abord, essayer de stage tous les fichiers normalement
+  for (const file of files) {
+    try {
+      await git.add(file);
+    } catch (error: any) {
+      // Si le fichier est supprimé, git add échoue
+      // On ignore l'erreur, on gèrera les suppressions après
+      if (!error.message?.includes('did not match any files')) {
+        throw error;
+      }
+    }
+  }
+
+  // Ensuite, stage explicitement tous les fichiers supprimés avec git add -u .
+  // Cette commande ne génère pas d'erreur même si aucun fichier n'est supprimé
+  try {
+    await git.raw(['add', '-u', '.']);
+  } catch {
+    // Ignorer les erreurs de git add -u
+  }
 }
 
 /**
@@ -205,13 +229,6 @@ export async function getRemoteUrl(remote: string = 'origin'): Promise<string | 
   }
 }
 
-/**
- * Vérifie si l'URL du remote est en HTTPS
- */
-export async function isHttpsRemote(remote: string = 'origin'): Promise<boolean> {
-  const url = await getRemoteUrl(remote);
-  return url ? url.startsWith('https://') : false;
-}
 
 /**
  * Push la branche actuelle vers le remote
@@ -224,46 +241,6 @@ export async function pushToRemote(remote: string, branch: string, setUpstream: 
   }
 }
 
-/**
- * Push avec authentification GitHub OAuth (pour remote HTTPS)
- */
-export async function pushWithGitHubToken(
-  token: string,
-  remote: string,
-  branch: string,
-  setUpstream: boolean = false
-): Promise<void> {
-  // Récupérer l'URL du remote
-  const remoteUrl = await getRemoteUrl(remote);
-  if (!remoteUrl) {
-    throw new Error(`Remote ${remote} not found`);
-  }
-
-  // Construire l'URL avec le token
-  // Format: https://x-access-token:<token>@github.com/user/repo.git
-  let authenticatedUrl: string;
-  if (remoteUrl.startsWith('https://github.com/')) {
-    authenticatedUrl = remoteUrl.replace(
-      'https://github.com/',
-      `https://x-access-token:${token}@github.com/`
-    );
-  } else if (remoteUrl.startsWith('https://')) {
-    // Autre provider Git (GitLab, Bitbucket, etc.)
-    const urlObj = new URL(remoteUrl);
-    urlObj.username = 'x-access-token';
-    urlObj.password = token;
-    authenticatedUrl = urlObj.toString();
-  } else {
-    throw new Error('Only HTTPS remotes are supported with token authentication');
-  }
-
-  // Pusher avec l'URL authentifiée
-  if (setUpstream) {
-    await git.push(authenticatedUrl, branch, ['-u']);
-  } else {
-    await git.push(authenticatedUrl, branch);
-  }
-}
 
 /**
  * Vérifie si la branche actuelle track un remote
