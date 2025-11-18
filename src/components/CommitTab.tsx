@@ -9,9 +9,11 @@ import { CommitMessageBuilder } from './CommitMessageBuilder.js';
 import { CommitConfirmation } from './CommitConfirmation.js';
 import { PushPrompt } from './PushPrompt.js';
 import { SuccessMessage } from './SuccessMessage.js';
+import { ContinuePrompt } from './ContinuePrompt.js';
 import { StepIndicator } from './StepIndicator.js';
 import type { AIProvider, CommitConfig } from '../types.js';
 import { stageFiles } from '../utils/git.js';
+import { useApp } from 'ink';
 
 type Step =
   | 'branch'
@@ -22,7 +24,8 @@ type Step =
   | 'manual-message'
   | 'confirm'
   | 'push'
-  | 'success';
+  | 'success'
+  | 'continue';
 
 const STEP_NAMES: Record<Step, { number: number; name: string; icon: string }> = {
   branch: { number: 1, name: 'Branch Selection', icon: '🌿' },
@@ -34,6 +37,7 @@ const STEP_NAMES: Record<Step, { number: number; name: string; icon: string }> =
   confirm: { number: 6, name: 'Confirmation', icon: '✓' },
   push: { number: 7, name: 'Push to Remote', icon: '🚀' },
   success: { number: 8, name: 'Complete', icon: '🎉' },
+  continue: { number: 9, name: 'Continue', icon: '🔄' },
 };
 
 interface Props {
@@ -41,6 +45,7 @@ interface Props {
 }
 
 export const CommitTab: React.FC<Props> = ({ config }) => {
+  const { exit } = useApp();
   const [step, setStep] = useState<Step>('branch');
   const [selectedBranch, setSelectedBranch] = useState<string>('');
   const [selectedFiles, setSelectedFiles] = useState<string[]>([]);
@@ -110,6 +115,25 @@ export const CommitTab: React.FC<Props> = ({ config }) => {
 
   const handlePushComplete = () => {
     setStep('success');
+    // Automatically move to continue prompt after a short delay
+    setTimeout(() => {
+      setStep('continue');
+    }, 2000);
+  };
+
+  const handleContinueComplete = (shouldContinue: boolean) => {
+    if (shouldContinue) {
+      // Reset all state and start over
+      setSelectedBranch('');
+      setSelectedFiles([]);
+      setCommitMode('manual');
+      setAIProvider(undefined);
+      setCommitMessage('');
+      setStep('branch');
+    } else {
+      // Exit the application
+      exit();
+    }
   };
 
   // Determine current step info
@@ -119,7 +143,7 @@ export const CommitTab: React.FC<Props> = ({ config }) => {
   return (
     <Box flexDirection="column">
       {/* Step Indicator */}
-      {step !== 'success' && (
+      {step !== 'success' && step !== 'continue' && (
         <StepIndicator
           currentStep={currentStepInfo.number}
           totalSteps={totalSteps}
@@ -200,6 +224,11 @@ export const CommitTab: React.FC<Props> = ({ config }) => {
             ]}
             icon="✓"
           />
+        )}
+
+        {/* Step 9: Continue Prompt */}
+        {step === 'continue' && (
+          <ContinuePrompt onComplete={handleContinueComplete} />
         )}
       </Box>
     </Box>

@@ -1,0 +1,63 @@
+import React, { useState } from 'react';
+import { Box, Text } from 'ink';
+import { useInput } from 'ink';
+
+interface ContinuePromptProps {
+  onComplete: (shouldContinue: boolean) => void;
+}
+
+export const ContinuePrompt: React.FC<ContinuePromptProps> = ({ onComplete }) => {
+  const [selected, setSelected] = useState<'continue' | 'quit'>('continue');
+
+  useInput((input, key) => {
+    if (key.return) {
+      onComplete(selected === 'continue');
+      return;
+    }
+
+    if (key.leftArrow || key.rightArrow || input === 'h' || input === 'l') {
+      setSelected(selected === 'continue' ? 'quit' : 'continue');
+    }
+  });
+
+  return (
+    <Box flexDirection="column" marginY={1}>
+      <Box
+        borderStyle="round"
+        borderColor="cyan"
+        paddingX={2}
+        paddingY={1}
+        flexDirection="column"
+      >
+        <Box marginBottom={1}>
+          <Text bold color="cyan">
+            🔄 What's next?
+          </Text>
+        </Box>
+
+        <Box marginBottom={1}>
+          <Text dimColor>Choose an option:</Text>
+        </Box>
+
+        <Box flexDirection="column" gap={1}>
+          <Box>
+            <Text color={selected === 'continue' ? 'green' : 'gray'}>
+              {selected === 'continue' ? '▶' : ' '} Make another commit
+            </Text>
+          </Box>
+          <Box>
+            <Text color={selected === 'quit' ? 'red' : 'gray'}>
+              {selected === 'quit' ? '▶' : ' '} Exit
+            </Text>
+          </Box>
+        </Box>
+
+        <Box marginTop={1}>
+          <Text dimColor>
+            Use ←/→ or h/l to select, Enter to confirm
+          </Text>
+        </Box>
+      </Box>
+    </Box>
+  );
+};
