@@ -5,7 +5,7 @@ import { getCredentialStore, saveCredentials, clearCredentials, type StoredCrede
 // GitHub OAuth App Client ID pour Gortex CLI
 // Peut être configuré via la variable d'environnement GORTEX_GITHUB_CLIENT_ID
 // Pour créer votre propre OAuth App, voir SETUP_GITHUB_OAUTH.md
-const GITHUB_CLIENT_ID = process.env.GORTEX_GITHUB_CLIENT_ID || 'Ov23li8pO3QoYZ5vRDtY'; // Placeholder
+const GITHUB_CLIENT_ID = process.env.GORTEX_GITHUB_CLIENT_ID || 'Ov23li23yvkwyWAxpISZ'; // Placeholder
 
 export interface DeviceFlowResult {
   verification_uri: string;
@@ -28,7 +28,7 @@ export async function authenticateWithDeviceFlow(
   onVerification: (verification: DeviceFlowResult) => void
 ): Promise<GitHubAuthResult> {
   // Vérifier que le Client ID est configuré
-  if (!GITHUB_CLIENT_ID || GITHUB_CLIENT_ID === 'Ov23li8pO3QoYZ5vRDtY') {
+  if (!GITHUB_CLIENT_ID || GITHUB_CLIENT_ID === 'Ov23li23yvkwyWAxpISZ') {
     throw new Error(
       'GitHub OAuth Client ID not configured. Please set GORTEX_GITHUB_CLIENT_ID environment variable or see SETUP_GITHUB_OAUTH.md'
     );
