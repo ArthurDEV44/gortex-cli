@@ -1,52 +1,38 @@
-# Source files - ne pas inclure dans le package npm
+# Development files
 src/
 *.ts
-!*.d.ts
-
-# Configuration
+*.tsx
+!dist/**/*.d.ts
 tsconfig.json
 tsup.config.ts
 
-# Tests
-tests/
+# Test files
 test/
-*.test.ts
-*.spec.ts
-coverage/
-.vitest/
+tests/
+__tests__/
 
-# Development
-.vscode/
-.idea/
-*.log
+# Documentation (keep only essentials)
+MIGRATION_INK.md
+PREMIUM_UX.md
+UPGRADE_COMPLETE.md
+TEST_DEMO.md
+PUBLISH_GUIDE.md
+README-old.md
+
+# Build tools
 node_modules/
-
-# Git
 .git/
-.gitignore
+.github/
+.vscode/
 
-# Package managers
-pnpm-lock.yaml
-yarn.lock
-package-lock.json
-bun.lockb
-.npmrc
-.yarnrc.yml
-bunfig.toml
-pnpm-workspace.yaml
-
-# Scripts de développement
+# Scripts
 scripts/
 
-# Documentation de développement
-GETTING_STARTED.md
-PACKAGE_MANAGERS.md
+# Config files
+.eslintrc*
+.prettierrc*
 
-# CI/CD
-.github/
-.gitlab-ci.yml
-
-# Divers
+# Misc
+*.log
 .DS_Store
-.env
-.env.*
+coverage/
