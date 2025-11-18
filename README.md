@@ -1,12 +1,12 @@
-# CommitFormat
+# Gortex CLI
 
 CLI interactif pour créer des commits conventionnels avec validation, hooks Git et statistiques.
 
-## Pourquoi CommitFormat ?
+## Pourquoi Gortex CLI ?
 
 **Problème réel :** Personne n'écrit de bons messages de commit. On se retrouve avec des "fix stuff", "wip", "test" qui rendent impossible la génération automatique de changelogs et la compréhension de l'historique du projet.
 
-**Solution :** CommitFormat vous guide à travers un processus interactif pour créer des commits qui suivent le format [Conventional Commits](https://www.conventionalcommits.org/).
+**Solution :** Gortex CLI vous guide à travers un processus interactif pour créer des commits qui suivent le format [Conventional Commits](https://www.conventionalcommits.org/).
 
 ### Avantages
 
@@ -18,7 +18,7 @@ CLI interactif pour créer des commits conventionnels avec validation, hooks Git
 
 ## Installation
 
-CommitFormat supporte tous les gestionnaires de paquets modernes : **npm**, **pnpm**, **yarn** et **bun**.
+Gortex CLI supporte tous les gestionnaires de paquets modernes : **npm**, **pnpm**, **yarn** et **bun**.
 
 ### Installation globale
 
@@ -46,7 +46,7 @@ bun add -g gortex
 
 ### Utilisation sans installation
 
-Vous pouvez également utiliser CommitFormat directement sans installation :
+Vous pouvez également utiliser Gortex CLI directement sans installation :
 
 #### NPX (npm)
 ```bash
@@ -99,7 +99,7 @@ Puis ajoutez un script dans votre `package.json` :
 
 ### Workflow Git complet en 5 étapes
 
-CommitFormat gère tout votre workflow Git de A à Z !
+Gortex CLI gère tout votre workflow Git de A à Z !
 
 ```bash
 npx gortex
@@ -362,17 +362,17 @@ bunx husky add .husky/commit-msg 'bunx gortex hooks install'
 
 ### Commitlint
 
-CommitFormat est compatible avec commitlint. Vous pouvez utiliser les deux ensemble ou choisir l'un ou l'autre selon vos préférences.
+Gortex CLI est compatible avec commitlint. Vous pouvez utiliser les deux ensemble ou choisir l'un ou l'autre selon vos préférences.
 
 ## Développement
 
 ### Installation en local
 
-CommitFormat supporte tous les package managers. Utilisez celui que vous préférez !
+Gortex CLI supporte tous les package managers. Utilisez celui que vous préférez !
 
 ```bash
 git clone <repo-url>
-cd CommitFormat
+cd Gortex CLI
 
 # Choisissez votre package manager
 npm install   # ou
@@ -418,7 +418,7 @@ Ces scripts détectent automatiquement si vous utilisez npm, pnpm, yarn ou bun e
 ### Structure du projet
 
 ```
-CommitFormat/
+Gortex CLI/
 ├── src/
 │   ├── commands/
 │   │   ├── commit.ts      # Commande de commit interactif
@@ -448,7 +448,7 @@ CommitFormat/
 
 ## Support Multi-Package Managers
 
-CommitFormat fonctionne avec **tous** les gestionnaires de paquets modernes :
+Gortex CLI fonctionne avec **tous** les gestionnaires de paquets modernes :
 
 - 📦 **npm** - Le standard, inclus avec Node.js
 - ⚡ **pnpm** - Rapide et efficace, économise l'espace disque
@@ -465,4 +465,4 @@ MIT
 
 Les contributions sont les bienvenues ! N'hésitez pas à ouvrir une issue ou une pull request.
 
-Pensez à utiliser CommitFormat pour vos commits dans ce projet ! 😉
+Pensez à utiliser Gortex CLI pour vos commits dans ce projet ! 😉

@@ -36,7 +36,7 @@ export async function commitCommand(): Promise<void> {
       process.exit(0);
     }
 
-    console.log(chalk.blue.bold('\n🚀 CommitFormat - Workflow Git complet\n'));
+    console.log(chalk.blue.bold('\n🚀 Gortex CLI - Workflow Git complet\n'));
 
     // ÉTAPE 1: Sélection de la branche
     const selectedBranch = await selectBranch();
