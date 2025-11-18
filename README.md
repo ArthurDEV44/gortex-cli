@@ -1,8 +1,6 @@
 <div align="center">
 
-# 🚀 GORTEX CLI
-
-### **Where Git Workflow Meets Art** ✨
+# GORTEX CLI
 
 [![npm version](https://badge.fury.io/js/gortex-cli.svg)](https://www.npmjs.com/package/gortex-cli)
 [![npm downloads](https://img.shields.io/npm/dm/gortex-cli.svg)](https://www.npmjs.com/package/gortex-cli)
@@ -10,9 +8,11 @@
 
 **Premium interactive CLI for crafting perfect conventional commits**
 
-[Features](#-features) • [Installation](#-installation) • [Usage](#-usage) • [Premium UX](#-premium-ux) • [Configuration](#-configuration)
+[Installation](#-installation) • [Usage](#-usage)
 
 </div>
+
+<img src="assets/images/gortex-cli.png" alt="Gortex CLI Banner" width="100%">
 
 ---
 
@@ -95,18 +95,7 @@ Simply run in your Git repository:
 gortex
 ```
 
-Or explicitly:
-
-```bash
-gortex commit
-```
-
 This launches the **premium interactive workflow with tabs**:
-
-**🔑 Credentials Tab:**
-- View AI API keys status (Mistral, OpenAI)
-- Instructions for configuration
-- Environment variable support
 
 **📝 Commit Tab (8-step workflow):**
 1. 🌿 **Branch Selection** - Choose or create a branch
@@ -122,72 +111,6 @@ This launches the **premium interactive workflow with tabs**:
 - `Tab` or `→` to switch between tabs
 - `1-2` for direct tab access
 - `h/l` for vim-style navigation
-
-### Git Hooks
-
-Install validation hooks to enforce conventional commits:
-
-```bash
-gortex hooks install
-```
-
-Remove hooks:
-
-```bash
-gortex hooks uninstall
-```
-
-### Statistics
-
-View commit statistics:
-
-```bash
-gortex stats
-# or analyze last 200 commits
-gortex stats -n 200
-```
-
-### 🤖 AI-Powered Commit Messages (Integrated!)
-
-AI generation is now **integrated directly into the main workflow**!
-
-When you run `gortex commit`, you'll be able to choose at step 3:
-- 🤖 **AI Generation** (Ollama/Mistral/OpenAI) - if available
-- ✍️ **Manual** - classic guided workflow
-
-**Supported AI Providers:**
-- **Ollama** (local, free, private) - Recommended for most users
-- **Mistral AI** (cloud, API key required)
-- **OpenAI** (cloud, API key required)
-
-**Smart Fallback:**
-- If no AI provider is available → Manual mode automatically
-- If you reject AI suggestion → Falls back to manual
-- Always a smooth experience!
-
-**Quick Start with Ollama:**
-```bash
-# Install Ollama
-curl -fsSL https://ollama.com/install.sh | sh
-
-# Pull the model
-ollama pull mistral:7b
-
-# Configure Gortex (optional, works out of the box)
-echo '{
-  "ai": {
-    "enabled": true,
-    "provider": "ollama"
-  }
-}' > .gortexrc
-
-# Use it!
-gortex commit
-# → Select files at step 2
-# → Choose "AI - Ollama" at step 4
-```
-
-**Note:** The standalone `gortex ai-suggest` command is deprecated but still works.
 
 ---
 
@@ -265,42 +188,6 @@ ollama rm mistral:7b
 | mistral-nemo:12b | 7 GB | 16 GB | ⭐⭐⭐⭐⭐ | Powerful workstations |
 | codestral:22b | 13 GB | 24 GB | ⭐⭐⭐⭐⭐ | Code-focused (larger commits) |
 
-#### Configuration in Gortex
-
-Create a `.gortexrc` file in your project root:
-
-```json
-{
-  "ai": {
-    "enabled": true,
-    "provider": "ollama",
-    "ollama": {
-      "model": "mistral:7b",
-      "baseUrl": "http://localhost:11434",
-      "timeout": 30000
-    }
-  }
-}
-```
-
-**Advanced configuration:**
-
-```json
-{
-  "ai": {
-    "enabled": true,
-    "provider": "ollama",
-    "ollama": {
-      "model": "mistral:7b",
-      "baseUrl": "http://localhost:11434",
-      "timeout": 30000
-    },
-    "temperature": 0.3,
-    "maxTokens": 500
-  }
-}
-```
-
 #### Troubleshooting Ollama
 
 **Problem: "Ollama not available"**
@@ -343,12 +230,12 @@ curl http://localhost:11434/api/tags
 
 #### Why Ollama for Gortex?
 
-✅ **100% Private** - Your code never leaves your machine
-✅ **Free** - No API costs
-✅ **Fast** - Local generation (1-3s on average CPU)
-✅ **Offline** - Works without internet
-✅ **No limits** - Unlimited commits
-✅ **No API keys** - Zero configuration hassle
+- ✅ **100% Private** - Your code never leaves your machine
+- ✅ **Free** - No API costs
+- ✅ **Fast** - Local generation (1-3s on average CPU)
+- ✅ **Offline** - Works without internet
+- ✅ **No limits** - Unlimited commits
+- ✅ **No API keys** - Zero configuration hassle
 
 ### Help
 
@@ -359,187 +246,7 @@ gortex help-format  # Conventional commits format guide
 
 ---
 
-## 🎨 Premium UX
-
-### Animated Introduction
-
-Every session starts with a stunning branded introduction:
-
-```
- ██████╗  ██████╗ ██████╗ ████████╗███████╗██╗  ██╗
-██╔════╝ ██╔═══██╗██╔══██╗╚══██╔══╝██╔════╝╚██╗██╔╝
-██║  ███╗██║   ██║██████╔╝   ██║   █████╗   ╚███╔╝
-██║   ██║██║   ██║██╔══██╗   ██║   ██╔══╝   ██╔██╗
-╚██████╔╝╚██████╔╝██║  ██║   ██║   ███████╗██╔╝ ██╗
- ╚═════╝  ╚═════╝ ╚═╝  ╚═╝   ╚═╝   ╚══════╝╚═╝  ╚═╝
-
-⚡ Git Workflow, Elevated ⚡
-```
-
-### Progress Visualization
-
-Beautiful step indicators show your progress:
-
-```
-▸ GORTEX | Git Workflow CLI
-
-🌿 Branch Selection [1/5]
-┌────────────────────────────────┐
-│ ████████████████░░░░░░░░░░░░░░ │ 53%
-└────────────────────────────────┘
-```
-
-### File Diff Preview
-
-Visual preview of changes before staging:
-
-```
-┌─────────────────────────────────┐
-│ 📝 Changed Files (12 total)     │
-├─────────────────────────────────┤
-│ ✚ nouveau    src/ui/Select.tsx  │
-│ ● modifié    package.json       │
-│ ✖ supprimé   old-file.js        │
-│ ● modifié    README.md          │
-│ ✚ nouveau    src/theme/colors.ts│
-│                                  │
-│ ... and 7 more files            │
-└─────────────────────────────────┘
-```
-
-### Smart Selection
-
-Multi-select with live feedback and quick actions:
-
-```
-? Select files to stage:
-
-Selected: 3 / 12
-
-┌──────────────────────────────────┐
-│ ❯ ◉ [nouveau] src/ui/Select.tsx │
-│     Choose specific files        │
-│   ◯ [modifié] package.json      │
-│   ◉ [modifié] README.md         │
-│   ◉ [nouveau] CHANGELOG.md      │
-└──────────────────────────────────┘
-
-↑↓ navigate • space toggle • enter submit
-a select all • i invert • j/k vim keys
-```
-
-### Commit Preview
-
-Professional preview before committing:
-
-```
-┌─────────────────────────────────┐
-│ 📋 Commit Preview                │
-│                                   │
-│ Files (3):                       │
-│   ✓ src/ui/Select.tsx           │
-│   ✓ package.json                │
-│   ✓ README.md                   │
-│                                   │
-│ Message:                         │
-│   feat(ui): add premium select   │
-│                                   │
-│   Add gradient cursor and vim    │
-│   keybindings support            │
-└─────────────────────────────────┘
-
-? Create this commit?
-┌──────────────────┐
-│ ✓ Yes / No      │
-└──────────────────┘
-```
-
-### Success Celebration
-
-Elegant success message with details:
-
-```
-┌─────────────────────────────────┐
-│ ✓ Workflow Complete!            │
-│                                   │
-│ Your commit has been created     │
-│ successfully                     │
-│                                   │
-│ ▸ Branch: feature/premium-ui    │
-│ ▸ Files: 3 changed              │
-│ ▸ Message: feat(ui): add...    │
-└─────────────────────────────────┘
-```
-
----
-
-## ⚙️ Configuration
-
-Gortex CLI supports multiple configuration formats:
-
-### Option 1: `.gortexrc` (JSON)
-
-```json
-{
-  "types": [
-    {
-      "value": "feat",
-      "name": "feat:     ✨ New feature",
-      "description": "A new feature"
-    },
-    {
-      "value": "fix",
-      "name": "fix:      🐛 Bug fix",
-      "description": "A bug fix"
-    }
-  ],
-  "scopes": ["ui", "api", "core", "docs"],
-  "allowCustomScopes": true,
-  "maxSubjectLength": 100,
-  "minSubjectLength": 3
-}
-```
-
-### Option 2: `gortex.config.js` (JavaScript)
-
-```javascript
-export default {
-  types: [
-    { value: 'feat', name: 'feat:     ✨ New feature' },
-    { value: 'fix', name: 'fix:      🐛 Bug fix' },
-  ],
-  scopes: ['ui', 'api', 'core'],
-  allowCustomScopes: true,
-  maxSubjectLength: 100,
-  minSubjectLength: 3,
-};
-```
-
-### Option 3: `package.json`
-
-```json
-{
-  "gortex": {
-    "types": [...],
-    "scopes": ["ui", "api"],
-    "allowCustomScopes": true
-  }
-}
-```
-
----
-
 ## 🎯 Conventional Commits Format
-
-Gortex CLI enforces the [Conventional Commits](https://www.conventionalcommits.org/) specification:
-
-```
-<type>(<scope>): <subject>
-
-[optional body]
-
-[optional footer]
-```
 
 ### Commit Types
 
@@ -599,16 +306,6 @@ Gortex CLI proves that **CLI tools can be beautiful AND functional**:
 - Guided workflow ensures consistency
 - Visual previews prevent mistakes
 - Helpful suggestions teach best practices
-
----
-
-## 🏆 Recognition
-
-Gortex CLI is built to the same standards as industry-leading CLIs:
-
-- **Vercel CLI** - Premium developer experience
-- **Stripe CLI** - Beautiful terminal UI
-- **GitHub CLI** - Professional polish
 
 ---
 
