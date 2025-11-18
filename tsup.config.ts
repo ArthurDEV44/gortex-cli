@@ -6,6 +6,11 @@ export default defineConfig({
   dts: true,
   clean: true,
   shims: true,
+  esbuildOptions: (options) => {
+    options.jsx = 'transform';
+    options.jsxFactory = 'React.createElement';
+    options.jsxFragment = 'React.Fragment';
+  },
   outExtension: ({ format }) => ({
     js: '.js',
   }),
