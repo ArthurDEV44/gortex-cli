@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Box, Text } from 'ink';
 import Spinner from 'ink-spinner';
 import { BranchSelector } from './BranchSelector.js';
@@ -10,12 +10,14 @@ import { CommitConfirmation } from './CommitConfirmation.js';
 import { PushPrompt } from './PushPrompt.js';
 import { SuccessMessage } from './SuccessMessage.js';
 import { ContinuePrompt } from './ContinuePrompt.js';
+import { CommitWelcome } from './CommitWelcome.js';
 import { StepIndicator } from './StepIndicator.js';
 import type { AIProvider, CommitConfig } from '../types.js';
 import { stageFiles } from '../utils/git.js';
 import { useApp } from 'ink';
 
 type Step =
+  | 'idle'
   | 'branch'
   | 'files'
   | 'staging'
@@ -28,6 +30,7 @@ type Step =
   | 'continue';
 
 const STEP_NAMES: Record<Step, { number: number; name: string; icon: string }> = {
+  idle: { number: 0, name: 'Ready', icon: '🏠' },
   branch: { number: 1, name: 'Branch Selection', icon: '🌿' },
   files: { number: 2, name: 'File Selection', icon: '📦' },
   staging: { number: 3, name: 'Staging Files', icon: '📥' },
@@ -42,16 +45,21 @@ const STEP_NAMES: Record<Step, { number: number; name: string; icon: string }> =
 
 interface Props {
   config: CommitConfig;
+  onWorkflowStateChange?: (isInWorkflow: boolean) => void;
 }
 
-export const CommitTab: React.FC<Props> = ({ config }) => {
+export const CommitTab: React.FC<Props> = ({ config, onWorkflowStateChange }) => {
   const { exit } = useApp();
-  const [step, setStep] = useState<Step>('branch');
+  const [step, setStep] = useState<Step>('idle');
   const [selectedBranch, setSelectedBranch] = useState<string>('');
   const [selectedFiles, setSelectedFiles] = useState<string[]>([]);
   const [commitMode, setCommitMode] = useState<CommitMode>('manual');
   const [aiProvider, setAIProvider] = useState<AIProvider | undefined>();
   const [commitMessage, setCommitMessage] = useState<string>('');
+
+  const handleStartWorkflow = () => {
+    setStep('branch');
+  };
 
   const handleBranchComplete = (branch: string) => {
     setSelectedBranch(branch);
@@ -123,18 +131,25 @@ export const CommitTab: React.FC<Props> = ({ config }) => {
 
   const handleContinueComplete = (shouldContinue: boolean) => {
     if (shouldContinue) {
-      // Reset all state and start over
+      // Reset all state and go back to idle
       setSelectedBranch('');
       setSelectedFiles([]);
       setCommitMode('manual');
       setAIProvider(undefined);
       setCommitMessage('');
-      setStep('branch');
+      setStep('idle');
     } else {
       // Exit the application
       exit();
     }
   };
+
+  // Notify parent when workflow state changes
+  useEffect(() => {
+    // Tab navigation should be enabled only in 'idle' and 'continue' states
+    const isInWorkflow = step !== 'idle' && step !== 'continue';
+    onWorkflowStateChange?.(isInWorkflow);
+  }, [step, onWorkflowStateChange]);
 
   // Determine current step info
   const currentStepInfo = STEP_NAMES[step];
@@ -143,7 +158,7 @@ export const CommitTab: React.FC<Props> = ({ config }) => {
   return (
     <Box flexDirection="column">
       {/* Step Indicator */}
-      {step !== 'success' && step !== 'continue' && (
+      {step !== 'idle' && step !== 'success' && step !== 'continue' && (
         <StepIndicator
           currentStep={currentStepInfo.number}
           totalSteps={totalSteps}
@@ -153,6 +168,11 @@ export const CommitTab: React.FC<Props> = ({ config }) => {
       )}
 
       <Box marginTop={1}>
+        {/* Step 0: Idle/Welcome */}
+        {step === 'idle' && (
+          <CommitWelcome onStart={handleStartWorkflow} />
+        )}
+
         {/* Step 1: Branch Selection */}
         {step === 'branch' && (
           <BranchSelector onComplete={handleBranchComplete} />

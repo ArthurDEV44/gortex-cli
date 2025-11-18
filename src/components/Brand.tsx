@@ -1,7 +1,7 @@
 import React from 'react';
 import { Box, Text } from 'ink';
-import Gradient from 'ink-gradient';
 import BigText from 'ink-big-text';
+import { createGradient, icons } from '../theme/colors.js';
 
 interface BrandProps {
   variant?: 'large' | 'small';
@@ -12,14 +12,14 @@ export const Brand: React.FC<BrandProps> = ({ variant = 'small', tagline = false
   if (variant === 'large') {
     return (
       <Box flexDirection="column" alignItems="center" marginY={1}>
-        <Gradient name="cristal">
-          <BigText text="GORTEX" font="tiny" />
-        </Gradient>
+        <Text>
+          {createGradient.dune('GORTEX')}
+        </Text>
         {tagline && (
           <Box marginTop={1}>
-            <Gradient name="passion">
-              <Text>⚡ Git Workflow, Elevated ⚡</Text>
-            </Gradient>
+            <Text>
+              {createGradient.warmth(`${icons.spice} Git Workflow, Elevated ${icons.spice}`)}
+            </Text>
           </Box>
         )}
       </Box>
@@ -28,10 +28,10 @@ export const Brand: React.FC<BrandProps> = ({ variant = 'small', tagline = false
 
   return (
     <Box marginBottom={1}>
-      <Gradient name="cristal">
-        <Text bold>▸ GORTEX</Text>
-      </Gradient>
-      <Text dimColor> | Git Workflow CLI</Text>
+      <Text bold>
+        {createGradient.spice('▸ GORTEX')}
+      </Text>
+      <Text dimColor> {icons.desert} Git Workflow CLI</Text>
     </Box>
   );
 };

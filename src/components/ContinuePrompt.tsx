@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Box, Text } from 'ink';
 import { useInput } from 'ink';
+import { colors } from '../theme/colors.js';
 
 interface ContinuePromptProps {
   onComplete: (shouldContinue: boolean) => void;
@@ -24,13 +25,13 @@ export const ContinuePrompt: React.FC<ContinuePromptProps> = ({ onComplete }) =>
     <Box flexDirection="column" marginY={1}>
       <Box
         borderStyle="round"
-        borderColor="cyan"
+        borderColor={colors.primary}
         paddingX={2}
         paddingY={1}
         flexDirection="column"
       >
         <Box marginBottom={1}>
-          <Text bold color="cyan">
+          <Text bold color={colors.primary}>
             🔄 What's next?
           </Text>
         </Box>
@@ -41,12 +42,12 @@ export const ContinuePrompt: React.FC<ContinuePromptProps> = ({ onComplete }) =>
 
         <Box flexDirection="column" gap={1}>
           <Box>
-            <Text color={selected === 'continue' ? 'green' : 'gray'}>
+            <Text color={selected === 'continue' ? colors.success : colors.muted}>
               {selected === 'continue' ? '▶' : ' '} Make another commit
             </Text>
           </Box>
           <Box>
-            <Text color={selected === 'quit' ? 'red' : 'gray'}>
+            <Text color={selected === 'quit' ? colors.error : colors.muted}>
               {selected === 'quit' ? '▶' : ' '} Exit
             </Text>
           </Box>
