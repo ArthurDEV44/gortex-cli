@@ -2,9 +2,10 @@ import React from 'react';
 import { render } from 'ink';
 import chalk from 'chalk';
 import { isGitRepository, hasChanges } from '../utils/git.js';
-import { CommitWorkflow } from '../components/CommitWorkflow.js';
+import { InteractiveWorkflow } from '../components/InteractiveWorkflow.js';
 import { Brand } from '../components/Brand.js';
 import { ErrorMessage } from '../components/ErrorMessage.js';
+import { loadConfig } from '../utils/config.js';
 
 export async function commitCommand(): Promise<void> {
   try {
@@ -42,14 +43,17 @@ export async function commitCommand(): Promise<void> {
       process.exit(0);
     }
 
+    // Load configuration
+    const config = await loadConfig();
+
     // Show intro brand
     console.clear();
     const intro = render(<Brand variant="large" tagline={true} />);
     await new Promise(resolve => setTimeout(resolve, 1500));
     intro.unmount();
 
-    // Lancer le workflow Ink
-    const { waitUntilExit } = render(<CommitWorkflow />);
+    // Lancer le workflow interactif avec onglets
+    const { waitUntilExit } = render(<InteractiveWorkflow config={config} />);
     await waitUntilExit();
 
   } catch (error) {

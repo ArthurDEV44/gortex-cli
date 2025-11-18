@@ -23,6 +23,22 @@ export async function loadConfig(): Promise<CommitConfig> {
         ...DEFAULT_CONFIG,
         ...result.config,
         types: result.config.types || DEFAULT_CONFIG.types,
+        ai: result.config.ai ? {
+          ...DEFAULT_CONFIG.ai,
+          ...result.config.ai,
+          ollama: result.config.ai.ollama ? {
+            ...DEFAULT_CONFIG.ai?.ollama,
+            ...result.config.ai.ollama,
+          } : DEFAULT_CONFIG.ai?.ollama,
+          mistral: result.config.ai.mistral ? {
+            ...DEFAULT_CONFIG.ai?.mistral,
+            ...result.config.ai.mistral,
+          } : DEFAULT_CONFIG.ai?.mistral,
+          openai: result.config.ai.openai ? {
+            ...DEFAULT_CONFIG.ai?.openai,
+            ...result.config.ai.openai,
+          } : DEFAULT_CONFIG.ai?.openai,
+        } : DEFAULT_CONFIG.ai,
       };
     }
 

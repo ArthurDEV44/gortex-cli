@@ -3,6 +3,7 @@ import chalk from 'chalk';
 import { commitCommand } from './commands/commit.js';
 import { installHooks, uninstallHooks } from './commands/hooks.js';
 import { statsCommand } from './commands/stats.js';
+import { aiSuggestCommand } from './commands/ai-suggest.js';
 
 const program = new Command();
 
@@ -60,6 +61,15 @@ program
       process.exit(1);
     }
     await statsCommand(count);
+  });
+
+// AI Suggestion
+program
+  .command('ai-suggest')
+  .alias('ai')
+  .description('Générer un message de commit avec l\'IA basé sur les changements stagés')
+  .action(async () => {
+    await aiSuggestCommand();
   });
 
 // Aide personnalisée
