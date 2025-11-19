@@ -1,4 +1,5 @@
 import type { AIGeneratedCommit } from '../../types.js';
+import { AIProviderError, AIGenerationError } from '../../shared/errors/index.js';
 
 /**
  * Interface commune pour tous les providers AI
@@ -34,31 +35,25 @@ export interface CommitContext {
 }
 
 /**
- * Erreur lancée quand un provider n'est pas disponible
+ * @deprecated Use AIProviderError from shared/errors instead
+ * Kept for backward compatibility
  */
-export class ProviderNotAvailableError extends Error {
-  constructor(
-    providerName: string,
-    reason: string,
-  ) {
-    super(`Provider ${providerName} n'est pas disponible: ${reason}`);
-    this.name = 'ProviderNotAvailableError';
+export class ProviderNotAvailableError extends AIProviderError {
+  constructor(providerName: string, reason: string) {
+    super(providerName, `Provider not available: ${reason}`, reason);
   }
 }
 
 /**
- * Erreur lancée lors de la génération
+ * @deprecated Use AIGenerationError from shared/errors instead
+ * Kept for backward compatibility
  */
-export class GenerationError extends Error {
-  constructor(
-    providerName: string,
-    originalError: unknown,
-  ) {
+export class GenerationError extends AIGenerationError {
+  constructor(providerName: string, originalError: unknown) {
     const message =
       originalError instanceof Error
         ? originalError.message
         : String(originalError);
-    super(`Erreur lors de la génération avec ${providerName}: ${message}`);
-    this.name = 'GenerationError';
+    super(providerName, message);
   }
 }
