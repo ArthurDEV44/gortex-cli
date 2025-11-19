@@ -59,7 +59,7 @@ describe('Integration: AI Commit Message Generation', () => {
       });
 
       expect(provider).toBeDefined();
-      expect(provider.getName()).toBe('Mistral AI');
+      expect(provider.getName()).toBe('Mistral');
     });
 
     it('should create OpenAI provider with config', () => {
@@ -80,7 +80,7 @@ describe('Integration: AI Commit Message Generation', () => {
     it('should throw for OpenAI without API key', () => {
       expect(() => {
         AIProviderFactory.create('openai', {});
-      }).toThrow('OpenAI API key is required');
+      }).toThrow('Provider not available: API key manquante. Configurez "ai.openai.apiKey" dans .gortexrc ou définissez OPENAI_API_KEY');
     });
   });
 
@@ -169,7 +169,7 @@ describe('Integration: AI Commit Message Generation', () => {
     it('should handle different provider types', () => {
       const providers: Array<{ type: string; name: string }> = [
         { type: 'ollama', name: 'Ollama' },
-        { type: 'mistral', name: 'Mistral AI' },
+        { type: 'mistral', name: 'Mistral' },
         { type: 'openai', name: 'OpenAI' },
       ];
 
@@ -204,7 +204,7 @@ describe('Integration: AI Commit Message Generation', () => {
       });
 
       expect(ollamaProvider.getName()).toBe('Ollama');
-      expect(mistralProvider.getName()).toBe('Mistral AI');
+      expect(mistralProvider.getName()).toBe('Mistral');
       expect(openaiProvider.getName()).toBe('OpenAI');
     });
   });

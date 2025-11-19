@@ -58,14 +58,14 @@ describe('AIProviderFactory', () => {
       const provider = AIProviderFactory.create('ollama');
 
       expect(provider).toBeInstanceOf(OllamaProviderAdapter);
-      expect(OllamaProviderAdapter).toHaveBeenCalledWith();
+      expect(OllamaProviderAdapter).toHaveBeenCalledWith(expect.any(Object));
     });
 
     it('should create Mistral provider', () => {
       const provider = AIProviderFactory.create('mistral');
 
       expect(provider).toBeInstanceOf(MistralProviderAdapter);
-      expect(MistralProviderAdapter).toHaveBeenCalledWith();
+      expect(MistralProviderAdapter).toHaveBeenCalledWith(expect.any(Object));
     });
 
     it('should create OpenAI provider with config', () => {

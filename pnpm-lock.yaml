@@ -75,6 +75,9 @@ importers:
       ink-testing-library:
         specifier: ^4.0.0
         version: 4.0.0(@types/react@19.2.6)
+      strip-ansi:
+        specifier: ^7.1.2
+        version: 7.1.2
       tsup:
         specifier: ^8.5.1
         version: 8.5.1(tsx@4.20.6)(typescript@5.9.3)

@@ -3,7 +3,7 @@ import { GitRepositoryImpl } from './GitRepositoryImpl.js';
 
 // Mock simple-git
 vi.mock('simple-git', () => import('../../__mocks__/simple-git.js'));
-import { mockGit, resetMocks, createMockLog } from '../../__mocks__/simple-git.js';
+import simpleGit, { mockGit, resetMocks, createMockLog } from '../../__mocks__/simple-git.js';
 
 describe('GitRepositoryImpl', () => {
   let repository: GitRepositoryImpl;
@@ -327,7 +327,7 @@ describe('GitRepositoryImpl', () => {
       });
 
       await expect(repository.getStagedChangesContext()).rejects.toThrow(
-        'Aucun fichier stagé',
+        'Aucun fichier pertinent stagé. Seuls les fichiers de lock ou autres fichiers ignorés ont été détectés.',
       );
     });
 
@@ -384,6 +384,34 @@ describe('GitRepositoryImpl', () => {
 
       expect(result.diff.length).toBeLessThan(largeDiff.length);
       expect(result.diff).toContain('tronquées pour économiser les tokens');
+    });
+
+    it('should filter out lockfiles from staged changes context', async () => {
+      vi.mocked(mockGit.status)!.mockResolvedValue({
+        staged: ['file1.ts', 'pnpm-lock.yaml'],
+        modified: [],
+        not_added: [],
+        deleted: [],
+        files: [],
+        created: [],
+        renamed: [],
+        conflicted: [],
+        current: 'main',
+        tracking: null,
+        ahead: 0,
+        behind: 0,
+        detached: false,
+        isClean: () => false,
+      });
+      vi.mocked(mockGit.diff)!.mockResolvedValue('diff --git a/file1.ts b/file1.ts');
+      vi.mocked(mockGit.revparse)!.mockResolvedValue('main');
+      vi.mocked(mockGit.log)!.mockResolvedValue(createMockLog([]));
+      
+      const context = await repository.getStagedChangesContext();
+
+      expect(context.files).toEqual(['file1.ts']);
+      expect(context.files).not.toContain('pnpm-lock.yaml');
+      expect(vi.mocked(mockGit.diff)!).toHaveBeenCalledWith(['--staged', '--no-color', '-U3']);
     });
   });
 

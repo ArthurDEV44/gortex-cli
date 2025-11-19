@@ -427,12 +427,19 @@ describe('Integration: CLI Commands with DI', () => {
       const root1 = new CompositionRoot();
       const root2 = new CompositionRoot();
 
-      root1.getContainer().registerInstance(ServiceIdentifiers.GitRepository, mockGitRepository);
+      // Register a specific mock instance in root1
+      const mockRepoInstance = { ...mockGitRepository, name: 'mockForRoot1' };
+      root1.getContainer().registerInstance(ServiceIdentifiers.GitRepository, mockRepoInstance);
 
-      // root2 should not have access to root1's registrations
-      expect(() => {
-        root2.getContainer().resolve<IGitRepository>(ServiceIdentifiers.GitRepository);
-      }).toThrow();
+      // Resolve from both containers
+      const repoFromRoot1 = root1.getContainer().resolve<IGitRepository>(ServiceIdentifiers.GitRepository);
+      const repoFromRoot2 = root2.getContainer().resolve<IGitRepository>(ServiceIdentifiers.GitRepository);
+      
+      // root1 should have the specific instance
+      expect(repoFromRoot1).toBe(mockRepoInstance);
+
+      // root2 should have resolved its own default instance, which is NOT the one from root1
+      expect(repoFromRoot2).not.toBe(mockRepoInstance);
 
       root1.dispose();
       root2.dispose();

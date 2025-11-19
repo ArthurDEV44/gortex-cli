@@ -1,6 +1,7 @@
 import React from 'react';
 import { describe, it, expect, vi } from 'vitest';
 import { render } from 'ink-testing-library';
+import stripAnsi from 'strip-ansi';
 import { Confirm } from './Confirm.js';
 
 describe('Confirm', () => {
@@ -10,7 +11,7 @@ describe('Confirm', () => {
       <Confirm message="Are you sure?" onSubmit={onSubmit} />
     );
 
-    const output = lastFrame();
+    const output = stripAnsi(lastFrame());
     expect(output).toContain('Are you sure?');
   });
 
@@ -20,7 +21,7 @@ describe('Confirm', () => {
       <Confirm message="Confirm?" onSubmit={onSubmit} />
     );
 
-    const output = lastFrame();
+    const output = stripAnsi(lastFrame());
     expect(output).toContain('Yes');
     expect(output).toContain('No');
   });
@@ -31,7 +32,7 @@ describe('Confirm', () => {
       <Confirm message="Confirm?" defaultValue={true} onSubmit={onSubmit} />
     );
 
-    const output = lastFrame();
+    const output = stripAnsi(lastFrame());
     expect(output).toContain('Yes');
   });
 
@@ -41,7 +42,7 @@ describe('Confirm', () => {
       <Confirm message="Confirm?" onSubmit={onSubmit} />
     );
 
-    const output = lastFrame();
+    const output = stripAnsi(lastFrame());
     expect(output).toContain('Yes');
   });
 

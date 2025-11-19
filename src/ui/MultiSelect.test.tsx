@@ -1,6 +1,7 @@
 import React from 'react';
 import { describe, it, expect, vi } from 'vitest';
 import { render } from 'ink-testing-library';
+import stripAnsi from 'strip-ansi';
 import { MultiSelect, type MultiSelectItem } from './MultiSelect.js';
 
 describe('MultiSelect', () => {
@@ -16,7 +17,7 @@ describe('MultiSelect', () => {
       <MultiSelect message="Select items" items={mockItems} onSubmit={onSubmit} />
     );
 
-    const output = lastFrame();
+    const output = stripAnsi(lastFrame());
     expect(output).toContain('Select items');
     expect(output).toContain('Item 1');
     expect(output).toContain('Item 2');

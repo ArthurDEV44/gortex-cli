@@ -122,17 +122,23 @@ export class GitRepositoryImpl implements IGitRepository {
   async getStagedChangesContext(): Promise<DiffContext> {
     // Get staged files
     const status = await this.git.status();
-    const stagedFiles = [
+    let stagedFiles = [
       ...status.staged,
       ...status.modified.filter(f => status.staged.includes(f)),
     ];
 
+    // Filter out non-relevant files for AI context
+    const ignoredFiles = ['pnpm-lock.yaml', 'package-lock.json', 'yarn.lock'];
+    stagedFiles = stagedFiles.filter(file => !ignoredFiles.some(ignored => file.endsWith(ignored)));
+
+
     if (stagedFiles.length === 0) {
-      throw new Error('Aucun fichier stagé. Utilisez "git add" pour stager des fichiers.');
+      // If only ignored files were staged, treat as no changes
+      throw new Error('Aucun fichier pertinent stagé. Seuls les fichiers de lock ou autres fichiers ignorés ont été détectés.');
     }
 
-    // Get diff of staged files
-    const diff = await this.git.diff(['--staged', '--no-color']);
+    // Get diff of staged files with context lines
+    const diff = await this.git.diff(['--staged', '--no-color', '-U3']);
 
     if (!diff || diff.trim().length === 0) {
       throw new Error('Aucun changement détecté dans les fichiers stagés.');
