@@ -11,3 +11,6 @@ export * from './ai/index.js';
 
 // Factories
 export * from './factories/index.js';
+
+// Dependency Injection
+export * from './di/index.js';
