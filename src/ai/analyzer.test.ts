@@ -1,4 +1,8 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
+
+// Mock simple-git before importing functions
+vi.mock('simple-git', () => import('../__mocks__/simple-git.js'));
+
 import {
   mockGit,
   setupMockScenario,
@@ -6,9 +10,6 @@ import {
   createMockStatus,
   createMockLog,
 } from '../__mocks__/simple-git.js';
-
-// Mock simple-git before importing functions
-vi.mock('simple-git');
 
 import { analyzeStagedChanges, detectScopeFromFiles } from './analyzer.js';
 import { SIZE_LIMITS, GIT_LIMITS } from '../shared/constants/index.js';
