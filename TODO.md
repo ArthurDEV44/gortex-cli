@@ -1,6 +1,6 @@
 # TODO - GORTEX CLI Clean Architecture Refactoring
 
-## 📊 État Actuel: 11/13 Phases Complétées (325+ tests, ALL Components & Commands Migrated, Legacy Code Cleaned!)
+## 📊 État Actuel: 12/13 Phases Complétées (380+ tests including integration, Full DI Architecture!)
 
 ### ✅ PHASES COMPLÉTÉES
 
@@ -99,41 +99,33 @@
 - ✅ Déprécié `utils/git.ts` avec commentaires détaillés
 - ✅ Documenté `CommitModeSelector.tsx` (utilisation légitime des providers)
 - ✅ Vérifié absence de duplications dans `src/ai/` (adapters réutilisent providers)
-- ✅ Tests passent (325+), build réussit
+- ✅ Tests passent (350+), build réussit
 
 **Architecture clarifiée:**
 - `src/ai/providers/` contient les implémentations concrètes des AI providers
 - `src/infrastructure/ai/` contient les adapters qui wrappent ces providers
 - Pas de duplication: architecture en couches appropriée
 
+#### Phase 11: Tests d'Intégration (✅ COMPLÉTÉE)
+**Localisation:** `src/__tests__/integration/`
+- ✅ `commit-workflow.test.tsx` - Tests end-to-end du workflow de commit (11 tests)
+- ✅ `ai-generation.test.ts` - Tests intégration AI providers (18 tests)
+- ✅ `cli-commands.test.ts` - Tests commands CLI avec DI (24 tests)
+- ✅ 53 tests d'intégration créés
+- ✅ Tests couvrent : Manual workflow, AI workflow, DI container, Error handling
+- ✅ Tests validés les use cases, factories, et lifecycle DI
+
+**Coverage des tests:**
+- Workflow complet commit (status → stage → commit)
+- Génération AI avec différents providers
+- Commandes CLI (commit, stats, hooks, branch, push)
+- Gestion d'erreurs et edge cases
+- Isolation des containers DI
+- Lifecycle du CompositionRoot
+
 ---
 
-## 🚧 PHASES RESTANTES (2 phases)
-
-### Phase 11: Tests d'Intégration
-**Objectif:** Ajouter tests bout-en-bout avec DI
-
-**Tests à créer:**
-1. `src/__tests__/integration/commit-workflow.test.tsx`
-   - Test du workflow complet avec DI
-   - Mocks des repositories et providers
-
-2. `src/__tests__/integration/ai-generation.test.ts`
-   - Test génération AI avec différents providers
-
-3. `src/__tests__/integration/cli-commands.test.ts`
-   - Test des commandes CLI avec DI
-
-**Template de test:**
-```typescript
-import { DIContainer, ServiceIdentifiers } from '../infrastructure/di';
-
-test('complete commit workflow', async () => {
-  const container = new DIContainer();
-  container.registerInstance(ServiceIdentifiers.GitRepository, mockRepo);
-  // ... test
-});
-```
+## 🚧 PHASES RESTANTES (1 phase)
 
 ### Phase 12: Documentation & Polish
 **Objectif:** Documentation complète et finalisation
@@ -163,16 +155,15 @@ test('complete commit workflow', async () => {
 
 ## 🎯 PRIORITÉS IMMÉDIATES
 
-### ✅ COMPLÉTÉ: Phase 10 - Cleanup du Code Legacy
-**Statut:** Nettoyage et migration complète
-- ✅ utils/git.ts déprécié avec documentation
-- ✅ HooksInstaller/Uninstaller migrés vers DI
-- ✅ hooks.tsx (command) migré vers DI
-- ✅ AISuggestWorkflow supprimé (obsolète)
-- ✅ Architecture AI clarifiée (pas de duplication)
-- ✅ Nouveaux hooks: useGitRepository(), useAIProvider()
+### ✅ COMPLÉTÉ: Phase 11 - Tests d'Intégration
+**Statut:** 53 tests d'intégration créés
+- ✅ commit-workflow.test.tsx (11 tests)
+- ✅ ai-generation.test.ts (18 tests)
+- ✅ cli-commands.test.ts (24 tests)
+- ✅ Tests couvrent workflow complet, AI, CLI, erreurs
+- ✅ DI container lifecycle validé
 
-### 1. Phase 11: Tests d'Intégration
+### 1. Phase 12: Documentation & Polish
 **Créer:** Tests end-to-end avec DI
 **Fichiers:**
 - `src/__tests__/integration/commit-workflow.test.tsx`
