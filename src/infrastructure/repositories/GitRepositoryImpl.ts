@@ -137,15 +137,12 @@ export class GitRepositoryImpl implements IGitRepository {
       throw new Error('Aucun fichier pertinent stagé. Seuls les fichiers de lock ou autres fichiers ignorés ont été détectés.');
     }
 
-    // Get diff of staged files with context lines
-    const diff = await this.git.diff(['--staged', '--no-color', '-U3']);
+    // Get diff of staged files with MORE context lines for better AI understanding
+    const diff = await this.git.diff(['--staged', '--no-color', '-U5']);
 
     if (!diff || diff.trim().length === 0) {
       throw new Error('Aucun changement détecté dans les fichiers stagés.');
     }
-
-    // Truncate diff if too large
-    const truncatedDiff = this.truncateDiff(diff, SIZE_LIMITS.MAX_DIFF_SIZE);
 
     // Get current branch
     const branch = await this.git.revparse(['--abbrev-ref', 'HEAD']);
@@ -155,11 +152,25 @@ export class GitRepositoryImpl implements IGitRepository {
     const recentCommits = recentCommitsLog.all.map(commit => commit.message);
 
     return {
-      diff: truncatedDiff,
+      diff: diff,
       files: stagedFiles,
       branch: branch.trim(),
       recentCommits,
     };
+  }
+
+  async getExistingScopes(): Promise<string[]> {
+    const log = await this.git.log({ maxCount: 200 });
+    const scopes = new Set<string>();
+
+    for (const commit of log.all) {
+      const match = commit.message.match(/^(?:\w+)\(([^)]+)\)/);
+      if (match && match[1]) {
+        scopes.add(match[1]);
+      }
+    }
+
+    return Array.from(scopes);
   }
 
   async getCurrentBranch(): Promise<string> {
@@ -226,20 +237,85 @@ export class GitRepositoryImpl implements IGitRepository {
   }
 
   /**
-   * Truncates diff if too long (keeps beginning and end)
+   * Intelligently truncates diff by file priority
+   * Keeps complete file diffs when possible, prioritizing smaller changes
    */
-  private truncateDiff(diff: string, maxChars: number): string {
+  smartTruncateDiff(diff: string, maxChars: number): string {
     if (diff.length <= maxChars) {
       return diff;
     }
 
-    const keepChars = Math.floor(maxChars / 2);
-    const start = diff.slice(0, keepChars);
-    const end = diff.slice(-keepChars);
+    // Split diff into file chunks
+    const fileChunks = this.splitDiffByFile(diff);
 
-    const truncatedLines =
-      diff.split('\n').length - start.split('\n').length - end.split('\n').length;
+    // Sort by size (smaller files first - likely more focused changes)
+    const sortedChunks = fileChunks.sort((a, b) => a.content.length - b.content.length);
 
-    return `${start}\n\n... [${truncatedLines} lignes tronquées pour économiser les tokens] ...\n\n${end}`;
+    let result = '';
+    let totalLength = 0;
+    const includedFiles: string[] = [];
+    const excludedFiles: string[] = [];
+
+    // Include complete file diffs until we hit the limit
+    for (const chunk of sortedChunks) {
+      if (totalLength + chunk.content.length <= maxChars) {
+        result += chunk.content + '\n';
+        totalLength += chunk.content.length + 1;
+        includedFiles.push(chunk.filename);
+      } else {
+        excludedFiles.push(chunk.filename);
+      }
+    }
+
+    // Add truncation message with file list
+    if (excludedFiles.length > 0) {
+      const truncationMsg = `\n... [Diff tronqué: ${excludedFiles.length} fichier(s) omis pour économiser les tokens] ...\n` +
+        `Fichiers omis: ${excludedFiles.join(', ')}\n` +
+        `Fichiers inclus (${includedFiles.length}): ${includedFiles.join(', ')}\n`;
+      result = truncationMsg + result;
+    }
+
+    return result;
+  }
+
+  /**
+   * Splits a unified diff into chunks per file
+   */
+  private splitDiffByFile(diff: string): Array<{ filename: string; content: string }> {
+    const chunks: Array<{ filename: string; content: string }> = [];
+    const lines = diff.split('\n');
+
+    let currentFile = '';
+    let currentContent: string[] = [];
+
+    for (const line of lines) {
+      // New file marker
+      if (line.startsWith('diff --git')) {
+        // Save previous file
+        if (currentFile && currentContent.length > 0) {
+          chunks.push({
+            filename: currentFile,
+            content: currentContent.join('\n'),
+          });
+        }
+
+        // Extract filename
+        const match = line.match(/diff --git a\/(.+?) b\//);
+        currentFile = match ? match[1] : 'unknown';
+        currentContent = [line];
+      } else {
+        currentContent.push(line);
+      }
+    }
+
+    // Save last file
+    if (currentFile && currentContent.length > 0) {
+      chunks.push({
+        filename: currentFile,
+        content: currentContent.join('\n'),
+      });
+    }
+
+    return chunks;
   }
 }

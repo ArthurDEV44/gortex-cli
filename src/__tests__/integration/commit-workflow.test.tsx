@@ -44,6 +44,7 @@ describe('Integration: Complete Commit Workflow', () => {
         branch: 'main',
         recentCommits: [],
       }),
+      getExistingScopes: vi.fn().mockResolvedValue(['api', 'tests']),
       getCurrentBranch: vi.fn().mockResolvedValue('main'),
       getAllBranches: vi.fn().mockResolvedValue(['main', 'dev']),
       branchExists: vi.fn().mockResolvedValue(true),

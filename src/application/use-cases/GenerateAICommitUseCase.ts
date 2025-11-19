@@ -8,7 +8,8 @@ import { IAIProvider, AIGenerationContext } from '../../domain/repositories/IAIP
 import { CommitMessageMapper } from '../mappers/CommitMessageMapper.js';
 import { AIGenerationResultDTO } from '../dto/AIGenerationDTO.js';
 import { getCommitTypeValues } from '../../shared/constants/commit-types.js';
-import { detectScopeFromFiles } from '../../ai/analyzer.js';
+import { SIZE_LIMITS } from '../../shared/constants/limits.js';
+import { GitRepositoryImpl } from '../../infrastructure/repositories/GitRepositoryImpl.js';
 
 export interface GenerateAICommitRequest {
   provider: IAIProvider;
@@ -46,14 +47,27 @@ export class GenerateAICommitUseCase {
       // Get staged changes context
       const diffContext = await this.gitRepository.getStagedChangesContext();
 
-      // Detect potential scopes
+      // Intelligently truncate diff if it's too large
+      let diffForAI = diffContext.diff;
+      if (diffForAI.length > SIZE_LIMITS.MAX_DIFF_LENGTH) {
+        // Use smart truncation if repository implements it
+        if (this.gitRepository instanceof GitRepositoryImpl) {
+          diffForAI = this.gitRepository.smartTruncateDiff(diffForAI, SIZE_LIMITS.MAX_DIFF_LENGTH);
+        } else {
+          // Fallback to simple truncation
+          diffForAI = diffForAI.substring(0, SIZE_LIMITS.MAX_DIFF_LENGTH);
+          diffForAI += '\n\n[... Diff tronqué en raison de limitations de taille ...]';
+        }
+      }
+
+      // Get existing scopes from commit history
       const availableScopes = request.includeScope
-        ? [detectScopeFromFiles(diffContext.files)].filter((s): s is string => s !== undefined)
+        ? await this.gitRepository.getExistingScopes()
         : undefined;
 
       // Build AI generation context
       const aiContext: AIGenerationContext = {
-        diff: diffContext.diff,
+        diff: diffForAI,
         files: diffContext.files,
         branch: diffContext.branch,
         recentCommits: diffContext.recentCommits,

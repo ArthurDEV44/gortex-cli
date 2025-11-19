@@ -7,7 +7,6 @@ import { CommitMessage, CommitMessageProps } from '../entities/CommitMessage.js'
 import { CommitType } from '../value-objects/CommitType.js';
 import { Scope } from '../value-objects/Scope.js';
 import { CommitSubject } from '../value-objects/CommitSubject.js';
-import { detectScopeFromFiles } from '../../ai/analyzer.js';
 
 export interface ParsedCommit {
   type: string;
@@ -93,14 +92,6 @@ export class CommitMessageService {
       breaking: breaking === '!',
       subject: subject.trim(),
     };
-  }
-
-  /**
-   * Suggests a scope based on modified files
-   * Uses heuristics to detect the most relevant scope
-   */
-  static suggestScope(files: string[]): string | undefined {
-    return detectScopeFromFiles(files);
   }
 
   /**

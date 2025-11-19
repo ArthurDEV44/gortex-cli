@@ -7,7 +7,7 @@
  */
 export const SIZE_LIMITS = {
   /** Maximum diff size in characters before truncation */
-  MAX_DIFF_SIZE: 8000,
+  MAX_DIFF_LENGTH: 30000,
 } as const;
 
 /**

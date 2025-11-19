@@ -133,6 +133,7 @@ export interface IGitRepository {
   getModifiedFiles(): Promise<string[]>;
   stageFiles(files: string[]): Promise<void>;
   createCommit(message: string): Promise<void>;
+  getExistingScopes(): Promise<string[]>;
   // ... autres méthodes
 }
 ```
@@ -639,15 +640,28 @@ User Action (Choose AI Mode)
 ┌──────────────────────────────────┐
 │   GenerateAICommitUseCase        │
 │   - Get diff from repository     │
+│   - Get existing scopes          │
+│   - IF diff > threshold THEN     │
+│   -   summarize diff with AI     │
 │   - Call AI provider             │
 └──────────────────────────────────┘
        │
        ├──→ IGitRepository.getStagedChangesContext()
        │        │
        │        ↓
-       │    GitRepositoryImpl (get diff)
+       │    GitRepositoryImpl (get diff & recent commits)
        │
-       └──→ IAIProvider.generateCommitMessage()
+       ├──→ IGitRepository.getExistingScopes()
+       │        │
+       │        ↓
+       │    GitRepositoryImpl (parse git log for scopes)
+       │
+       ├──→ (conditional) IAIProvider.summarizeChanges(diff)
+       │        │
+       │        ↓
+       │    Provider-specific summary implementation
+       │
+       └──→ IAIProvider.generateCommitMessage(context)
                 │
                 ↓
          ┌────────────────────────────┐
