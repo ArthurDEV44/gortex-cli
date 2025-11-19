@@ -21,16 +21,26 @@ ${availableTypes.join(', ')}
 RAPPEL IMPORTANT: Le champ "type" DOIT être EXACTEMENT l'une de ces valeurs:
 ${availableTypes.map(t => `- "${t}"`).join('\n')}
 
-❌ N'UTILISE JAMAIS: "commit", "update", "change", "modification" ou tout autre mot qui n'est pas dans la liste ci-dessus
-✅ UTILISE SEULEMENT: ${availableTypes.join(', ')}
+❌ INTERDICTIONS ABSOLUES - N'utilise JAMAIS:
+- "commit", "update", "change", "modification"
+- "refactoring" (utilise "refactor")
+- "feature" (utilise "feat")
+- "bugfix" (utilise "fix")
+- "documentation" (utilise "docs")
+- "performance" (utilise "perf")
+- "testing" ou "tests" (utilise "test")
+- Toute autre variation ou forme longue
+
+✅ UTILISE SEULEMENT ET EXACTEMENT: ${availableTypes.join(', ')}
 
 RÈGLES STRICTES:
-1. Le type DOIT être EXACTEMENT l'un des types disponibles ci-dessus (feat, fix, docs, style, refactor, perf, test, build, ci, chore, revert)
-2. Le scope est optionnel mais recommandé (par exemple: api, ui, auth, database)
-3. Le subject doit être concis (max 50 caractères), impératif, COMMENCER PAR UNE MINUSCULE (lowercase), sans point final
-4. Le body est optionnel mais utile pour expliquer POURQUOI le changement a été fait
-5. Utilise "!" après le type/scope pour indiquer un breaking change
-6. Si breaking change, DOIT inclure "BREAKING CHANGE:" dans le footer
+1. Le type DOIT être EXACTEMENT l'un de ces 11 mots (pas de variation): feat, fix, docs, style, refactor, perf, test, build, ci, chore, revert
+2. AUCUNE forme longue acceptée: utilise "refactor" PAS "refactoring", "feat" PAS "feature"
+3. Le scope est optionnel mais recommandé (par exemple: api, ui, auth, database)
+4. Le subject doit être concis (max 50 caractères), impératif, COMMENCER PAR UNE MINUSCULE (lowercase), sans point final
+5. Le body est optionnel mais utile pour expliquer POURQUOI le changement a été fait
+6. Utilise "!" après le type/scope pour indiquer un breaking change
+7. Si breaking change, DOIT inclure "BREAKING CHANGE:" dans le footer
 
 IMPORTANT - RÈGLE CAPITALE POUR LE SUBJECT:
 - Le subject DOIT ABSOLUMENT commencer par une lettre MINUSCULE (lowercase)
@@ -63,6 +73,16 @@ EXEMPLES DE RÉPONSES VALIDES:
 }
 
 {
+  "type": "refactor",
+  "scope": "dependencies",
+  "subject": "remove unused dependencies and optimize package size",
+  "body": "Removed unnecessary dependencies to reduce the overall package size.",
+  "breaking": false,
+  "confidence": 90,
+  "reasoning": "Code restructuring without adding features or fixing bugs = refactor (NOT refactoring)"
+}
+
+{
   "type": "fix",
   "scope": "parser",
   "subject": "handle edge case in JSON parsing",
@@ -91,7 +111,18 @@ INSTRUCTIONS D'ANALYSE:
 - La confidence doit être honnête (0-100)
 - Le reasoning explique ton raisonnement pour choisir type/scope
 
-RAPPEL FINAL: Le "type" doit être UNIQUEMENT: ${availableTypes.join(', ')} - RIEN D'AUTRE!`;
+⚠️⚠️⚠️ RAPPEL FINAL CRITIQUE ⚠️⚠️⚠️
+Le champ "type" doit être EXACTEMENT l'un de ces 11 mots (ni plus ni moins):
+${availableTypes.join(', ')}
+
+ATTENTION AUX ERREURS COURANTES:
+- ❌ "refactoring" → ✅ "refactor"
+- ❌ "feature" → ✅ "feat"
+- ❌ "bugfix" → ✅ "fix"
+- ❌ "documentation" → ✅ "docs"
+- ❌ "commit" → ✅ Choisis le bon type selon le changement
+
+N'utilise AUCUNE variation, forme longue, ou synonyme. EXACTEMENT ces 11 mots.`;
 }
 
 /**
