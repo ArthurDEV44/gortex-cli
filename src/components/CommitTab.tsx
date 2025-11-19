@@ -13,7 +13,7 @@ import { ContinuePrompt } from './ContinuePrompt.js';
 import { CommitWelcome } from './CommitWelcome.js';
 import { StepIndicator } from './StepIndicator.js';
 import type { AIProvider, CommitConfig } from '../types.js';
-import { stageFiles } from '../utils/git.js';
+import { useStageFiles } from '../infrastructure/di/hooks.js';
 import { useApp } from 'ink';
 import { icons, commitIcons } from '../theme/colors.js';
 
@@ -51,6 +51,8 @@ interface Props {
 
 export const CommitTab: React.FC<Props> = ({ config, onWorkflowStateChange }) => {
   const { exit } = useApp();
+  const stageFilesUseCase = useStageFiles();
+
   const [step, setStep] = useState<Step>('idle');
   const [selectedBranch, setSelectedBranch] = useState<string>('');
   const [selectedFiles, setSelectedFiles] = useState<string[]>([]);
@@ -71,13 +73,19 @@ export const CommitTab: React.FC<Props> = ({ config, onWorkflowStateChange }) =>
     setSelectedFiles(files);
     setStep('staging');
 
-    // Stage the files
+    // Stage the files using clean architecture use case
     try {
-      await stageFiles(files);
-      setStep('mode');
+      const result = await stageFilesUseCase.execute({ files });
+
+      if (result.success) {
+        setStep('mode');
+      } else {
+        // Handle error - could add error state here
+        console.error('Error staging files:', result.error);
+        setStep('mode'); // Continue anyway
+      }
     } catch (error) {
-      // Handle error - could add error state here
-      console.error('Error staging files:', error);
+      console.error('Unexpected error staging files:', error);
       setStep('mode'); // Continue anyway
     }
   };

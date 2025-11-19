@@ -55,19 +55,24 @@
 
 ## 🚧 PHASES RESTANTES (6 phases)
 
-### Phase 8: Migration Progressive des Composants
+### Phase 8: Migration Progressive des Composants ✅ 2/7 COMPLÉTÉS
 **Objectif:** Migrer les composants existants pour utiliser DI et use cases
 
-**Fichiers à migrer:**
-1. `src/components/CommitTab.tsx` (priorité haute)
-   - Remplacer `import { stageFiles } from '../utils/git.js'` par `useStageFiles()`
-   - Remplacer appels directs aux utils par use cases
+**Fichiers migrés:** ✅
+1. ✅ `src/components/CommitTab.tsx` (MIGRÉ)
+   - ✅ Remplacé `stageFiles` par `useStageFiles()`
+   - ✅ Utilise pattern success/error
+   - ✅ Hook appelé au niveau du composant
 
-2. `src/components/FileSelector.tsx`
-   - Utiliser `useRepositoryStatus()` pour `getModifiedFilesWithStatus()`
+2. ✅ `src/components/FileSelector.tsx` (MIGRÉ)
+   - ✅ Remplacé `getModifiedFilesWithStatus()` par `useRepositoryStatus()`
+   - ✅ Conversion DTO vers format interne
+   - ✅ Gestion d'erreurs ajoutée
 
-3. `src/components/CommitConfirmation.tsx`
+**Fichiers restants à migrer:**
+3. `src/components/CommitConfirmation.tsx` (EN ATTENTE)
    - Utiliser `useCreateCommit()` pour `createCommit()`
+   - Note: Nécessite parsing du message string vers DTO ou nouvelle méthode
 
 4. `src/components/PushPrompt.tsx`
    - Utiliser `useRepositoryStatus()` pour hasRemote, hasUpstream, etc.
