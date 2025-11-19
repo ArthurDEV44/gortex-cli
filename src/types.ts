@@ -1,4 +1,4 @@
-import { commitIcons } from './theme/colors.js';
+import { COMMIT_TYPES } from './shared/constants/index.js';
 
 export interface CommitType {
   value: string;
@@ -83,63 +83,15 @@ export interface AIGeneratedCommit {
   reasoning?: string;   // Pourquoi l'AI a choisi ces valeurs
 }
 
-export const DEFAULT_TYPES: CommitType[] = [
-  {
-    value: 'feat',
-    name: `feat:     ${commitIcons.feat} Nouvelle fonctionnalité`,
-    description: 'Une nouvelle fonctionnalité',
-  },
-  {
-    value: 'fix',
-    name: `fix:      ${commitIcons.fix} Correction de bug`,
-    description: 'Une correction de bug',
-  },
-  {
-    value: 'docs',
-    name: `docs:     ${commitIcons.docs} Documentation`,
-    description: 'Changements de documentation uniquement',
-  },
-  {
-    value: 'style',
-    name: `style:    ${commitIcons.style} Style`,
-    description: 'Changements qui n\'affectent pas le sens du code (espaces, formatage, etc.)',
-  },
-  {
-    value: 'refactor',
-    name: `refactor: ${commitIcons.refactor} Refactoring`,
-    description: 'Changement de code qui ne corrige pas de bug ni n\'ajoute de fonctionnalité',
-  },
-  {
-    value: 'perf',
-    name: `perf:     ${commitIcons.perf} Performance`,
-    description: 'Amélioration des performances',
-  },
-  {
-    value: 'test',
-    name: `test:     ${commitIcons.test} Tests`,
-    description: 'Ajout ou modification de tests',
-  },
-  {
-    value: 'build',
-    name: `build:    ${commitIcons.build} Build`,
-    description: 'Changements qui affectent le système de build ou les dépendances',
-  },
-  {
-    value: 'ci',
-    name: `ci:       ${commitIcons.ci} CI`,
-    description: 'Changements dans les fichiers de configuration CI',
-  },
-  {
-    value: 'chore',
-    name: `chore:    ${commitIcons.chore} Chore`,
-    description: 'Autres changements qui ne modifient pas les fichiers src ou test',
-  },
-  {
-    value: 'revert',
-    name: `revert:   ${commitIcons.revert} Revert`,
-    description: 'Annulation d\'un commit précédent',
-  },
-];
+/**
+ * Default commit types for conventional commits
+ * Maps from centralized COMMIT_TYPES to maintain backward compatibility
+ */
+export const DEFAULT_TYPES: CommitType[] = COMMIT_TYPES.map((type) => ({
+  value: type.value,
+  name: type.name,
+  description: type.description,
+}));
 
 export const DEFAULT_AI_CONFIG: AIConfig = {
   enabled: false,

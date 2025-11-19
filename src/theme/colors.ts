@@ -1,4 +1,5 @@
 import gradient from 'gradient-string';
+import { COMMIT_TYPE_ICONS } from '../shared/constants/index.js';
 
 /**
  * Thème de couleurs Gortex CLI
@@ -232,20 +233,10 @@ export const icons = {
 
 /**
  * Icônes colorées pour les types de commit (conventional commits)
+ * @deprecated Use COMMIT_TYPE_ICONS from shared/constants/commit-types instead
+ * Kept for backward compatibility
  */
-export const commitIcons = {
-  feat: '✦',      // Feature - Étoile épice
-  fix: '◆',       // Fix - Diamant
-  docs: '◈',      // Documentation - Diamant vide
-  style: '◇',     // Style - Losange
-  refactor: '⟲',  // Refactor - Cercle flèche
-  perf: '⚡',     // Performance - Éclair
-  test: '✓',      // Test - Check
-  build: '▣',     // Build - Carré avec point
-  ci: '⚙',        // CI - Engrenage
-  chore: '○',     // Chore - Cercle
-  revert: '↶',    // Revert - Flèche retour
-};
+export const commitIcons = COMMIT_TYPE_ICONS;
 
 // Helper pour obtenir la couleur d'un type de commit
 export function getCommitColor(type: string): string {

@@ -1,5 +1,6 @@
 import chalk from 'chalk';
 import { isGitRepository, analyzeCommitStats } from '../utils/git.js';
+import { getCommitTypeEmoji } from '../shared/constants/index.js';
 
 export async function statsCommand(maxCount: number = 100): Promise<void> {
   try {
@@ -42,7 +43,7 @@ export async function statsCommand(maxCount: number = 100): Promise<void> {
       for (const [type, count] of sortedTypes) {
         const percentage = ((count / stats.conventional) * 100).toFixed(1);
         const bar = getProgressBar((count / stats.conventional) * 100, 20);
-        console.log(`  ${getTypeEmoji(type)} ${type.padEnd(10)} ${count.toString().padStart(3)} (${percentage}%) ${chalk.gray(bar)}`);
+        console.log(`  ${getCommitTypeEmoji(type)} ${type.padEnd(10)} ${count.toString().padStart(3)} (${percentage}%) ${chalk.gray(bar)}`);
       }
       console.log();
     }
@@ -70,19 +71,3 @@ function getProgressBar(percentage: number, length: number = 30): string {
   return '█'.repeat(filled) + '░'.repeat(empty);
 }
 
-function getTypeEmoji(type: string): string {
-  const emojis: Record<string, string> = {
-    feat: '✨',
-    fix: '🐛',
-    docs: '📝',
-    style: '💄',
-    refactor: '♻️',
-    perf: '⚡️',
-    test: '✅',
-    build: '📦',
-    ci: '👷',
-    chore: '🔧',
-    revert: '⏪',
-  };
-  return emojis[type] || '📌';
-}
