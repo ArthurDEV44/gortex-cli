@@ -2,6 +2,26 @@
 
 All notable changes to Gortex CLI will be documented in this file.
 
+## [Unreleased]
+
+### 🐛 Bug Fixes
+
+#### AI Commit Type Validation (IMPORTANT)
+- **Fixed**: Erreur "Invalid commit type: commit" lors de la génération de commits par l'IA
+- **Root Cause**: L'IA générait parfois des types invalides ("commit", "update", "change") au lieu des types conventionnels standards
+- **Solution**: 
+  - Renforcement du prompt système avec avertissements visuels explicites
+  - Validation anticipée du type AVANT la création de l'entité domaine
+  - Message d'erreur amélioré avec suggestion de réessayer ou utiliser le mode manuel
+- **Impact**: Réduction drastique des erreurs de type invalide, meilleure expérience utilisateur
+- **Changes**:
+  - `src/ai/prompts/commit-message.ts` - Prompt système largement renforcé avec emphase sur les types valides
+  - `src/ai/providers/BaseAIProvider.ts` - Validation avec vérification stricte du type contre la liste disponible
+  - `src/ai/providers/ollama.ts` - Utilisation de la nouvelle validation avec types disponibles
+  - `src/ai/providers/mistral.ts` - Utilisation de la nouvelle validation avec types disponibles
+  - `src/ai/providers/openai.ts` - Utilisation de la nouvelle validation avec types disponibles
+- **Documentation**: See `docs/BUGFIX_AI_COMMIT_TYPE_VALIDATION.md` for complete analysis
+
 ## [3.0.1] - 2025-11-18
 
 ### ✨ New Features

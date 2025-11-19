@@ -1,9 +1,9 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, type Mock } from 'vitest';
 import { GitRepositoryImpl } from './GitRepositoryImpl.js';
 
 // Mock simple-git
 vi.mock('simple-git', () => import('../../__mocks__/simple-git.js'));
-import { mockGit, resetMocks } from '../../__mocks__/simple-git.js';
+import { mockGit, resetMocks, createMockLog } from '../../__mocks__/simple-git.js';
 
 describe('GitRepositoryImpl', () => {
   let repository: GitRepositoryImpl;
@@ -15,7 +15,7 @@ describe('GitRepositoryImpl', () => {
 
   describe('isRepository', () => {
     it('should return true for valid repository', async () => {
-      mockGit.revparse.mockResolvedValue('');
+      vi.mocked(mockGit.revparse)!.mockResolvedValue('');
 
       const result = await repository.isRepository();
 
@@ -24,7 +24,7 @@ describe('GitRepositoryImpl', () => {
     });
 
     it('should return false for invalid repository', async () => {
-      mockGit.revparse.mockRejectedValue(new Error('Not a git repository'));
+      vi.mocked(mockGit.revparse)!.mockRejectedValue(new Error('Not a git repository'));
 
       const result = await repository.isRepository();
 
@@ -34,7 +34,7 @@ describe('GitRepositoryImpl', () => {
 
   describe('hasChanges', () => {
     it('should return true when there are changes', async () => {
-      mockGit.status.mockResolvedValue({
+      vi.mocked(mockGit.status)!.mockResolvedValue({
         modified: ['file.ts'],
         not_added: [],
         deleted: [],
@@ -47,6 +47,7 @@ describe('GitRepositoryImpl', () => {
         tracking: null,
         ahead: 0,
         behind: 0,
+        detached: false,
         isClean: () => false,
       });
 
@@ -56,7 +57,7 @@ describe('GitRepositoryImpl', () => {
     });
 
     it('should return false when repository is clean', async () => {
-      mockGit.status.mockResolvedValue({
+      vi.mocked(mockGit.status)!.mockResolvedValue({
         modified: [],
         not_added: [],
         deleted: [],
@@ -69,6 +70,7 @@ describe('GitRepositoryImpl', () => {
         tracking: null,
         ahead: 0,
         behind: 0,
+        detached: false,
         isClean: () => true,
       });
 
@@ -80,7 +82,7 @@ describe('GitRepositoryImpl', () => {
 
   describe('getModifiedFiles', () => {
     it('should return list of modified files', async () => {
-      mockGit.status.mockResolvedValue({
+      vi.mocked(mockGit.status)!.mockResolvedValue({
         modified: ['file1.ts', 'file2.ts'],
         not_added: ['file3.ts'],
         deleted: ['file4.ts'],
@@ -93,6 +95,7 @@ describe('GitRepositoryImpl', () => {
         tracking: null,
         ahead: 0,
         behind: 0,
+        detached: false,
         isClean: () => false,
       });
 
@@ -103,7 +106,7 @@ describe('GitRepositoryImpl', () => {
     });
 
     it('should return empty array for clean repository', async () => {
-      mockGit.status.mockResolvedValue({
+      vi.mocked(mockGit.status)!.mockResolvedValue({
         modified: [],
         not_added: [],
         deleted: [],
@@ -116,6 +119,7 @@ describe('GitRepositoryImpl', () => {
         tracking: null,
         ahead: 0,
         behind: 0,
+        detached: false,
         isClean: () => true,
       });
 
@@ -131,13 +135,13 @@ describe('GitRepositoryImpl', () => {
 
       await repository.stageFiles(files);
 
-      expect(mockGit.add).toHaveBeenCalledWith(files);
+      expect(vi.mocked(mockGit.add)!).toHaveBeenCalledWith(files);
     });
 
     it('should handle single file', async () => {
       await repository.stageFiles(['file.ts']);
 
-      expect(mockGit.add).toHaveBeenCalledWith(['file.ts']);
+      expect(vi.mocked(mockGit.add)!).toHaveBeenCalledWith(['file.ts']);
     });
   });
 
@@ -145,7 +149,7 @@ describe('GitRepositoryImpl', () => {
     it('should stage all files', async () => {
       await repository.stageAll();
 
-      expect(mockGit.add).toHaveBeenCalledWith('.');
+      expect(vi.mocked(mockGit.add)!).toHaveBeenCalledWith('.');
     });
   });
 
@@ -155,13 +159,13 @@ describe('GitRepositoryImpl', () => {
 
       await repository.createCommit(message);
 
-      expect(mockGit.commit).toHaveBeenCalledWith(message);
+      expect(vi.mocked(mockGit.commit)!).toHaveBeenCalledWith(message);
     });
   });
 
   describe('getCurrentBranch', () => {
     it('should return current branch name', async () => {
-      mockGit.revparse.mockResolvedValue('main\n');
+      vi.mocked(mockGit.revparse)!.mockResolvedValue('main\n');
 
       const result = await repository.getCurrentBranch();
 
@@ -170,7 +174,7 @@ describe('GitRepositoryImpl', () => {
     });
 
     it('should trim whitespace from branch name', async () => {
-      mockGit.revparse.mockResolvedValue('  feature-branch  \n');
+      vi.mocked(mockGit.revparse)!.mockResolvedValue('  feature-branch  \n');
 
       const result = await repository.getCurrentBranch();
 
@@ -180,7 +184,7 @@ describe('GitRepositoryImpl', () => {
 
   describe('hasRemote', () => {
     it('should return true when remote exists', async () => {
-      mockGit.getRemotes.mockResolvedValue([
+      vi.mocked(mockGit.getRemotes)!.mockResolvedValue([
         { name: 'origin', refs: { fetch: '', push: '' } },
       ]);
 
@@ -190,7 +194,7 @@ describe('GitRepositoryImpl', () => {
     });
 
     it('should return false when no remotes exist', async () => {
-      mockGit.getRemotes.mockResolvedValue([]);
+      vi.mocked(mockGit.getRemotes)!.mockResolvedValue([]);
 
       const result = await repository.hasRemote();
 
@@ -200,7 +204,7 @@ describe('GitRepositoryImpl', () => {
 
   describe('getDefaultRemote', () => {
     it('should return origin if it exists', async () => {
-      mockGit.getRemotes.mockResolvedValue([
+      vi.mocked(mockGit.getRemotes)!.mockResolvedValue([
         { name: 'origin', refs: { fetch: '', push: '' } },
         { name: 'upstream', refs: { fetch: '', push: '' } },
       ]);
@@ -211,7 +215,7 @@ describe('GitRepositoryImpl', () => {
     });
 
     it('should return first remote if origin does not exist', async () => {
-      mockGit.getRemotes.mockResolvedValue([
+      vi.mocked(mockGit.getRemotes)!.mockResolvedValue([
         { name: 'upstream', refs: { fetch: '', push: '' } },
       ]);
 
@@ -221,7 +225,7 @@ describe('GitRepositoryImpl', () => {
     });
 
     it('should throw error if no remotes exist', async () => {
-      mockGit.getRemotes.mockResolvedValue([]);
+      vi.mocked(mockGit.getRemotes)!.mockResolvedValue([]);
 
       await expect(repository.getDefaultRemote()).rejects.toThrow(
         'No remote configured',
@@ -231,8 +235,8 @@ describe('GitRepositoryImpl', () => {
 
   describe('hasUpstream', () => {
     it('should return true when branch has upstream', async () => {
-      mockGit.revparse.mockResolvedValue('main'); // for getCurrentBranch
-      mockGit.raw.mockResolvedValue('origin/main');
+      vi.mocked(mockGit.revparse)!.mockResolvedValue('main'); // for getCurrentBranch
+      vi.mocked(mockGit.raw)!.mockResolvedValue('origin/main');
 
       const result = await repository.hasUpstream();
 
@@ -245,8 +249,8 @@ describe('GitRepositoryImpl', () => {
     });
 
     it('should return false when branch has no upstream', async () => {
-      mockGit.revparse.mockResolvedValue('feature-branch'); // for getCurrentBranch
-      mockGit.raw.mockRejectedValue(new Error('no upstream configured'));
+      vi.mocked(mockGit.revparse)!.mockResolvedValue('feature-branch'); // for getCurrentBranch
+      vi.mocked(mockGit.raw)!.mockRejectedValue(new Error('no upstream configured'));
 
       const result = await repository.hasUpstream();
 
@@ -258,19 +262,19 @@ describe('GitRepositoryImpl', () => {
     it('should push to remote without setting upstream', async () => {
       await repository.pushToRemote('origin', 'main', false);
 
-      expect(mockGit.push).toHaveBeenCalledWith('origin', 'main');
+      expect(vi.mocked(mockGit.push)!).toHaveBeenCalledWith('origin', 'main');
     });
 
     it('should push to remote with setting upstream', async () => {
       await repository.pushToRemote('origin', 'feature', true);
 
-      expect(mockGit.push).toHaveBeenCalledWith(['-u', 'origin', 'feature']);
+      expect(vi.mocked(mockGit.push)!).toHaveBeenCalledWith(['-u', 'origin', 'feature']);
     });
   });
 
   describe('getStagedChangesContext', () => {
     it('should return context for staged changes', async () => {
-      mockGit.status.mockResolvedValue({
+      vi.mocked(mockGit.status)!.mockResolvedValue({
         staged: ['file1.ts', 'file2.ts'],
         modified: [],
         not_added: [],
@@ -283,19 +287,18 @@ describe('GitRepositoryImpl', () => {
         tracking: null,
         ahead: 0,
         behind: 0,
+        detached: false,
         isClean: () => false,
       });
 
-      mockGit.diff.mockResolvedValue('diff content');
-      mockGit.revparse.mockResolvedValue('main');
-      mockGit.log.mockResolvedValue({
-        all: [
-          { message: 'commit 1', hash: '123' },
-          { message: 'commit 2', hash: '456' },
-        ],
-        latest: null,
-        total: 2,
-      });
+      vi.mocked(mockGit.diff)!.mockResolvedValue('diff content');
+      vi.mocked(mockGit.revparse)!.mockResolvedValue('main');
+      vi.mocked(mockGit.log)!.mockResolvedValue(
+        createMockLog([
+          { hash: '123', message: 'commit 1' },
+          { hash: '456', message: 'commit 2' },
+        ])
+      );
 
       const result = await repository.getStagedChangesContext();
 
@@ -306,7 +309,7 @@ describe('GitRepositoryImpl', () => {
     });
 
     it('should throw error when no files are staged', async () => {
-      mockGit.status.mockResolvedValue({
+      vi.mocked(mockGit.status)!.mockResolvedValue({
         staged: [],
         modified: [],
         not_added: [],
@@ -319,6 +322,7 @@ describe('GitRepositoryImpl', () => {
         tracking: null,
         ahead: 0,
         behind: 0,
+        detached: false,
         isClean: () => true,
       });
 
@@ -328,7 +332,7 @@ describe('GitRepositoryImpl', () => {
     });
 
     it('should throw error when diff is empty', async () => {
-      mockGit.status.mockResolvedValue({
+      vi.mocked(mockGit.status)!.mockResolvedValue({
         staged: ['file.ts'],
         modified: [],
         not_added: [],
@@ -341,10 +345,11 @@ describe('GitRepositoryImpl', () => {
         tracking: null,
         ahead: 0,
         behind: 0,
+        detached: false,
         isClean: () => false,
       });
 
-      mockGit.diff.mockResolvedValue('   \n  ');
+      vi.mocked(mockGit.diff)!.mockResolvedValue('   \n  ');
 
       await expect(repository.getStagedChangesContext()).rejects.toThrow(
         'Aucun changement détecté',
@@ -354,7 +359,7 @@ describe('GitRepositoryImpl', () => {
     it('should truncate large diffs', async () => {
       const largeDiff = 'a'.repeat(30000);
 
-      mockGit.status.mockResolvedValue({
+      vi.mocked(mockGit.status)!.mockResolvedValue({
         staged: ['file.ts'],
         modified: [],
         not_added: [],
@@ -367,16 +372,13 @@ describe('GitRepositoryImpl', () => {
         tracking: null,
         ahead: 0,
         behind: 0,
+        detached: false,
         isClean: () => false,
       });
 
-      mockGit.diff.mockResolvedValue(largeDiff);
-      mockGit.revparse.mockResolvedValue('main');
-      mockGit.log.mockResolvedValue({
-        all: [],
-        latest: null,
-        total: 0,
-      });
+      vi.mocked(mockGit.diff)!.mockResolvedValue(largeDiff);
+      vi.mocked(mockGit.revparse)!.mockResolvedValue('main');
+      vi.mocked(mockGit.log)!.mockResolvedValue(createMockLog([]));
 
       const result = await repository.getStagedChangesContext();
 

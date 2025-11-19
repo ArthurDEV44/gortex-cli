@@ -15,18 +15,42 @@ FORMAT REQUIS:
 
 [optional footer]
 
-TYPES DISPONIBLES: ${availableTypes.join(', ')}
+⚠️ TYPES DISPONIBLES (UNIQUEMENT CEUX-CI) ⚠️
+${availableTypes.join(', ')}
+
+RAPPEL IMPORTANT: Le champ "type" DOIT être EXACTEMENT l'une de ces valeurs:
+${availableTypes.map(t => `- "${t}"`).join('\n')}
+
+❌ N'UTILISE JAMAIS: "commit", "update", "change", "modification" ou tout autre mot qui n'est pas dans la liste ci-dessus
+✅ UTILISE SEULEMENT: ${availableTypes.join(', ')}
 
 RÈGLES STRICTES:
-1. Le type DOIT être l'un des types disponibles ci-dessus
+1. Le type DOIT être EXACTEMENT l'un des types disponibles ci-dessus (feat, fix, docs, style, refactor, perf, test, build, ci, chore, revert)
 2. Le scope est optionnel mais recommandé (par exemple: api, ui, auth, database)
-3. Le subject doit être concis (max 50 caractères), impératif, sans majuscule au début, sans point final
+3. Le subject doit être concis (max 50 caractères), impératif, COMMENCER PAR UNE MINUSCULE (lowercase), sans point final
 4. Le body est optionnel mais utile pour expliquer POURQUOI le changement a été fait
 5. Utilise "!" après le type/scope pour indiquer un breaking change
 6. Si breaking change, DOIT inclure "BREAKING CHANGE:" dans le footer
 
+IMPORTANT - RÈGLE CAPITALE POUR LE SUBJECT:
+- Le subject DOIT ABSOLUMENT commencer par une lettre MINUSCULE (lowercase)
+- ✓ CORRECT: "add user authentication"
+- ✗ INCORRECT: "Add user authentication"
+- ✓ CORRECT: "fix parsing error"
+- ✗ INCORRECT: "Fix parsing error"
+
 RÉPONSE ATTENDUE:
-Tu dois répondre UNIQUEMENT avec un JSON valide dans ce format exact:
+Tu dois répondre avec un objet JSON contenant EXACTEMENT ces champs:
+- "type" (OBLIGATOIRE): string - Le type de commit EXACT parmi: ${availableTypes.join(', ')}
+- "subject" (OBLIGATOIRE): string - Le sujet du commit (impératif, max 50 chars)
+- "breaking" (OBLIGATOIRE): boolean - Si c'est un breaking change
+- "confidence" (OBLIGATOIRE): integer - Niveau de confiance 0-100
+- "scope" (optionnel): string - Le scope du commit
+- "body" (optionnel): string - Description détaillée
+- "breakingDescription" (optionnel): string - Description du breaking change
+- "reasoning" (optionnel): string - Explication de tes choix
+
+EXEMPLES DE RÉPONSES VALIDES:
 {
   "type": "feat",
   "scope": "api",
@@ -38,13 +62,36 @@ Tu dois répondre UNIQUEMENT avec un JSON valide dans ce format exact:
   "reasoning": "The changes add new authentication functionality (feat), focused on the API layer (api scope). High confidence based on clear API endpoint additions."
 }
 
-IMPORTANT:
-- Analyse le CONTEXTE des changements pour choisir le bon type
+{
+  "type": "fix",
+  "scope": "parser",
+  "subject": "handle edge case in JSON parsing",
+  "breaking": false,
+  "confidence": 90
+}
+
+{
+  "type": "docs",
+  "subject": "update installation guide",
+  "breaking": false,
+  "confidence": 95
+}
+
+IMPORTANT - FORMAT DE RÉPONSE:
+- Un JSON Schema est fourni à l'API pour garantir la structure
+- Réponds avec un objet JSON valide contenant AU MINIMUM: type, subject, breaking, confidence
+- Ne pas omettre les champs obligatoires
+- Les champs optionnels peuvent être null ou omis
+- Le champ "type" DOIT être l'un des types disponibles SANS EXCEPTION
+
+INSTRUCTIONS D'ANALYSE:
+- Analyse le CONTEXTE des changements pour choisir le bon type parmi: ${availableTypes.join(', ')}
 - Sois précis dans le scope (identifie le module/composant affecté)
 - Le subject doit décrire CE QUI a changé, le body POURQUOI
 - La confidence doit être honnête (0-100)
 - Le reasoning explique ton raisonnement pour choisir type/scope
-- TOUJOURS répondre en JSON valide, rien d'autre`;
+
+RAPPEL FINAL: Le "type" doit être UNIQUEMENT: ${availableTypes.join(', ')} - RIEN D'AUTRE!`;
 }
 
 /**
@@ -87,12 +134,37 @@ export function generateUserPrompt(
  * Parse la réponse JSON de l'AI
  */
 export function parseAIResponse(response: string): any {
+  // Nettoie la réponse de tout markdown ou texte supplémentaire
+  let cleanedResponse = response.trim();
+
+  // Supprime les blocs de code markdown si présents
+  cleanedResponse = cleanedResponse.replace(/```json\s*/g, '');
+  cleanedResponse = cleanedResponse.replace(/```\s*/g, '');
+
+  // Supprime les retours à la ligne excessifs
+  cleanedResponse = cleanedResponse.trim();
+
   // Cherche du JSON dans la réponse (au cas où l'AI ajoute du texte avant/après)
-  const jsonMatch = response.match(/\{[\s\S]*\}/);
+  // Pattern amélioré pour capturer le JSON même avec du texte autour
+  const jsonMatch = cleanedResponse.match(/\{[\s\S]*?\}(?=\s*$|\s*\n\s*[^}\s])/);
 
   if (!jsonMatch) {
+    // Essaie une approche plus aggressive: trouve le premier { et le dernier }
+    const firstBrace = cleanedResponse.indexOf('{');
+    const lastBrace = cleanedResponse.lastIndexOf('}');
+
+    if (firstBrace !== -1 && lastBrace !== -1 && lastBrace > firstBrace) {
+      const potentialJson = cleanedResponse.substring(firstBrace, lastBrace + 1);
+
+      try {
+        return JSON.parse(potentialJson);
+      } catch (error) {
+        // Continue vers l'erreur finale
+      }
+    }
+
     throw new Error(
-      'Réponse AI invalide: aucun JSON trouvé dans la réponse',
+      `Réponse AI invalide: aucun JSON trouvé dans la réponse.\n\nRéponse reçue: ${response.substring(0, 200)}${response.length > 200 ? '...' : ''}`,
     );
   }
 
@@ -100,7 +172,7 @@ export function parseAIResponse(response: string): any {
     return JSON.parse(jsonMatch[0]);
   } catch (error) {
     throw new Error(
-      `Impossible de parser la réponse JSON: ${error instanceof Error ? error.message : String(error)}`,
+      `Impossible de parser la réponse JSON: ${error instanceof Error ? error.message : String(error)}\n\nJSON extrait: ${jsonMatch[0].substring(0, 200)}${jsonMatch[0].length > 200 ? '...' : ''}`,
     );
   }
 }

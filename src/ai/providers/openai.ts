@@ -149,8 +149,8 @@ export class OpenAIProvider extends BaseAIProvider {
       // Parse la réponse
       const parsed = parseAIResponse(data.choices[0].message.content);
 
-      // Validation basique
-      this.validateResponse(parsed);
+      // Validation avec vérification stricte du type
+      this.validateResponse(parsed, context.availableTypes);
 
       return {
         type: parsed.type,

@@ -3,7 +3,7 @@
  * Convenient hooks to access specific use cases and repositories
  */
 
-import { useUseCase, useDI } from './DIContext.js';
+import { useUseCase, useCompositionRoot } from './DIContext.js';
 import { ServiceIdentifiers } from './ServiceRegistry.js';
 import type { CreateCommitUseCase } from '../../application/use-cases/CreateCommitUseCase.js';
 import type { GenerateAICommitUseCase } from '../../application/use-cases/GenerateAICommitUseCase.js';
@@ -69,8 +69,8 @@ export function usePushOperations(): PushOperationsUseCase {
  * Use this when you need low-level git operations not covered by use cases
  */
 export function useGitRepository(): IGitRepository {
-  const container = useDI();
-  return container.resolve<IGitRepository>(ServiceIdentifiers.GitRepository);
+  const root = useCompositionRoot();
+  return root.getContainer().resolve<IGitRepository>(ServiceIdentifiers.GitRepository);
 }
 
 /**
@@ -78,9 +78,9 @@ export function useGitRepository(): IGitRepository {
  * Use this when you need to check provider availability or other provider-specific operations
  */
 export function useAIProvider(): IAIProvider | null {
-  const container = useDI();
+  const root = useCompositionRoot();
   try {
-    return container.resolve<IAIProvider>(ServiceIdentifiers.AIProvider);
+    return root.getContainer().resolve<IAIProvider>(ServiceIdentifiers.AIProvider);
   } catch {
     return null;
   }

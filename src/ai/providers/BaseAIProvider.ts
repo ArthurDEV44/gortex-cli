@@ -30,13 +30,24 @@ export abstract class BaseAIProvider implements AIProvider {
    * This method is shared across all providers to ensure consistent validation
    *
    * @param response - The response object to validate
+   * @param availableTypes - Optional list of valid commit types to validate against
    * @throws {Error} If the response is invalid
    *
    * @protected - Available to subclasses
    */
-  protected validateResponse(response: any): void {
+  protected validateResponse(response: any, availableTypes?: string[]): void {
     if (!response.type || typeof response.type !== 'string') {
       throw new Error('Réponse invalide: "type" manquant ou invalide');
+    }
+
+    // Validate type is in the list of available types if provided
+    if (availableTypes && !availableTypes.includes(response.type)) {
+      throw new Error(
+        `Réponse invalide: Le type "${response.type}" n'est pas valide.\n` +
+        `Types autorisés: ${availableTypes.join(', ')}\n` +
+        `L'IA a généré un type incorrect. Cela peut arriver avec certains modèles.\n` +
+        `Veuillez réessayer ou utiliser le mode manuel.`
+      );
     }
 
     if (!response.subject || typeof response.subject !== 'string') {

@@ -3,7 +3,7 @@
  * Tests the end-to-end commit workflow using the DI container
  */
 
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { DIContainer } from '../../infrastructure/di/DIContainer.js';
 import { ServiceIdentifiers } from '../../infrastructure/di/ServiceRegistry.js';
 import { CompositionRoot } from '../../infrastructure/di/CompositionRoot.js';
@@ -57,11 +57,11 @@ describe('Integration: Complete Commit Workflow', () => {
     };
 
     // Create mock AI provider
-    const mockCommitMessage = new CommitMessage(
-      CommitType.create('feat'),
-      CommitSubject.create('add integration tests'),
-      Scope.create('tests')
-    );
+    const mockCommitMessage = CommitMessage.create({
+      type: CommitType.create('feat'),
+      subject: CommitSubject.create('add integration tests'),
+      scope: Scope.create('tests'),
+    });
 
     mockAIProvider = {
       getName: vi.fn().mockReturnValue('MockAI'),
@@ -99,7 +99,7 @@ describe('Integration: Complete Commit Workflow', () => {
       const stageUseCase = root.getContainer().resolve<StageFilesUseCase>(
         ServiceIdentifiers.StageFilesUseCase
       );
-      const stageResult = await stageUseCase.execute({ filePaths: ['file1.ts', 'file2.ts'] });
+      const stageResult = await stageUseCase.execute({ files: ['file1.ts', 'file2.ts'] });
 
       expect(stageResult.success).toBe(true);
       expect(mockGitRepository.stageFiles).toHaveBeenCalledWith(['file1.ts', 'file2.ts']);
@@ -137,7 +137,7 @@ describe('Integration: Complete Commit Workflow', () => {
       const stageUseCase = root.getContainer().resolve<StageFilesUseCase>(
         ServiceIdentifiers.StageFilesUseCase
       );
-      const result = await stageUseCase.execute({ stageAll: true });
+      const result = await stageUseCase.execute({});
 
       expect(result.success).toBe(true);
       expect(mockGitRepository.stageAll).toHaveBeenCalled();
@@ -152,17 +152,13 @@ describe('Integration: Complete Commit Workflow', () => {
         ServiceIdentifiers.GenerateAICommitUseCase
       );
       const aiResult = await aiUseCase.execute({
-        diff: 'fake diff',
-        context: {
-          files: ['file1.ts'],
-          branch: 'main',
-          recentCommits: [],
-        },
+        provider: mockAIProvider,
+        includeScope: true,
       });
 
       expect(aiResult.success).toBe(true);
-      expect(aiResult.message?.type).toBe('feat');
-      expect(aiResult.message?.subject).toBe('add integration tests');
+      expect(aiResult.commit?.type).toBe('feat');
+      expect(aiResult.commit?.subject).toBe('add integration tests');
       expect(aiResult.confidence).toBe(0.95);
 
       // 2. Create commit with AI-generated message
@@ -171,9 +167,9 @@ describe('Integration: Complete Commit Workflow', () => {
       );
       const commitResult = await commitUseCase.execute({
         message: {
-          type: aiResult.message!.type,
-          subject: aiResult.message!.subject,
-          scope: aiResult.message!.scope?.toString(),
+          type: aiResult.commit!.type,
+          subject: aiResult.commit!.subject,
+          scope: aiResult.commit!.scope,
         },
       });
 
@@ -188,12 +184,7 @@ describe('Integration: Complete Commit Workflow', () => {
         ServiceIdentifiers.GenerateAICommitUseCase
       );
       const result = await aiUseCase.execute({
-        diff: 'fake diff',
-        context: {
-          files: ['file1.ts'],
-          branch: 'main',
-          recentCommits: [],
-        },
+        provider: mockAIProvider,
       });
 
       expect(result.success).toBe(false);
@@ -235,7 +226,7 @@ describe('Integration: Complete Commit Workflow', () => {
 
       // Execute both
       statusUseCase.execute();
-      stageUseCase.execute({ stageAll: true });
+      stageUseCase.execute({});
 
       // Should use same repository (calls should accumulate)
       expect(mockGitRepository.isRepository).toHaveBeenCalled();
@@ -245,7 +236,7 @@ describe('Integration: Complete Commit Workflow', () => {
       expect(() => root.dispose()).not.toThrow();
 
       // After dispose, container should be cleared
-      expect(root.getContainer()['registrations'].size).toBe(0);
+      expect(root.getContainer().size).toBe(0);
     });
   });
 
@@ -288,10 +279,10 @@ describe('Integration: Complete Commit Workflow', () => {
       const stageUseCase = root.getContainer().resolve<StageFilesUseCase>(
         ServiceIdentifiers.StageFilesUseCase
       );
-      const result = await stageUseCase.execute({ filePaths: [] });
+      const result = await stageUseCase.execute({ files: [] });
 
-      expect(result.success).toBe(false);
-      expect(result.error).toContain('No files specified');
+      expect(result.success).toBe(true);
+      expect(mockGitRepository.stageAll).toHaveBeenCalled();
     });
   });
 });

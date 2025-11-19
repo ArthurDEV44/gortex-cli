@@ -6,7 +6,6 @@
 import React, { useEffect, useState } from 'react';
 import { Box, Text } from 'ink';
 import Spinner from 'ink-spinner';
-import chalk from 'chalk';
 import { useCommitHistory } from '../infrastructure/di/hooks.js';
 import type { RepositoryStatsDTO } from '../application/dto/GitStatusDTO.js';
 import { getCommitTypeEmoji } from '../shared/constants/index.js';
@@ -16,18 +15,25 @@ interface Props {
 }
 
 export function StatsDisplay({ maxCount = 100 }: Props) {
-  const { analyzeHistory, loading, error } = useCommitHistory();
+  const analyzeHistoryUseCase = useCommitHistory();
   const [stats, setStats] = useState<RepositoryStatsDTO | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     async function loadStats() {
-      const result = await analyzeHistory(maxCount);
+      setLoading(true);
+      setError(null);
+      const result = await analyzeHistoryUseCase.execute({ maxCount });
       if (result.success && result.stats) {
         setStats(result.stats);
+      } else {
+        setError(result.error || 'Erreur lors de l\'analyse');
       }
+      setLoading(false);
     }
     loadStats();
-  }, [maxCount]);
+  }, [maxCount, analyzeHistoryUseCase]);
 
   if (loading) {
     return (
@@ -55,9 +61,10 @@ export function StatsDisplay({ maxCount = 100 }: Props) {
     );
   }
 
-  const percentage = stats.percentage.toFixed(1);
+  const percentage = stats.conventionalPercentage.toFixed(1);
   const percentageNum = parseFloat(percentage);
   const color = percentageNum >= 80 ? 'green' : percentageNum >= 50 ? 'yellow' : 'red';
+  const nonConventional = stats.totalCommits - stats.conventionalCommits;
 
   return (
     <Box flexDirection="column" padding={1}>
@@ -72,9 +79,9 @@ export function StatsDisplay({ maxCount = 100 }: Props) {
       <Box flexDirection="column" marginBottom={1}>
         <Text bold>Résumé:</Text>
         <Text color="gray">{'─'.repeat(50)}</Text>
-        <Text>Total de commits analysés:      <Text color="cyan">{stats.total}</Text></Text>
-        <Text>Commits conventionnels:          <Text color="green">{stats.conventional}</Text></Text>
-        <Text>Commits non-conventionnels:      <Text color="red">{stats.nonConventional}</Text></Text>
+        <Text>Total de commits analysés:      <Text color="cyan">{stats.totalCommits}</Text></Text>
+        <Text>Commits conventionnels:          <Text color="green">{stats.conventionalCommits}</Text></Text>
+        <Text>Commits non-conventionnels:      <Text color="red">{nonConventional}</Text></Text>
       </Box>
 
       {/* Compliance Rate */}
@@ -94,8 +101,8 @@ export function StatsDisplay({ maxCount = 100 }: Props) {
             {Object.entries(stats.typeBreakdown)
               .sort((a, b) => b[1] - a[1])
               .map(([type, count]) => {
-                const typePercentage = ((count / stats.conventional) * 100).toFixed(1);
-                const bar = getProgressBar((count / stats.conventional) * 100, 20);
+                const typePercentage = ((count / stats.conventionalCommits) * 100).toFixed(1);
+                const bar = getProgressBar((count / stats.conventionalCommits) * 100, 20);
                 return (
                   <Text key={type}>
                     {getCommitTypeEmoji(type)} {type.padEnd(10)} {count.toString().padStart(3)} ({typePercentage}%) <Text color="gray">{bar}</Text>
