@@ -22,7 +22,7 @@ All notable changes to Gortex CLI will be documented in this file.
   - `src/ai/providers/openai.ts` - Utilisation de la nouvelle validation avec types disponibles
 - **Documentation**: See `docs/BUGFIX_AI_COMMIT_TYPE_VALIDATION.md` for complete analysis
 
-## [3.0.1] - 2025-11-18
+## [2.0.1] - 2025-11-19
 
 ### ✨ New Features
 
@@ -76,14 +76,14 @@ All notable changes to Gortex CLI will be documented in this file.
 
 ### 📖 User Experience
 
-**Before v3.0.1:**
+**Before v2.0.1:**
 ```
 Push en cours...
 Username for 'https://github.com':
 [FROZEN - Application hangs indefinitely]
 ```
 
-**After v3.0.1:**
+**After v2.0.1:**
 ```
 ⚠️  Remote HTTPS détecté
 URL: https://github.com/user/repo.git
@@ -111,7 +111,7 @@ For the best experience with Gortex CLI, we recommend:
 
 ---
 
-## [3.0.0] - 2025-11-18
+## [2.0.0] - 2025-11-19
 
 ### 🚨 BREAKING CHANGES
 
@@ -123,14 +123,14 @@ This is a major UX refactor that changes the workflow interaction model.
 - Command `gortex ai-suggest` is **deprecated** (still works with warning)
 
 #### Migration Guide
-**Before v3.0:**
+**Before v2.0.1:**
 ```bash
 # Two separate workflows
 gortex commit          # Manual workflow
 gortex ai-suggest      # AI workflow
 ```
 
-**After v3.0:**
+**After v2.0.1:**
 ```bash
 # One unified workflow with choice
 gortex commit
