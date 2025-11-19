@@ -8,6 +8,7 @@ import { OllamaProviderAdapter } from '../ai/OllamaProviderAdapter.js';
 import { MistralProviderAdapter } from '../ai/MistralProviderAdapter.js';
 import { OpenAIProviderAdapter } from '../ai/OpenAIProviderAdapter.js';
 import type { AIConfig } from '../../types.js';
+import { DEFAULT_AI_CONFIG } from '../../types.js';
 
 export type AIProviderType = 'ollama' | 'mistral' | 'openai';
 
@@ -20,12 +21,14 @@ export class AIProviderFactory {
    * @throws Error if the provider type is unsupported
    */
   static create(type: AIProviderType, config?: AIConfig): IAIProvider {
+    const effectiveConfig = config || DEFAULT_AI_CONFIG;
+
     switch (type.toLowerCase()) {
       case 'ollama':
-        return new OllamaProviderAdapter();
+        return new OllamaProviderAdapter(effectiveConfig);
 
       case 'mistral':
-        return new MistralProviderAdapter();
+        return new MistralProviderAdapter(effectiveConfig);
 
       case 'openai':
         if (!config) {

@@ -20,6 +20,7 @@ interface OllamaRequest {
   model: string;
   messages: OllamaMessage[];
   stream: boolean;
+  format?: 'json' | object; // 'json' for basic JSON mode, or JSON Schema object for structured outputs
   options?: {
     temperature?: number;
     num_predict?: number;
@@ -109,6 +110,48 @@ export class OllamaProvider extends BaseAIProvider {
     }
 
     try {
+      // Définit le JSON Schema pour la structure de réponse attendue
+      const jsonSchema = {
+        type: 'object',
+        properties: {
+          type: {
+            type: 'string',
+            description: 'The commit type (feat, fix, docs, etc.)',
+          },
+          scope: {
+            type: 'string',
+            description: 'The optional scope of the commit',
+          },
+          subject: {
+            type: 'string',
+            description: 'The commit subject (imperative, max 50 chars, MUST start with lowercase letter)',
+          },
+          body: {
+            type: 'string',
+            description: 'Optional detailed description',
+          },
+          breaking: {
+            type: 'boolean',
+            description: 'Whether this is a breaking change',
+          },
+          breakingDescription: {
+            type: 'string',
+            description: 'Description of the breaking change if applicable',
+          },
+          confidence: {
+            type: 'integer',
+            description: 'Confidence level (0-100)',
+            minimum: 0,
+            maximum: 100,
+          },
+          reasoning: {
+            type: 'string',
+            description: 'Explanation of the choices made',
+          },
+        },
+        required: ['type', 'subject', 'breaking', 'confidence'],
+      };
+
       // Construit la requête
       const request: OllamaRequest = {
         model: this.model,
@@ -123,6 +166,7 @@ export class OllamaProvider extends BaseAIProvider {
           },
         ],
         stream: false,
+        format: jsonSchema, // Utilise JSON Schema pour forcer la structure
         options: {
           temperature: this.temperature,
           num_predict: this.maxTokens,
@@ -153,16 +197,37 @@ export class OllamaProvider extends BaseAIProvider {
 
       const data = (await response.json()) as OllamaResponse;
 
-      // Parse la réponse
-      const parsed = parseAIResponse(data.message.content);
+      // Avec JSON Schema, la réponse devrait déjà être structurée
+      // Essaie d'abord de parser directement le contenu
+      let parsed: any;
 
-      // Validation basique
-      this.validateResponse(parsed);
+      try {
+        // Si le contenu est déjà un objet JSON (grâce au schema)
+        parsed = JSON.parse(data.message.content);
+      } catch (parseError) {
+        // Fallback sur notre parsing robuste si nécessaire
+        parsed = parseAIResponse(data.message.content);
+      }
+
+      // Validation avec vérification stricte du type
+      try {
+        this.validateResponse(parsed, context.availableTypes);
+      } catch (validationError) {
+        throw new Error(
+          `${validationError instanceof Error ? validationError.message : String(validationError)}\n\nRéponse AI reçue: ${JSON.stringify(parsed, null, 2)}`,
+        );
+      }
+
+      // Ensure subject starts with lowercase (safety measure)
+      let subject = parsed.subject;
+      if (subject && subject.length > 0) {
+        subject = subject.charAt(0).toLowerCase() + subject.slice(1);
+      }
 
       return {
         type: parsed.type,
         scope: parsed.scope || undefined,
-        subject: parsed.subject,
+        subject: subject,
         body: parsed.body || undefined,
         breaking: parsed.breaking || false,
         breakingDescription: parsed.breakingDescription || undefined,

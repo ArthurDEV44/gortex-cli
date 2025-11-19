@@ -90,11 +90,11 @@ describe('Integration: AI Commit Message Generation', () => {
 
     beforeEach(() => {
       // Create a comprehensive mock AI provider
-      const mockCommitMessage = new CommitMessage(
-        CommitType.create('feat'),
-        CommitSubject.create('implement user authentication'),
-        Scope.create('auth')
-      );
+      const mockCommitMessage = CommitMessage.create({
+        type: CommitType.create('feat'),
+        subject: CommitSubject.create('implement user authentication'),
+        scope: Scope.create('auth'),
+      });
 
       mockAIProvider = {
         getName: vi.fn().mockReturnValue('MockAI'),
@@ -107,24 +107,20 @@ describe('Integration: AI Commit Message Generation', () => {
       };
 
       container.registerInstance(ServiceIdentifiers.AIProvider, mockAIProvider);
-      useCase = new GenerateAICommitUseCase(mockGitRepository, mockAIProvider);
+      useCase = new GenerateAICommitUseCase(mockGitRepository);
     });
 
     it('should generate commit message from diff', async () => {
       const result = await useCase.execute({
-        diff: '+function auth() {}',
-        context: {
-          files: ['src/auth.ts'],
-          branch: 'feature/auth',
-          recentCommits: [],
-        },
+        provider: mockAIProvider,
+        includeScope: true,
       });
 
       expect(result.success).toBe(true);
-      expect(result.message).toBeDefined();
-      expect(result.message?.type).toBe('feat');
-      expect(result.message?.subject).toBe('implement user authentication');
-      expect(result.message?.scope?.toString()).toBe('auth');
+      expect(result.commit).toBeDefined();
+      expect(result.commit?.type).toBe('feat');
+      expect(result.commit?.subject).toBe('implement user authentication');
+      expect(result.commit?.scope).toBe('auth');
       expect(result.confidence).toBe(0.92);
     });
 
@@ -132,12 +128,7 @@ describe('Integration: AI Commit Message Generation', () => {
       vi.mocked(mockAIProvider.isAvailable).mockResolvedValue(false);
 
       const result = await useCase.execute({
-        diff: 'test diff',
-        context: {
-          files: ['test.ts'],
-          branch: 'main',
-          recentCommits: [],
-        },
+        provider: mockAIProvider,
       });
 
       expect(result.success).toBe(false);
@@ -150,12 +141,7 @@ describe('Integration: AI Commit Message Generation', () => {
       );
 
       const result = await useCase.execute({
-        diff: 'test diff',
-        context: {
-          files: ['test.ts'],
-          branch: 'main',
-          recentCommits: [],
-        },
+        provider: mockAIProvider,
       });
 
       expect(result.success).toBe(false);
@@ -163,26 +149,17 @@ describe('Integration: AI Commit Message Generation', () => {
     });
 
     it('should pass context to AI provider', async () => {
-      const context: AIGenerationContext = {
-        diff: '+new code',
-        files: ['src/file1.ts', 'src/file2.ts'],
-        branch: 'feature/new',
-        recentCommits: ['feat: add feature', 'fix: bug'],
-        availableTypes: ['feat', 'fix', 'docs'],
-        availableScopes: ['api', 'ui', 'core'],
-      };
-
       await useCase.execute({
-        diff: context.diff,
-        context,
+        provider: mockAIProvider,
+        includeScope: true,
       });
 
       expect(mockAIProvider.generateCommitMessage).toHaveBeenCalledWith(
         expect.objectContaining({
-          diff: '+new code',
-          files: ['src/file1.ts', 'src/file2.ts'],
-          branch: 'feature/new',
-          recentCommits: ['feat: add feature', 'fix: bug'],
+          diff: '+function newFeature() {\n+  return true;\n+}',
+          files: ['src/feature.ts'],
+          branch: 'main',
+          recentCommits: ['feat: previous feature', 'fix: bug fix'],
         })
       );
     });
@@ -234,11 +211,11 @@ describe('Integration: AI Commit Message Generation', () => {
 
   describe('AI Provider Validation', () => {
     it('should validate provider configuration', async () => {
-      const mockCommitMessage = new CommitMessage(
-        CommitType.create('feat'),
-        CommitSubject.create('test'),
-        Scope.empty()
-      );
+      const mockCommitMessage = CommitMessage.create({
+        type: CommitType.create('feat'),
+        subject: CommitSubject.create('test'),
+        scope: Scope.empty(),
+      });
 
       const provider: IAIProvider = {
         getName: () => 'TestProvider',
@@ -269,11 +246,11 @@ describe('Integration: AI Commit Message Generation', () => {
 
   describe('AI with Git Repository Integration', () => {
     it('should use staged changes from repository', async () => {
-      const mockCommitMessage = new CommitMessage(
-        CommitType.create('refactor'),
-        CommitSubject.create('improve code structure'),
-        Scope.create('core')
-      );
+      const mockCommitMessage = CommitMessage.create({
+        type: CommitType.create('refactor'),
+        subject: CommitSubject.create('improve code structure'),
+        scope: Scope.create('core'),
+      });
 
       const mockProvider: IAIProvider = {
         getName: () => 'TestAI',
@@ -284,15 +261,10 @@ describe('Integration: AI Commit Message Generation', () => {
         validateConfiguration: vi.fn().mockResolvedValue(true),
       };
 
-      const useCase = new GenerateAICommitUseCase(mockGitRepository, mockProvider);
+      const useCase = new GenerateAICommitUseCase(mockGitRepository);
 
       const result = await useCase.execute({
-        diff: '', // Will use git repository
-        context: {
-          files: [],
-          branch: '',
-          recentCommits: [],
-        },
+        provider: mockProvider,
       });
 
       expect(result.success).toBe(true);
@@ -302,11 +274,11 @@ describe('Integration: AI Commit Message Generation', () => {
 
   describe('Confidence Levels', () => {
     it('should handle high confidence suggestions', async () => {
-      const mockMessage = new CommitMessage(
-        CommitType.create('feat'),
-        CommitSubject.create('add new feature'),
-        Scope.empty()
-      );
+      const mockMessage = CommitMessage.create({
+        type: CommitType.create('feat'),
+        subject: CommitSubject.create('add new feature'),
+        scope: Scope.empty(),
+      });
 
       const provider: IAIProvider = {
         getName: () => 'HighConfidenceAI',
@@ -319,22 +291,21 @@ describe('Integration: AI Commit Message Generation', () => {
       };
 
       container.registerInstance(ServiceIdentifiers.AIProvider, provider);
-      const useCase = new GenerateAICommitUseCase(mockGitRepository, provider);
+      const useCase = new GenerateAICommitUseCase(mockGitRepository);
 
       const result = await useCase.execute({
-        diff: 'test',
-        context: { files: [], branch: 'main', recentCommits: [] },
+        provider,
       });
 
       expect(result.confidence).toBeGreaterThan(0.9);
     });
 
     it('should handle low confidence suggestions', async () => {
-      const mockMessage = new CommitMessage(
-        CommitType.create('chore'),
-        CommitSubject.create('update dependencies'),
-        Scope.empty()
-      );
+      const mockMessage = CommitMessage.create({
+        type: CommitType.create('chore'),
+        subject: CommitSubject.create('update dependencies'),
+        scope: Scope.empty(),
+      });
 
       const provider: IAIProvider = {
         getName: () => 'LowConfidenceAI',
@@ -346,22 +317,21 @@ describe('Integration: AI Commit Message Generation', () => {
         validateConfiguration: vi.fn().mockResolvedValue(true),
       };
 
-      const useCase = new GenerateAICommitUseCase(mockGitRepository, provider);
+      const useCase = new GenerateAICommitUseCase(mockGitRepository);
 
       const result = await useCase.execute({
-        diff: 'ambiguous changes',
-        context: { files: [], branch: 'main', recentCommits: [] },
+        provider,
       });
 
       expect(result.confidence).toBeLessThan(0.5);
     });
 
     it('should handle undefined confidence', async () => {
-      const mockMessage = new CommitMessage(
-        CommitType.create('fix'),
-        CommitSubject.create('resolve issue'),
-        Scope.empty()
-      );
+      const mockMessage = CommitMessage.create({
+        type: CommitType.create('fix'),
+        subject: CommitSubject.create('resolve issue'),
+        scope: Scope.empty(),
+      });
 
       const provider: IAIProvider = {
         getName: () => 'NoConfidenceAI',
@@ -373,11 +343,10 @@ describe('Integration: AI Commit Message Generation', () => {
         validateConfiguration: vi.fn().mockResolvedValue(true),
       };
 
-      const useCase = new GenerateAICommitUseCase(mockGitRepository, provider);
+      const useCase = new GenerateAICommitUseCase(mockGitRepository);
 
       const result = await useCase.execute({
-        diff: 'test',
-        context: { files: [], branch: 'main', recentCommits: [] },
+        provider,
       });
 
       expect(result.confidence).toBeUndefined();

@@ -101,11 +101,11 @@ describe('Integration: CLI Commands with DI', () => {
 
     it('should dispose and cleanup container', () => {
       const container = root.getContainer();
-      expect(container['registrations'].size).toBeGreaterThan(0);
+      expect(container.size).toBeGreaterThan(0);
 
       root.dispose();
 
-      expect(container['registrations'].size).toBe(0);
+      expect(container.size).toBe(0);
     });
 
     it('should allow multiple dispose calls safely', () => {
@@ -186,8 +186,8 @@ describe('Integration: CLI Commands with DI', () => {
       const result = await useCase.execute();
 
       expect(result.success).toBe(true);
-      expect(result.stats?.total).toBe(2);
-      expect(result.stats?.conventional).toBeGreaterThan(0);
+      expect(result.stats?.totalCommits).toBe(2);
+      expect(result.stats?.conventionalCommits).toBeGreaterThan(0);
     });
 
     it('should handle different maxCount parameters', async () => {
@@ -260,7 +260,7 @@ describe('Integration: CLI Commands with DI', () => {
         ServiceIdentifiers.BranchOperationsUseCase
       );
 
-      const result = await useCase.checkoutBranch('develop');
+      const result = await useCase.checkoutBranch({ branchName: 'develop' });
 
       expect(result.success).toBe(true);
       expect(mockGitRepository.checkoutBranch).toHaveBeenCalledWith('develop');
@@ -273,7 +273,7 @@ describe('Integration: CLI Commands with DI', () => {
         ServiceIdentifiers.BranchOperationsUseCase
       );
 
-      const result = await useCase.createBranch('feature/new');
+      const result = await useCase.createBranch({ branchName: 'feature/new' });
 
       expect(result.success).toBe(true);
       expect(mockGitRepository.createAndCheckoutBranch).toHaveBeenCalledWith('feature/new');
@@ -337,11 +337,11 @@ describe('Integration: CLI Commands with DI', () => {
       expect(result.success).toBe(true);
       expect(result.status?.branch).toBe('main');
       expect(result.status?.modifiedFiles).toHaveLength(2);
-      expect(result.status?.hasRemote).toBe(true);
+      expect(result.status?.hasChanges).toBe(true);
     });
 
-    it('should detect repository without remote', async () => {
-      vi.mocked(mockGitRepository.hasRemote).mockResolvedValue(false);
+    it('should detect repository without changes', async () => {
+      vi.mocked(mockGitRepository.hasChanges).mockResolvedValue(false);
 
       const useCase = root.getContainer().resolve<GetRepositoryStatusUseCase>(
         ServiceIdentifiers.GetRepositoryStatusUseCase
@@ -350,7 +350,7 @@ describe('Integration: CLI Commands with DI', () => {
       const result = await useCase.execute();
 
       expect(result.success).toBe(true);
-      expect(result.status?.hasRemote).toBe(false);
+      expect(result.status?.hasChanges).toBe(false);
     });
   });
 

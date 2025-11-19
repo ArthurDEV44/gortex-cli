@@ -10,12 +10,13 @@ import {
   AIGenerationResult,
 } from '../../domain/repositories/IAIProvider.js';
 import { CommitMessageService } from '../../domain/services/CommitMessageService.js';
+import type { AIConfig } from '../../types.js';
 
 export class MistralProviderAdapter implements IAIProvider {
   private readonly provider: MistralProvider;
 
-  constructor() {
-    this.provider = new MistralProvider();
+  constructor(config: AIConfig) {
+    this.provider = new MistralProvider(config);
   }
 
   getName(): string {

@@ -10,12 +10,13 @@ import {
   AIGenerationResult,
 } from '../../domain/repositories/IAIProvider.js';
 import { CommitMessageService } from '../../domain/services/CommitMessageService.js';
+import type { AIConfig } from '../../types.js';
 
 export class OllamaProviderAdapter implements IAIProvider {
   private readonly provider: OllamaProvider;
 
-  constructor() {
-    this.provider = new OllamaProvider();
+  constructor(config: AIConfig) {
+    this.provider = new OllamaProvider(config);
   }
 
   getName(): string {
