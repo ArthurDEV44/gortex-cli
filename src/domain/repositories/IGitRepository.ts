@@ -79,6 +79,11 @@ export interface IGitRepository {
   getStagedChangesContext(): Promise<DiffContext>;
 
   /**
+   * Gets a list of scopes used in the repository's commit history
+   */
+  getExistingScopes(): Promise<string[]>;
+
+  /**
    * Gets the current branch name
    */
   getCurrentBranch(): Promise<string>;

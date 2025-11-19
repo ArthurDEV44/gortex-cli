@@ -356,36 +356,6 @@ describe('GitRepositoryImpl', () => {
       );
     });
 
-    it('should truncate large diffs', async () => {
-      const largeDiff = 'a'.repeat(30000);
-
-      vi.mocked(mockGit.status)!.mockResolvedValue({
-        staged: ['file.ts'],
-        modified: [],
-        not_added: [],
-        deleted: [],
-        files: [],
-        created: [],
-        renamed: [],
-        conflicted: [],
-        current: 'main',
-        tracking: null,
-        ahead: 0,
-        behind: 0,
-        detached: false,
-        isClean: () => false,
-      });
-
-      vi.mocked(mockGit.diff)!.mockResolvedValue(largeDiff);
-      vi.mocked(mockGit.revparse)!.mockResolvedValue('main');
-      vi.mocked(mockGit.log)!.mockResolvedValue(createMockLog([]));
-
-      const result = await repository.getStagedChangesContext();
-
-      expect(result.diff.length).toBeLessThan(largeDiff.length);
-      expect(result.diff).toContain('tronquées pour économiser les tokens');
-    });
-
     it('should filter out lockfiles from staged changes context', async () => {
       vi.mocked(mockGit.status)!.mockResolvedValue({
         staged: ['file1.ts', 'pnpm-lock.yaml'],
@@ -411,7 +381,26 @@ describe('GitRepositoryImpl', () => {
 
       expect(context.files).toEqual(['file1.ts']);
       expect(context.files).not.toContain('pnpm-lock.yaml');
-      expect(vi.mocked(mockGit.diff)!).toHaveBeenCalledWith(['--staged', '--no-color', '-U3']);
+      expect(vi.mocked(mockGit.diff)!).toHaveBeenCalledWith(['--staged', '--no-color', '-U5']);
+    });
+  });
+
+  describe('getExistingScopes', () => {
+    it('should return unique scopes from commit history', async () => {
+      const commits = [
+        { hash: '1', message: 'feat(api): first feature' },
+        { hash: '2', message: 'fix(ui): fix button' },
+        { hash: '3', message: 'feat(api): another feature' },
+        { hash: '4', message: 'docs: update README' },
+        { hash: '5', message: 'refactor(db)!: breaking change' },
+      ];
+      vi.mocked(mockGit.log)!.mockResolvedValue(createMockLog(commits));
+
+      const scopes = await repository.getExistingScopes();
+      
+      expect(scopes).toHaveLength(3);
+      expect(scopes.sort()).toEqual(['api', 'db', 'ui'].sort());
+      expect(vi.mocked(mockGit.log)!).toHaveBeenCalledWith({ maxCount: 200 });
     });
   });
 

@@ -4,125 +4,38 @@ import type { CommitContext } from '../providers/base.js';
  * Génère le prompt système pour l'AI
  */
 export function generateSystemPrompt(availableTypes: string[]): string {
-  return `Tu es un assistant expert en Git et Conventional Commits.
+  console.log('DEBUG: availableTypes in generateSystemPrompt', typeof availableTypes, availableTypes);
 
-Ta tâche est d'analyser les changements de code et de générer un message de commit au format Conventional Commits.
+  const systemPrompt = `Tu es un assistant expert en Git et Conventional Commits.
+Ta tâche est de générer un message de commit au format Conventional Commits.
 
-FORMAT REQUIS:
-<type>(<scope>): <subject>
+Le format de réponse doit être un objet JSON valide contenant les champs suivants:
+- "type": string (doit être l'un de: ${availableTypes.join(', ')})
+- "scope": string (optionnel, concis)
+- "subject": string (doit commencer par une minuscule)
+- "body": string (optionnel, explique le pourquoi du changement)
+- "breaking": boolean
+- "breakingDescription": string (optionnel)
+- "confidence": integer (0-100)
+- "reasoning": string (ton raisonnement pour le commit)
 
-[optional body]
+IMPORTANT: Analyse ATTENTIVEMENT le diff fourni pour comprendre:
+1. La nature exacte des changements (nouveaux fichiers, modifications, suppressions)
+2. Le but et l'impact de chaque changement
+3. Les relations entre les différents fichiers modifiés
+4. Le contexte technique (noms de fonctions, classes, variables modifiées)
 
-[optional footer]
+Génère un message de commit qui:
+- Est PRÉCIS et DESCRIPTIF (évite les généralisations vagues)
+- Capture l'INTENTION derrière les changements, pas seulement ce qui a été fait
+- Utilise la terminologie correcte du code modifié
+- Est concis mais informatif (50-72 caractères pour le subject)
+- Inclut un body détaillé si les changements sont complexes ou multiples
 
-⚠️ TYPES DISPONIBLES (UNIQUEMENT CEUX-CI) ⚠️
-${availableTypes.join(', ')}
+Si le diff contient plusieurs types de changements, choisis le type dominant et mentionne les autres dans le body.
+`;
 
-RAPPEL IMPORTANT: Le champ "type" DOIT être EXACTEMENT l'une de ces valeurs:
-${availableTypes.map(t => `- "${t}"`).join('\n')}
-
-❌ INTERDICTIONS ABSOLUES - N'utilise JAMAIS:
-- "commit", "update", "change", "modification"
-- "refactoring" (utilise "refactor")
-- "feature" (utilise "feat")
-- "bugfix" (utilise "fix")
-- "documentation" (utilise "docs")
-- "performance" (utilise "perf")
-- "testing" ou "tests" (utilise "test")
-- Toute autre variation ou forme longue
-
-✅ UTILISE SEULEMENT ET EXACTEMENT: ${availableTypes.join(', ')}
-
-RÈGLES STRICTES:
-1. Le type DOIT être EXACTEMENT l'un de ces 11 mots (pas de variation): feat, fix, docs, style, refactor, perf, test, build, ci, chore, revert
-2. AUCUNE forme longue acceptée: utilise "refactor" PAS "refactoring", "feat" PAS "feature"
-3. Le scope est optionnel mais recommandé (par exemple: api, ui, auth, database)
-4. Le subject doit être concis (max 50 caractères), impératif, COMMENCER PAR UNE MINUSCULE (lowercase), sans point final
-5. Le body est optionnel mais utile pour expliquer POURQUOI le changement a été fait
-6. Utilise "!" après le type/scope pour indiquer un breaking change
-7. Si breaking change, DOIT inclure "BREAKING CHANGE:" dans le footer
-
-IMPORTANT - RÈGLE CAPITALE POUR LE SUBJECT:
-- Le subject DOIT ABSOLUMENT commencer par une lettre MINUSCULE (lowercase)
-- ✓ CORRECT: "add user authentication"
-- ✗ INCORRECT: "Add user authentication"
-- ✓ CORRECT: "fix parsing error"
-- ✗ INCORRECT: "Fix parsing error"
-
-RÉPONSE ATTENDUE:
-Tu dois répondre avec un objet JSON contenant EXACTEMENT ces champs:
-- "type" (OBLIGATOIRE): string - Le type de commit EXACT parmi: ${availableTypes.join(', ')}
-- "subject" (OBLIGATOIRE): string - Le sujet du commit (impératif, max 50 chars)
-- "breaking" (OBLIGATOIRE): boolean - Si c'est un breaking change
-- "confidence" (OBLIGATOIRE): integer - Niveau de confiance 0-100
-- "scope" (optionnel): string - Le scope du commit
-- "body" (optionnel): string - Description détaillée
-- "breakingDescription" (optionnel): string - Description du breaking change
-- "reasoning" (optionnel): string - Explication de tes choix
-
-EXEMPLES DE RÉPONSES VALIDES:
-{
-  "type": "feat",
-  "scope": "api",
-  "subject": "add user authentication endpoint",
-  "body": "Implement JWT-based authentication to secure API endpoints. This allows users to login and receive a token for subsequent requests.",
-  "breaking": false,
-  "breakingDescription": null,
-  "confidence": 85,
-  "reasoning": "The changes add new authentication functionality (feat), focused on the API layer (api scope). High confidence based on clear API endpoint additions."
-}
-
-{
-  "type": "refactor",
-  "scope": "dependencies",
-  "subject": "remove unused dependencies and optimize package size",
-  "body": "Removed unnecessary dependencies to reduce the overall package size.",
-  "breaking": false,
-  "confidence": 90,
-  "reasoning": "Code restructuring without adding features or fixing bugs = refactor (NOT refactoring)"
-}
-
-{
-  "type": "fix",
-  "scope": "parser",
-  "subject": "handle edge case in JSON parsing",
-  "breaking": false,
-  "confidence": 90
-}
-
-{
-  "type": "docs",
-  "subject": "update installation guide",
-  "breaking": false,
-  "confidence": 95
-}
-
-IMPORTANT - FORMAT DE RÉPONSE:
-- Un JSON Schema est fourni à l'API pour garantir la structure
-- Réponds avec un objet JSON valide contenant AU MINIMUM: type, subject, breaking, confidence
-- Ne pas omettre les champs obligatoires
-- Les champs optionnels peuvent être null ou omis
-- Le champ "type" DOIT être l'un des types disponibles SANS EXCEPTION
-
-INSTRUCTIONS D'ANALYSE:
-- Analyse le CONTEXTE des changements pour choisir le bon type parmi: ${availableTypes.join(', ')}
-- Sois précis dans le scope (identifie le module/composant affecté)
-- Le subject doit décrire CE QUI a changé, le body POURQUOI
-- La confidence doit être honnête (0-100)
-- Le reasoning explique ton raisonnement pour choisir type/scope
-
-⚠️⚠️⚠️ RAPPEL FINAL CRITIQUE ⚠️⚠️⚠️
-Le champ "type" doit être EXACTEMENT l'un de ces 11 mots (ni plus ni moins):
-${availableTypes.join(', ')}
-
-ATTENTION AUX ERREURS COURANTES:
-- ❌ "refactoring" → ✅ "refactor"
-- ❌ "feature" → ✅ "feat"
-- ❌ "bugfix" → ✅ "fix"
-- ❌ "documentation" → ✅ "docs"
-- ❌ "commit" → ✅ Choisis le bon type selon le changement
-
-N'utilise AUCUNE variation, forme longue, ou synonyme. EXACTEMENT ces 11 mots.`;
+  return systemPrompt;
 }
 
 /**
@@ -132,30 +45,50 @@ export function generateUserPrompt(
   diff: string,
   context: CommitContext,
 ): string {
-  const parts = [
-    '=== CONTEXTE ===',
-    `Branche: ${context.branch}`,
-    `Fichiers modifiés: ${context.files.join(', ')}`,
-  ];
+  const parts = ['<context>'];
+  parts.push(`  <branch>${context.branch}</branch>`);
+  parts.push(`  <files count="${context.files.length}">`);
+  context.files.forEach(file => {
+    parts.push(`    <file>${file}</file>`);
+  });
+  parts.push(`  </files>`);
 
   if (context.availableScopes && context.availableScopes.length > 0) {
-    parts.push(`Scopes suggérés: ${context.availableScopes.join(', ')}`);
+    parts.push(`  <suggested_scopes>`);
+    context.availableScopes.forEach(scope => {
+      parts.push(`    <scope>${scope}</scope>`);
+    });
+    parts.push(`  </suggested_scopes>`);
   }
+  parts.push('</context>');
 
   if (context.recentCommits && context.recentCommits.length > 0) {
     parts.push('');
-    parts.push('=== COMMITS RÉCENTS (pour contexte) ===');
-    context.recentCommits.slice(0, 5).forEach((commit, i) => {
-      parts.push(`${i + 1}. ${commit}`);
+    parts.push('<recent_commits>');
+    parts.push('  <!-- Exemples de style de commits récents dans ce projet -->');
+    context.recentCommits.slice(0, 5).forEach((commit) => {
+      parts.push(`  <commit>${commit}</commit>`);
     });
+    parts.push('</recent_commits>');
   }
 
   parts.push('');
-  parts.push('=== CHANGEMENTS (git diff) ===');
+  parts.push('<diff>');
+  parts.push('  <!-- Analyse CHAQUE fichier et TOUS les changements pour créer un message précis -->');
+  parts.push(`<![CDATA[
+`);
   parts.push(diff);
+  parts.push(`
+]]>`);
+  parts.push('</diff>');
   parts.push('');
   parts.push(
-    'Analyse ces changements et génère un message de commit conventionnel au format JSON comme spécifié dans les instructions système.',
+    'Analyse ATTENTIVEMENT ces changements:\n' +
+    '1. Examine TOUS les fichiers listés ci-dessus\n' +
+    '2. Comprends le CONTEXTE de chaque modification dans le diff\n' +
+    '3. Identifie le BUT principal de ces changements\n' +
+    '4. Génère un message de commit conventionnel PRÉCIS et DESCRIPTIF au format JSON comme spécifié.\n\n' +
+    'Le message doit refléter CE QUI a été changé et POURQUOI, pas seulement une description générique.',
   );
 
   return parts.join('\n');

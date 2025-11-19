@@ -31,6 +31,7 @@ describe('Integration: AI Commit Message Generation', () => {
         branch: 'main',
         recentCommits: ['feat: previous feature', 'fix: bug fix'],
       }),
+      getExistingScopes: vi.fn().mockResolvedValue(['api', 'auth']),
     } as any;
 
     container.registerInstance(ServiceIdentifiers.GitRepository, mockGitRepository);
