@@ -1,9 +1,10 @@
 import type { AIGeneratedCommit, AIConfig } from '../../types.js';
-import type { AIProvider, CommitContext } from './base.js';
+import type { CommitContext } from './base.js';
 import {
   ProviderNotAvailableError,
   GenerationError,
 } from './base.js';
+import { BaseAIProvider } from './BaseAIProvider.js';
 import {
   generateSystemPrompt,
   generateUserPrompt,
@@ -37,7 +38,7 @@ interface OllamaResponse {
 /**
  * Provider pour Ollama (LLM local)
  */
-export class OllamaProvider implements AIProvider {
+export class OllamaProvider extends BaseAIProvider {
   private baseUrl: string;
   private model: string;
   private timeout: number;
@@ -175,20 +176,4 @@ export class OllamaProvider implements AIProvider {
     }
   }
 
-  /**
-   * Valide la réponse de l'AI
-   */
-  private validateResponse(response: any): void {
-    if (!response.type || typeof response.type !== 'string') {
-      throw new Error('Réponse invalide: "type" manquant ou invalide');
-    }
-
-    if (!response.subject || typeof response.subject !== 'string') {
-      throw new Error('Réponse invalide: "subject" manquant ou invalide');
-    }
-
-    if (response.subject.length > 100) {
-      throw new Error('Réponse invalide: "subject" trop long (>100 chars)');
-    }
-  }
 }

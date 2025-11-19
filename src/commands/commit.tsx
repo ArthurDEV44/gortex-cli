@@ -6,6 +6,7 @@ import { InteractiveWorkflow } from '../components/InteractiveWorkflow.js';
 import { Brand } from '../components/Brand.js';
 import { ErrorMessage } from '../components/ErrorMessage.js';
 import { loadConfig } from '../utils/config.js';
+import { UI_DELAYS } from '../shared/constants/index.js';
 
 export async function commitCommand(): Promise<void> {
   try {
@@ -49,7 +50,7 @@ export async function commitCommand(): Promise<void> {
     // Show intro brand
     console.clear();
     const intro = render(<Brand variant="large" tagline={true} />);
-    await new Promise(resolve => setTimeout(resolve, 1500));
+    await new Promise(resolve => setTimeout(resolve, UI_DELAYS.INTRO));
     intro.unmount();
 
     // Lancer le workflow interactif avec onglets

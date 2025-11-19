@@ -1,5 +1,6 @@
 import simpleGit from 'simple-git';
 import type { CommitContext } from './providers/base.js';
+import { SIZE_LIMITS, GIT_LIMITS } from '../shared/constants/index.js';
 
 const git = simpleGit();
 
@@ -29,13 +30,13 @@ export async function analyzeStagedChanges(): Promise<{
   }
 
   // Limite la taille du diff (pour éviter de dépasser les limites des modèles)
-  const truncatedDiff = truncateDiff(diff, 8000);
+  const truncatedDiff = truncateDiff(diff, SIZE_LIMITS.MAX_DIFF_SIZE);
 
   // Récupère la branche courante
   const branch = await git.revparse(['--abbrev-ref', 'HEAD']);
 
   // Récupère quelques commits récents pour contexte
-  const recentCommitsLog = await git.log({ maxCount: 5 });
+  const recentCommitsLog = await git.log({ maxCount: GIT_LIMITS.RECENT_COMMITS_COUNT });
   const recentCommits = recentCommitsLog.all.map((commit) => commit.message);
 
   return {

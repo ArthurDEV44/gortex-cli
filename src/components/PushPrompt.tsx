@@ -4,6 +4,7 @@ import Spinner from 'ink-spinner';
 import { Confirm } from '../ui/index.js';
 import { hasRemote, getDefaultRemote, hasUpstream, pushToRemote, getRemoteUrl } from '../utils/git.js';
 import { icons } from '../theme/colors.js';
+import { UI_DELAYS } from '../shared/constants/index.js';
 
 interface PushPromptProps {
   branch: string;
@@ -48,7 +49,7 @@ export const PushPrompt: React.FC<PushPromptProps> = ({ branch, onComplete }) =>
       setStep('success');
       setTimeout(() => {
         onComplete();
-      }, 1500);
+      }, UI_DELAYS.INTRO);
     } catch (err: any) {
       setError(err.message);
       setStep('error');

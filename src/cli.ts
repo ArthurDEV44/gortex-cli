@@ -4,13 +4,21 @@ import { commitCommand } from './commands/commit.js';
 import { installHooks, uninstallHooks } from './commands/hooks.js';
 import { statsCommand } from './commands/stats.js';
 import { aiSuggestCommand } from './commands/ai-suggest.js';
+import { readFileSync } from 'fs';
+import { fileURLToPath } from 'url';
+import { dirname, join } from 'path';
+
+// Read version from package.json
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+const packageJson = JSON.parse(readFileSync(join(__dirname, '../package.json'), 'utf-8'));
 
 const program = new Command();
 
 program
   .name('gortex')
   .description('CLI interactif pour créer des commits conventionnels')
-  .version('1.1.0');
+  .version(packageJson.version);
 
 // Commande par défaut (commit interactif)
 program
