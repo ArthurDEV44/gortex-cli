@@ -116,7 +116,8 @@ export class OllamaProvider extends BaseAIProvider {
         properties: {
           type: {
             type: 'string',
-            description: 'The commit type (feat, fix, docs, etc.)',
+            enum: context.availableTypes,
+            description: `The commit type - MUST be exactly one of: ${context.availableTypes.join(', ')}. NO variations like "refactoring" (use "refactor"), "feature" (use "feat"), etc.`,
           },
           scope: {
             type: 'string',
