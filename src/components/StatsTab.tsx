@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Box, Text } from 'ink';
 import Spinner from 'ink-spinner';
-import { analyzeCommitStats } from '../utils/git.js';
+import { useCommitHistory } from '../infrastructure/di/hooks.js';
 import { colors, icons, getCommitIcon } from '../theme/colors.js';
 
 interface StatsData {
@@ -21,6 +21,8 @@ function getProgressBar(percentage: number, length: number = 30): string {
 // Supprimé - on utilise maintenant getCommitIcon() du thème
 
 export const StatsTab: React.FC = () => {
+  const analyzeCommitHistoryUseCase = useCommitHistory();
+
   const [stats, setStats] = useState<StatsData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -29,8 +31,24 @@ export const StatsTab: React.FC = () => {
     const loadStats = async () => {
       try {
         setLoading(true);
-        const data = await analyzeCommitStats(100);
-        setStats(data);
+
+        // Use clean architecture use case to analyze commit history
+        const result = await analyzeCommitHistoryUseCase.execute({ maxCount: 100 });
+
+        if (!result.success || !result.stats) {
+          setError(result.error || 'Failed to load stats');
+          return;
+        }
+
+        // Map DTO to component format
+        const statsDTO = result.stats;
+        setStats({
+          total: statsDTO.totalCommits,
+          conventional: statsDTO.conventionalCommits,
+          nonConventional: statsDTO.totalCommits - statsDTO.conventionalCommits,
+          percentage: statsDTO.conventionalPercentage,
+          typeBreakdown: statsDTO.typeBreakdown,
+        });
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to load stats');
       } finally {

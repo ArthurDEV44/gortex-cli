@@ -52,6 +52,56 @@ export class CommitMessageMapper {
   }
 
   /**
+   * Parses a formatted conventional commit message string to a DTO
+   * Format: type(scope): subject\n\nbody\n\nBREAKING CHANGE: description
+   */
+  static fromFormattedString(formattedMessage: string): CommitMessageDTO {
+    const lines = formattedMessage.split('\n');
+    const firstLine = lines[0] || '';
+
+    // Parse first line: type(scope): subject or type: subject
+    const match = firstLine.match(/^(\w+)(?:\(([^)]+)\))?: (.+)$/);
+    if (!match) {
+      // If parsing fails, treat entire message as subject with type 'chore'
+      return {
+        type: 'chore',
+        subject: formattedMessage.trim() || 'commit',
+      };
+    }
+
+    const [, type, scope, subject] = match;
+
+    // Extract body (lines between first line and BREAKING CHANGE if present)
+    let body: string | undefined;
+    let breaking = false;
+    let breakingChangeDescription: string | undefined;
+
+    if (lines.length > 1) {
+      const restOfMessage = lines.slice(1).join('\n');
+      const breakingMatch = restOfMessage.match(/BREAKING CHANGE:\s*(.+)/s);
+
+      if (breakingMatch) {
+        breaking = true;
+        breakingChangeDescription = breakingMatch[1].trim();
+        // Body is everything before BREAKING CHANGE
+        const bodyPart = restOfMessage.split('BREAKING CHANGE:')[0].trim();
+        body = bodyPart || undefined;
+      } else {
+        body = restOfMessage.trim() || undefined;
+      }
+    }
+
+    return {
+      type,
+      subject,
+      scope: scope || undefined,
+      body,
+      breaking,
+      breakingChangeDescription,
+    };
+  }
+
+  /**
    * Validates a DTO before conversion
    */
   static validateDTO(dto: CommitMessageDTO): { valid: boolean; errors: string[] } {

@@ -3,12 +3,19 @@ import { Box, Text } from 'ink';
 import Spinner from 'ink-spinner';
 import Gradient from 'ink-gradient';
 import { Confirm } from '../ui/Confirm.js';
-import type { AIProvider as AIProviderType, AIGeneratedCommit, CommitConfig } from '../types.js';
-import { AICommitService, analyzeStagedChanges } from '../ai/index.js';
-import { formatCommitMessage } from '../utils/validate.js';
+import type { AIProvider as AIProviderType, CommitConfig } from '../types.js';
+import { useGenerateAICommit } from '../infrastructure/di/hooks.js';
+import { AIProviderFactory } from '../infrastructure/factories/AIProviderFactory.js';
+import type { CommitMessageDTO } from '../application/dto/CommitMessageDTO.js';
 import { icons, commitIcons } from '../theme/colors.js';
 
-type Step = 'analyzing' | 'generating' | 'preview' | 'error';
+type Step = 'generating' | 'preview' | 'error';
+
+interface GeneratedSuggestion {
+  commit: CommitMessageDTO;
+  formattedMessage: string;
+  confidence?: number;
+}
 
 interface Props {
   provider: AIProviderType;
@@ -17,9 +24,11 @@ interface Props {
 }
 
 export const AICommitGenerator: React.FC<Props> = ({ provider, config, onComplete }) => {
-  const [step, setStep] = useState<Step>('analyzing');
+  const generateAICommitUseCase = useGenerateAICommit();
+
+  const [step, setStep] = useState<Step>('generating');
   const [error, setError] = useState<string | null>(null);
-  const [suggestion, setSuggestion] = useState<AIGeneratedCommit | null>(null);
+  const [suggestion, setSuggestion] = useState<GeneratedSuggestion | null>(null);
   const [providerName, setProviderName] = useState<string>('');
 
   // Start generation on mount
@@ -29,25 +38,29 @@ export const AICommitGenerator: React.FC<Props> = ({ provider, config, onComplet
 
   async function generate() {
     try {
-      // Analyze changes
-      setStep('analyzing');
-      await analyzeStagedChanges();
-
-      // Generate with AI
       setStep('generating');
-      const aiConfig = {
-        ...config.ai,
-        provider,
-        enabled: true,
-      };
 
-      const service = new AICommitService({ ...config, ai: aiConfig });
-      setProviderName(service.getProviderName());
+      // Create AI provider instance using factory
+      const aiProvider = AIProviderFactory.create(provider as any, config.ai);
+      setProviderName(aiProvider.getName());
 
-      const { diff, context } = await analyzeStagedChanges();
-      const result = await service.generateCommitMessage(diff, context);
+      // Generate commit message using clean architecture use case
+      const result = await generateAICommitUseCase.execute({
+        provider: aiProvider,
+        includeScope: true,
+      });
 
-      setSuggestion(result);
+      if (!result.success || !result.commit) {
+        setError(result.error || 'AI generation failed');
+        setStep('error');
+        return;
+      }
+
+      setSuggestion({
+        commit: result.commit,
+        formattedMessage: result.formattedMessage!,
+        confidence: result.confidence,
+      });
       setStep('preview');
     } catch (err) {
       setError(err instanceof Error ? err.message : String(err));
@@ -63,37 +76,17 @@ export const AICommitGenerator: React.FC<Props> = ({ provider, config, onComplet
     }
 
     if (suggestion) {
-      const message = formatCommitMessage(
-        suggestion.type,
-        suggestion.scope,
-        suggestion.subject,
-        suggestion.body,
-        suggestion.breaking,
-        suggestion.breakingDescription,
-      );
-      onComplete(message, false);
+      onComplete(suggestion.formattedMessage, false);
     }
   };
 
   // Render based on step
-  if (step === 'analyzing') {
-    return (
-      <Box flexDirection="column" padding={1}>
-        <Box>
-          <Text color="cyan">
-            <Spinner type="dots" /> Analyse des changements stagés...
-          </Text>
-        </Box>
-      </Box>
-    );
-  }
-
   if (step === 'generating') {
     return (
       <Box flexDirection="column" padding={1}>
         <Box>
           <Text color="magenta">
-            <Spinner type="dots" /> Génération du message avec {providerName}...
+            <Spinner type="dots" /> Génération du message avec {providerName || 'AI'}...
           </Text>
         </Box>
         <Box marginTop={1}>
@@ -131,15 +124,6 @@ export const AICommitGenerator: React.FC<Props> = ({ provider, config, onComplet
   }
 
   if (step === 'preview' && suggestion) {
-    const commitMessage = formatCommitMessage(
-      suggestion.type,
-      suggestion.scope,
-      suggestion.subject,
-      suggestion.body,
-      suggestion.breaking,
-      suggestion.breakingDescription,
-    );
-
     return (
       <Box flexDirection="column" padding={1}>
         <Box marginBottom={1}>
@@ -164,19 +148,10 @@ export const AICommitGenerator: React.FC<Props> = ({ provider, config, onComplet
             padding={1}
             flexDirection="column"
           >
-            {commitMessage.split('\n').map((line, i) => (
+            {suggestion.formattedMessage.split('\n').map((line, i) => (
               <Text key={i}>{line || ' '}</Text>
             ))}
           </Box>
-
-          {suggestion.reasoning && (
-            <Box flexDirection="column" marginTop={1}>
-              <Text dimColor>Raisonnement:</Text>
-              <Box paddingLeft={2} marginTop={1}>
-                <Text italic>{suggestion.reasoning}</Text>
-              </Box>
-            </Box>
-          )}
 
           <Box marginTop={1}>
             <Text dimColor>

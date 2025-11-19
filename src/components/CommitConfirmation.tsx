@@ -3,7 +3,8 @@ import { Box, Text } from 'ink';
 import Gradient from 'ink-gradient';
 import { Confirm } from '../ui/index.js';
 import { LoadingSpinner } from './LoadingSpinner.js';
-import { stageFiles, createCommit } from '../utils/git.js';
+import { useStageFiles, useCreateCommit } from '../infrastructure/di/hooks.js';
+import { CommitMessageMapper } from '../application/mappers/CommitMessageMapper.js';
 import { icons } from '../theme/colors.js';
 
 interface CommitConfirmationProps {
@@ -17,6 +18,9 @@ export const CommitConfirmation: React.FC<CommitConfirmationProps> = ({
   files,
   onComplete,
 }) => {
+  const stageFilesUseCase = useStageFiles();
+  const createCommitUseCase = useCreateCommit();
+
   const [committing, setCommitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -29,8 +33,25 @@ export const CommitConfirmation: React.FC<CommitConfirmationProps> = ({
     setCommitting(true);
 
     try {
-      await stageFiles(files);
-      await createCommit(message);
+      // Stage files using clean architecture use case
+      const stageResult = await stageFilesUseCase.execute({ files });
+      if (!stageResult.success) {
+        setError(stageResult.error || 'Failed to stage files');
+        setCommitting(false);
+        return;
+      }
+
+      // Parse formatted message string to DTO
+      const messageDTO = CommitMessageMapper.fromFormattedString(message);
+
+      // Create commit using clean architecture use case
+      const commitResult = await createCommitUseCase.execute({ message: messageDTO });
+      if (!commitResult.success) {
+        setError(commitResult.error || 'Failed to create commit');
+        setCommitting(false);
+        return;
+      }
+
       onComplete(true);
     } catch (err: any) {
       setError(err.message);

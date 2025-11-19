@@ -55,7 +55,7 @@
 
 ## 🚧 PHASES RESTANTES (6 phases)
 
-### Phase 8: Migration Progressive des Composants ✅ 2/7 COMPLÉTÉS
+### Phase 8: Migration Progressive des Composants ✅ 5/7 COMPLÉTÉS
 **Objectif:** Migrer les composants existants pour utiliser DI et use cases
 
 **Fichiers migrés:** ✅
@@ -69,22 +69,34 @@
    - ✅ Conversion DTO vers format interne
    - ✅ Gestion d'erreurs ajoutée
 
-**Fichiers restants à migrer:**
-3. `src/components/CommitConfirmation.tsx` (EN ATTENTE)
-   - Utiliser `useCreateCommit()` pour `createCommit()`
-   - Note: Nécessite parsing du message string vers DTO ou nouvelle méthode
+3. ✅ `src/components/CommitConfirmation.tsx` (MIGRÉ)
+   - ✅ Remplacé `stageFiles` et `createCommit` par hooks DI
+   - ✅ Ajouté `CommitMessageMapper.fromFormattedString()` pour parser messages
+   - ✅ Utilise `useStageFiles()` et `useCreateCommit()`
+   - ✅ Gestion d'erreurs robuste avec success/error pattern
 
-4. `src/components/PushPrompt.tsx`
-   - Utiliser `useRepositoryStatus()` pour hasRemote, hasUpstream, etc.
+4. ✅ `src/components/AICommitGenerator.tsx` (MIGRÉ)
+   - ✅ Remplacé `AICommitService` et `analyzeStagedChanges` par `useGenerateAICommit()`
+   - ✅ Utilise `AIProviderFactory` pour créer provider instance
+   - ✅ Mapping vers CommitMessageDTO et formatted message
+   - ✅ Gestion d'erreurs avec success/error pattern
 
-5. `src/components/BranchSelector.tsx`
-   - Utiliser `useRepositoryStatus()` pour getCurrentBranch, etc.
+5. ✅ `src/components/StatsTab.tsx` (MIGRÉ)
+   - ✅ Remplacé `analyzeCommitStats` par `useCommitHistory()`
+   - ✅ Mapping RepositoryStatsDTO vers format interne
+   - ✅ Gestion d'erreurs ajoutée
 
-6. `src/components/AICommitGenerator.tsx`
-   - Utiliser `useGenerateAICommit()` au lieu d'appels directs
+**Fichiers restants (BLOQUÉS - nécessitent nouveaux use cases):**
+6. `src/components/BranchSelector.tsx` (BLOQUÉ)
+   - Note: Nécessite BranchOperationsUseCase pour getAllBranches, checkoutBranch, createAndCheckoutBranch, branchExists
+   - Opérations disponibles dans IGitRepository mais pas encore dans use cases
 
-7. `src/components/StatsTab.tsx`
-   - Utiliser `useCommitHistory()` pour analyzeCommitStats
+7. `src/components/PushPrompt.tsx` (BLOQUÉ)
+   - Note: Nécessite PushOperationsUseCase pour hasRemote, getRemoteUrl, pushToRemote, hasUpstream, getDefaultRemote
+   - Opérations disponibles dans IGitRepository mais pas encore dans use cases
+
+**Améliorations apportées:**
+- ✅ Ajouté `CommitMessageMapper.fromFormattedString()` pour parser les messages conventionnels
 
 **Approche:**
 - Wrapper chaque component parent avec `<DIProvider>`
