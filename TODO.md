@@ -1,6 +1,6 @@
 # TODO - GORTEX CLI Clean Architecture Refactoring
 
-## 📊 État Actuel: 8/13 Phases Complétées (325+ tests, Phase 8 partiellement complète)
+## 📊 État Actuel: 9/13 Phases Complétées (325+ tests, ALL Components Migrated!)
 
 ### ✅ PHASES COMPLÉTÉES
 
@@ -51,38 +51,33 @@
 - ✅ `commit-refactored.tsx` - Exemple de command refactoré
 - ✅ `docs/MIGRATION_GUIDE.md` - Guide de migration complet
 
-#### Phase 8: Migration Progressive des Composants (5/7 ✅ PARTIELLEMENT COMPLÉTÉE)
+#### Phase 8: Migration Progressive des Composants (7/7 ✅ COMPLÉTÉE)
 **Localisation:** `src/components/`
 - ✅ `CommitTab.tsx` - Utilise `useStageFiles()`
 - ✅ `FileSelector.tsx` - Utilise `useRepositoryStatus()`
 - ✅ `CommitConfirmation.tsx` - Utilise `useStageFiles()` + `useCreateCommit()`
 - ✅ `AICommitGenerator.tsx` - Utilise `useGenerateAICommit()`
 - ✅ `StatsTab.tsx` - Utilise `useCommitHistory()`
-- ⏸️ `BranchSelector.tsx` - EN ATTENTE (nécessite nouveau use case)
-- ⏸️ `PushPrompt.tsx` - EN ATTENTE (nécessite nouveau use case)
+- ✅ `BranchSelector.tsx` - Utilise `useBranchOperations()`
+- ✅ `PushPrompt.tsx` - Utilise `usePushOperations()`
 
 **Améliorations:**
 - ✅ Ajouté `CommitMessageMapper.fromFormattedString()` pour parser conventional commits
+- ✅ Créé `BranchOperationsUseCase` et `PushOperationsUseCase`
+- ✅ Ajouté méthodes manquantes à `IGitRepository` (checkoutBranch, createAndCheckoutBranch, getRemoteUrl)
 
-**Note:** Les 2 composants restants seront migrés après création des use cases manquants (Phase 8.5)
+#### Phase 8.5: Use Cases Additionnels (✅ COMPLÉTÉE)
+**Localisation:** `src/application/use-cases/`, `src/infrastructure/`
+- ✅ `BranchOperationsUseCase` - Gestion complète des branches (getCurrentBranch, getAllBranches, checkoutBranch, createBranch, branchExists)
+- ✅ `PushOperationsUseCase` - Gestion des opérations remote/push (checkRemote, pushToRemote)
+- ✅ Hooks React: `useBranchOperations()`, `usePushOperations()`
+- ✅ Enregistrement dans DI container et CompositionRoot
+- ✅ Implémentation dans `GitRepositoryImpl`
+- ✅ Extension de `IGitRepository` avec nouvelles méthodes
 
 ---
 
-## 🚧 PHASES RESTANTES (5 phases)
-
-### Phase 8.5: Use Cases Additionnels (OPTIONNEL - peut être fait plus tard)
-**Objectif:** Créer use cases manquants pour finaliser Phase 8
-
-**Use cases à créer:**
-1. `BranchOperationsUseCase`
-   - Méthodes: getCurrentBranch, getAllBranches, checkoutBranch, createBranch, branchExists
-   - Nécessaire pour: BranchSelector.tsx
-
-2. `PushOperationsUseCase`
-   - Méthodes: hasRemote, getRemoteUrl, pushToRemote, hasUpstream, getDefaultRemote
-   - Nécessaire pour: PushPrompt.tsx
-
-**Note:** Ces use cases peuvent être créés après Phase 9-10 si besoin
+## 🚧 PHASES RESTANTES (4 phases)
 
 ### Phase 9: Migration des Commands CLI
 **Objectif:** Migrer toutes les commandes pour utiliser DI

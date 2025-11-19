@@ -166,9 +166,26 @@ export class GitRepositoryImpl implements IGitRepository {
     return branches.includes(branchName);
   }
 
+  async checkoutBranch(branchName: string): Promise<void> {
+    await this.git.checkout(branchName);
+  }
+
+  async createAndCheckoutBranch(branchName: string): Promise<void> {
+    await this.git.checkoutLocalBranch(branchName);
+  }
+
   async hasRemote(): Promise<boolean> {
     const remotes = await this.git.getRemotes();
     return remotes.length > 0;
+  }
+
+  async getRemoteUrl(remoteName: string): Promise<string> {
+    const remotes = await this.git.getRemotes(true);
+    const remote = remotes.find(r => r.name === remoteName);
+    if (!remote) {
+      throw new Error(`Remote "${remoteName}" not found`);
+    }
+    return remote.refs.fetch || remote.refs.push || '';
   }
 
   async getDefaultRemote(): Promise<string> {

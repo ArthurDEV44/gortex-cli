@@ -89,9 +89,24 @@ export interface IGitRepository {
   branchExists(branchName: string): Promise<boolean>;
 
   /**
+   * Checks out an existing branch
+   */
+  checkoutBranch(branchName: string): Promise<void>;
+
+  /**
+   * Creates a new branch and checks it out
+   */
+  createAndCheckoutBranch(branchName: string): Promise<void>;
+
+  /**
    * Checks if a remote exists
    */
   hasRemote(): Promise<boolean>;
+
+  /**
+   * Gets the URL of a remote
+   */
+  getRemoteUrl(remoteName: string): Promise<string>;
 
   /**
    * Gets the default remote name

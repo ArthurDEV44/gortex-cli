@@ -8,3 +8,5 @@ export * from './GenerateAICommitUseCase.js';
 export * from './GetRepositoryStatusUseCase.js';
 export * from './AnalyzeCommitHistoryUseCase.js';
 export * from './StageFilesUseCase.js';
+export * from './BranchOperationsUseCase.js';
+export * from './PushOperationsUseCase.js';

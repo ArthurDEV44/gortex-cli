@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Box, Text } from 'ink';
 import Spinner from 'ink-spinner';
 import { Confirm } from '../ui/index.js';
-import { hasRemote, getDefaultRemote, hasUpstream, pushToRemote, getRemoteUrl } from '../utils/git.js';
+import { usePushOperations } from '../infrastructure/di/hooks.js';
 import { icons } from '../theme/colors.js';
 import { UI_DELAYS } from '../shared/constants/index.js';
 
@@ -14,22 +14,29 @@ interface PushPromptProps {
 type PushStep = 'checking' | 'no-remote' | 'confirm' | 'pushing' | 'success' | 'error';
 
 export const PushPrompt: React.FC<PushPromptProps> = ({ branch, onComplete }) => {
+  const pushOperationsUseCase = usePushOperations();
+
   const [step, setStep] = useState<PushStep>('checking');
   const [remoteUrl, setRemoteUrl] = useState<string>('');
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const checkRemote = async () => {
-      const exists = await hasRemote();
+      // Use clean architecture use case to check remote
+      const result = await pushOperationsUseCase.checkRemote();
 
-      if (!exists) {
+      if (!result.success) {
+        setError(result.error || 'Failed to check remote');
+        setStep('error');
+        return;
+      }
+
+      if (!result.hasRemote) {
         setStep('no-remote');
         return;
       }
 
-      const remote = await getDefaultRemote();
-      const url = await getRemoteUrl(remote);
-      setRemoteUrl(url || '');
+      setRemoteUrl(result.remoteUrl || '');
       setStep('confirm');
     };
     checkRemote();
@@ -40,11 +47,14 @@ export const PushPrompt: React.FC<PushPromptProps> = ({ branch, onComplete }) =>
     setStep('pushing');
 
     try {
-      const remote = await getDefaultRemote();
-      const upstream = await hasUpstream();
+      // Use clean architecture use case to push to remote
+      const result = await pushOperationsUseCase.pushToRemote({ branch });
 
-      // Push normal (utilise les credentials Git de l'utilisateur)
-      await pushToRemote(remote, branch, !upstream);
+      if (!result.success) {
+        setError(result.error || 'Failed to push to remote');
+        setStep('error');
+        return;
+      }
 
       setStep('success');
       setTimeout(() => {

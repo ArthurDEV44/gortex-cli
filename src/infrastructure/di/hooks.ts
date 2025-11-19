@@ -9,6 +9,8 @@ import type { GenerateAICommitUseCase } from '../../application/use-cases/Genera
 import type { GetRepositoryStatusUseCase } from '../../application/use-cases/GetRepositoryStatusUseCase.js';
 import type { AnalyzeCommitHistoryUseCase } from '../../application/use-cases/AnalyzeCommitHistoryUseCase.js';
 import type { StageFilesUseCase } from '../../application/use-cases/StageFilesUseCase.js';
+import type { BranchOperationsUseCase } from '../../application/use-cases/BranchOperationsUseCase.js';
+import type { PushOperationsUseCase } from '../../application/use-cases/PushOperationsUseCase.js';
 
 /**
  * Hook to access CreateCommitUseCase
@@ -43,4 +45,18 @@ export function useCommitHistory(): AnalyzeCommitHistoryUseCase {
  */
 export function useStageFiles(): StageFilesUseCase {
   return useUseCase<StageFilesUseCase>('stageFilesUseCase');
+}
+
+/**
+ * Hook to access BranchOperationsUseCase
+ */
+export function useBranchOperations(): BranchOperationsUseCase {
+  return useUseCase<BranchOperationsUseCase>('branchOperationsUseCase');
+}
+
+/**
+ * Hook to access PushOperationsUseCase
+ */
+export function usePushOperations(): PushOperationsUseCase {
+  return useUseCase<PushOperationsUseCase>('pushOperationsUseCase');
 }

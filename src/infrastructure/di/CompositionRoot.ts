@@ -10,6 +10,8 @@ import { GenerateAICommitUseCase } from '../../application/use-cases/GenerateAIC
 import { GetRepositoryStatusUseCase } from '../../application/use-cases/GetRepositoryStatusUseCase.js';
 import { AnalyzeCommitHistoryUseCase } from '../../application/use-cases/AnalyzeCommitHistoryUseCase.js';
 import { StageFilesUseCase } from '../../application/use-cases/StageFilesUseCase.js';
+import { BranchOperationsUseCase } from '../../application/use-cases/BranchOperationsUseCase.js';
+import { PushOperationsUseCase } from '../../application/use-cases/PushOperationsUseCase.js';
 
 /**
  * Application services accessible via composition root
@@ -21,6 +23,8 @@ export interface ApplicationServices {
   getRepositoryStatusUseCase: GetRepositoryStatusUseCase;
   analyzeCommitHistoryUseCase: AnalyzeCommitHistoryUseCase;
   stageFilesUseCase: StageFilesUseCase;
+  branchOperationsUseCase: BranchOperationsUseCase;
+  pushOperationsUseCase: PushOperationsUseCase;
 }
 
 /**
@@ -69,6 +73,12 @@ export class CompositionRoot {
         ),
         stageFilesUseCase: this.container.resolve<StageFilesUseCase>(
           ServiceIdentifiers.StageFilesUseCase,
+        ),
+        branchOperationsUseCase: this.container.resolve<BranchOperationsUseCase>(
+          ServiceIdentifiers.BranchOperationsUseCase,
+        ),
+        pushOperationsUseCase: this.container.resolve<PushOperationsUseCase>(
+          ServiceIdentifiers.PushOperationsUseCase,
         ),
       };
     }

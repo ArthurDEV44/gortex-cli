@@ -17,6 +17,8 @@ import { GenerateAICommitUseCase } from '../../application/use-cases/GenerateAIC
 import { GetRepositoryStatusUseCase } from '../../application/use-cases/GetRepositoryStatusUseCase.js';
 import { AnalyzeCommitHistoryUseCase } from '../../application/use-cases/AnalyzeCommitHistoryUseCase.js';
 import { StageFilesUseCase } from '../../application/use-cases/StageFilesUseCase.js';
+import { BranchOperationsUseCase } from '../../application/use-cases/BranchOperationsUseCase.js';
+import { PushOperationsUseCase } from '../../application/use-cases/PushOperationsUseCase.js';
 
 /**
  * Service identifiers for dependency injection
@@ -34,6 +36,8 @@ export const ServiceIdentifiers = {
   GetRepositoryStatusUseCase: 'GetRepositoryStatusUseCase',
   AnalyzeCommitHistoryUseCase: 'AnalyzeCommitHistoryUseCase',
   StageFilesUseCase: 'StageFilesUseCase',
+  BranchOperationsUseCase: 'BranchOperationsUseCase',
+  PushOperationsUseCase: 'PushOperationsUseCase',
 
   // Configuration
   AIConfig: 'AIConfig',
@@ -177,6 +181,16 @@ export class ServiceRegistry {
     // StageFilesUseCase
     container.registerTransient(ServiceIdentifiers.StageFilesUseCase, c =>
       new StageFilesUseCase(c.resolve<IGitRepository>(ServiceIdentifiers.GitRepository)),
+    );
+
+    // BranchOperationsUseCase
+    container.registerTransient(ServiceIdentifiers.BranchOperationsUseCase, c =>
+      new BranchOperationsUseCase(c.resolve<IGitRepository>(ServiceIdentifiers.GitRepository)),
+    );
+
+    // PushOperationsUseCase
+    container.registerTransient(ServiceIdentifiers.PushOperationsUseCase, c =>
+      new PushOperationsUseCase(c.resolve<IGitRepository>(ServiceIdentifiers.GitRepository)),
     );
   }
 
