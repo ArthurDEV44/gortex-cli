@@ -4,6 +4,8 @@ All notable changes to Gortex CLI will be documented in this file.
 
 ## [Unreleased]
 
+## [2.0.2] - 2025-12-20
+
 ### 🐛 Bug Fixes
 
 #### AI Commit Type Validation (IMPORTANT)
@@ -31,6 +33,25 @@ All notable changes to Gortex CLI will be documented in this file.
   - `src/ai/providers/mistral.ts` - Utilisation de la nouvelle validation avec types disponibles
   - `src/ai/providers/openai.ts` - Utilisation de la nouvelle validation avec types disponibles
 - **Documentation**: See `docs/BUGFIX_AI_TYPE_VARIATIONS.md` for complete analysis
+
+### 🔧 Technical Improvements
+
+#### Validation Renforcée des Réponses IA
+- **Amélioration**: Validation anticipée du type de commit avant la création de l'entité domaine
+- **Bénéfice**: Détection précoce des erreurs, meilleure gestion des cas limites
+- **Implémentation**: Méthode `validateResponse()` dans `BaseAIProvider` avec vérification stricte contre les types disponibles
+
+#### JSON Schema pour Ollama
+- **Amélioration**: Utilisation de JSON Schema avec enum strict pour forcer les valeurs exactes
+- **Bénéfice**: Contrainte au niveau du schéma, réduction drastique des erreurs de type
+- **Implémentation**: Format JSON Schema dans les requêtes Ollama avec enum pour le champ `type`
+
+#### Parsing Robuste des Réponses
+- **Amélioration**: Extraction améliorée du JSON depuis les réponses IA (gestion des markdown, texte supplémentaire)
+- **Bénéfice**: Meilleure tolérance aux variations de format des réponses IA
+- **Implémentation**: Méthode `extractJSON()` et `parseJSON()` dans `BaseAIProvider`
+
+---
 
 ## [2.0.1] - 2025-11-19
 
