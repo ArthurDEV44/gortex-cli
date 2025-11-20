@@ -5,12 +5,6 @@ import type { CommitContext } from "../providers/base.js";
  * Génère le prompt système pour l'AI
  */
 export function generateSystemPrompt(availableTypes: string[]): string {
-  console.log(
-    "DEBUG: availableTypes in generateSystemPrompt",
-    typeof availableTypes,
-    availableTypes,
-  );
-
   const systemPrompt = `Tu es un assistant expert en Git et Conventional Commits.
 Ta tâche est de générer un message de commit au format Conventional Commits.
 
