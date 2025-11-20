@@ -3,15 +3,19 @@
  * Application bootstrap and dependency composition
  */
 
-import { DIContainer } from './DIContainer.js';
-import { ServiceRegistry, ServiceRegistrationOptions, ServiceIdentifiers } from './ServiceRegistry.js';
-import { CreateCommitUseCase } from '../../application/use-cases/CreateCommitUseCase.js';
-import { GenerateAICommitUseCase } from '../../application/use-cases/GenerateAICommitUseCase.js';
-import { GetRepositoryStatusUseCase } from '../../application/use-cases/GetRepositoryStatusUseCase.js';
-import { AnalyzeCommitHistoryUseCase } from '../../application/use-cases/AnalyzeCommitHistoryUseCase.js';
-import { StageFilesUseCase } from '../../application/use-cases/StageFilesUseCase.js';
-import { BranchOperationsUseCase } from '../../application/use-cases/BranchOperationsUseCase.js';
-import { PushOperationsUseCase } from '../../application/use-cases/PushOperationsUseCase.js';
+import type { AnalyzeCommitHistoryUseCase } from "../../application/use-cases/AnalyzeCommitHistoryUseCase.js";
+import type { BranchOperationsUseCase } from "../../application/use-cases/BranchOperationsUseCase.js";
+import type { CreateCommitUseCase } from "../../application/use-cases/CreateCommitUseCase.js";
+import type { GenerateAICommitUseCase } from "../../application/use-cases/GenerateAICommitUseCase.js";
+import type { GetRepositoryStatusUseCase } from "../../application/use-cases/GetRepositoryStatusUseCase.js";
+import type { PushOperationsUseCase } from "../../application/use-cases/PushOperationsUseCase.js";
+import type { StageFilesUseCase } from "../../application/use-cases/StageFilesUseCase.js";
+import { DIContainer } from "./DIContainer.js";
+import {
+  ServiceIdentifiers,
+  type ServiceRegistrationOptions,
+  ServiceRegistry,
+} from "./ServiceRegistry.js";
 
 /**
  * Application services accessible via composition root
@@ -62,21 +66,25 @@ export class CompositionRoot {
         createCommitUseCase: this.container.resolve<CreateCommitUseCase>(
           ServiceIdentifiers.CreateCommitUseCase,
         ),
-        generateAICommitUseCase: this.container.resolve<GenerateAICommitUseCase>(
-          ServiceIdentifiers.GenerateAICommitUseCase,
-        ),
-        getRepositoryStatusUseCase: this.container.resolve<GetRepositoryStatusUseCase>(
-          ServiceIdentifiers.GetRepositoryStatusUseCase,
-        ),
-        analyzeCommitHistoryUseCase: this.container.resolve<AnalyzeCommitHistoryUseCase>(
-          ServiceIdentifiers.AnalyzeCommitHistoryUseCase,
-        ),
+        generateAICommitUseCase:
+          this.container.resolve<GenerateAICommitUseCase>(
+            ServiceIdentifiers.GenerateAICommitUseCase,
+          ),
+        getRepositoryStatusUseCase:
+          this.container.resolve<GetRepositoryStatusUseCase>(
+            ServiceIdentifiers.GetRepositoryStatusUseCase,
+          ),
+        analyzeCommitHistoryUseCase:
+          this.container.resolve<AnalyzeCommitHistoryUseCase>(
+            ServiceIdentifiers.AnalyzeCommitHistoryUseCase,
+          ),
         stageFilesUseCase: this.container.resolve<StageFilesUseCase>(
           ServiceIdentifiers.StageFilesUseCase,
         ),
-        branchOperationsUseCase: this.container.resolve<BranchOperationsUseCase>(
-          ServiceIdentifiers.BranchOperationsUseCase,
-        ),
+        branchOperationsUseCase:
+          this.container.resolve<BranchOperationsUseCase>(
+            ServiceIdentifiers.BranchOperationsUseCase,
+          ),
         pushOperationsUseCase: this.container.resolve<PushOperationsUseCase>(
           ServiceIdentifiers.PushOperationsUseCase,
         ),

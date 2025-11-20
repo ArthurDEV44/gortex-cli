@@ -3,7 +3,7 @@
  * Immutable and validated on creation
  */
 
-import { getCommitTypeValues } from '../../shared/constants/commit-types.js';
+import { getCommitTypeValues } from "../../shared/constants/commit-types.js";
 
 export class CommitType {
   private constructor(private readonly value: string) {
@@ -19,7 +19,7 @@ export class CommitType {
 
     if (!validTypes.includes(type)) {
       throw new Error(
-        `Invalid commit type: "${type}". Must be one of: ${validTypes.join(', ')}`
+        `Invalid commit type: "${type}". Must be one of: ${validTypes.join(", ")}`,
       );
     }
 

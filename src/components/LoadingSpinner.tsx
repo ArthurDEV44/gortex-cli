@@ -1,18 +1,22 @@
-import React from 'react';
-import { Box, Text } from 'ink';
-import Spinner from 'ink-spinner';
-import Gradient from 'ink-gradient';
+import { Box, Text } from "ink";
+import Gradient from "ink-gradient";
+import Spinner from "ink-spinner";
 
 interface LoadingSpinnerProps {
   message?: string;
-  variant?: 'primary' | 'success' | 'warning';
+  variant?: "primary" | "success" | "warning";
 }
 
-export const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({
-  message = 'Loading...',
-  variant = 'primary',
-}) => {
-  const gradientName = variant === 'success' ? 'summer' : variant === 'warning' ? 'fruit' : 'cristal';
+export const LoadingSpinner = ({
+  message = "Loading...",
+  variant = "primary",
+}: LoadingSpinnerProps) => {
+  const gradientName =
+    variant === "success"
+      ? "summer"
+      : variant === "warning"
+        ? "fruit"
+        : "cristal";
 
   return (
     <Box>

@@ -1,12 +1,30 @@
-import type { AIGeneratedCommit } from '../../types.js';
-import type { AIProvider, CommitContext } from './base.js';
-import { COMMIT_LIMITS } from '../../shared/constants/index.js';
+import { COMMIT_LIMITS } from "../../shared/constants/index.js";
+import type { AIGeneratedCommit } from "../../types.js";
+import type { AIProvider, CommitContext } from "./base.js";
+
+/**
+ * Type pour une réponse AI partielle (utilisé pour la validation)
+ */
+type PartialAIResponse = {
+  type?: unknown;
+  subject?: unknown;
+  scope?: unknown;
+  body?: unknown;
+  breaking?: unknown;
+  breakingDescription?: unknown;
+  confidence?: unknown;
+  reasoning?: unknown;
+  [key: string]: unknown;
+};
 
 /**
  * Base abstract class for AI providers
  * Provides common functionality to eliminate code duplication across providers
  */
 export abstract class BaseAIProvider implements AIProvider {
+  protected model: string = "";
+  protected temperature: number = 0.3;
+  protected maxTokens: number = 500;
   /**
    * Abstract method to generate commit message - must be implemented by subclasses
    */
@@ -35,22 +53,22 @@ export abstract class BaseAIProvider implements AIProvider {
    *
    * @protected - Available to subclasses
    */
-  protected validateResponse(response: any, availableTypes?: string[]): void {
-    if (!response.type || typeof response.type !== 'string') {
+  protected validateResponse(
+    response: PartialAIResponse | AIGeneratedCommit | Record<string, unknown>,
+    availableTypes?: string[],
+  ): void {
+    if (!response.type || typeof response.type !== "string") {
       throw new Error('Réponse invalide: "type" manquant ou invalide');
     }
 
     // Validate type is in the list of available types if provided
     if (availableTypes && !availableTypes.includes(response.type)) {
       throw new Error(
-        `Réponse invalide: Le type "${response.type}" n'est pas valide.\n` +
-        `Types autorisés: ${availableTypes.join(', ')}\n` +
-        `L'IA a généré un type incorrect. Cela peut arriver avec certains modèles.\n` +
-        `Veuillez réessayer ou utiliser le mode manuel.`
+        `Réponse invalide: Le type "${response.type}" n'est pas valide.\nTypes autorisés: ${availableTypes.join(", ")}\nL'IA a généré un type incorrect. Cela peut arriver avec certains modèles.\nVeuillez réessayer ou utiliser le mode manuel.`,
       );
     }
 
-    if (!response.subject || typeof response.subject !== 'string') {
+    if (!response.subject || typeof response.subject !== "string") {
       throw new Error('Réponse invalide: "subject" manquant ou invalide');
     }
 
@@ -70,12 +88,12 @@ export abstract class BaseAIProvider implements AIProvider {
    *
    * @protected - Available to subclasses
    */
-  protected parseJSON(text: string): any {
+  protected parseJSON(text: string): unknown {
     try {
       return JSON.parse(text);
     } catch (error) {
       throw new Error(
-        `Impossible de parser la réponse JSON: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        `Impossible de parser la réponse JSON: ${error instanceof Error ? error.message : "Unknown error"}`,
       );
     }
   }

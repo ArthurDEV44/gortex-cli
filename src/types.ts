@@ -1,4 +1,4 @@
-import { COMMIT_TYPES } from './shared/constants/index.js';
+import { COMMIT_TYPES } from "./shared/constants/index.js";
 
 export interface CommitType {
   value: string;
@@ -36,7 +36,7 @@ export interface CommitStats {
 // AI Configuration Types
 // ============================================
 
-export type AIProvider = 'ollama' | 'mistral' | 'openai' | 'disabled';
+export type AIProvider = "ollama" | "mistral" | "openai" | "disabled";
 
 export interface AIConfig {
   enabled?: boolean;
@@ -68,8 +68,8 @@ export interface AIConfig {
   maxTokens?: number;
 
   // Behavior
-  autoSuggest?: boolean;  // Suggère automatiquement dans le workflow
-  requireConfirmation?: boolean;  // Demande confirmation avant d'utiliser la suggestion
+  autoSuggest?: boolean; // Suggère automatiquement dans le workflow
+  requireConfirmation?: boolean; // Demande confirmation avant d'utiliser la suggestion
 }
 
 export interface AIGeneratedCommit {
@@ -79,8 +79,8 @@ export interface AIGeneratedCommit {
   body?: string;
   breaking?: boolean;
   breakingDescription?: string;
-  confidence?: number;  // 0-100
-  reasoning?: string;   // Pourquoi l'AI a choisi ces valeurs
+  confidence?: number; // 0-100
+  reasoning?: string; // Pourquoi l'AI a choisi ces valeurs
 }
 
 /**
@@ -95,19 +95,19 @@ export const DEFAULT_TYPES: CommitType[] = COMMIT_TYPES.map((type) => ({
 
 export const DEFAULT_AI_CONFIG: AIConfig = {
   enabled: false,
-  provider: 'ollama',
+  provider: "ollama",
   ollama: {
-    model: 'mistral:7b',
-    baseUrl: 'http://localhost:11434',
+    model: "mistral:7b",
+    baseUrl: "http://localhost:11434",
     timeout: 30000,
   },
   mistral: {
-    model: 'mistral-small-latest',
-    baseUrl: 'https://api.mistral.ai',
+    model: "mistral-small-latest",
+    baseUrl: "https://api.mistral.ai",
   },
   openai: {
-    model: 'gpt-4o-mini',
-    baseUrl: 'https://api.openai.com',
+    model: "gpt-4o-mini",
+    baseUrl: "https://api.openai.com",
   },
   temperature: 0.3,
   maxTokens: 500,

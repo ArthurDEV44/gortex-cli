@@ -8,15 +8,15 @@
  */
 
 export {
-  AppError,
-  GitRepositoryError,
-  NoChangesError,
-  ConfigurationError,
-  ValidationError,
-  AIProviderError,
   AIGenerationError,
+  AIProviderError,
+  AppError,
+  ConfigurationError,
   FileSystemError,
+  GitRepositoryError,
   NetworkError,
-} from './AppError.js';
+  NoChangesError,
+  ValidationError,
+} from "./AppError.js";
 
-export { ErrorHandler } from './ErrorHandler.js';
+export { ErrorHandler } from "./ErrorHandler.js";

@@ -24,7 +24,7 @@ export abstract class AppError extends Error {
   /**
    * Returns error details for logging
    */
-  getDetails(): Record<string, any> {
+  getDetails(): Record<string, unknown> {
     return {
       name: this.name,
       message: this.message,
@@ -51,7 +51,7 @@ export class GitRepositoryError extends AppError {
  * Error thrown when no changes are detected
  */
 export class NoChangesError extends AppError {
-  constructor(message = 'Aucun changement détecté') {
+  constructor(message = "Aucun changement détecté") {
     super(message, true);
   }
 
@@ -75,7 +75,7 @@ export class ConfigurationError extends AppError {
     return `Erreur de configuration: ${this.message}`;
   }
 
-  getDetails(): Record<string, any> {
+  getDetails(): Record<string, unknown> {
     return {
       ...super.getDetails(),
       configPath: this.configPath,
@@ -88,9 +88,9 @@ export class ConfigurationError extends AppError {
  */
 export class ValidationError extends AppError {
   public readonly field?: string;
-  public readonly value?: any;
+  public readonly value?: unknown;
 
-  constructor(message: string, field?: string, value?: any) {
+  constructor(message: string, field?: string, value?: unknown) {
     super(message, true);
     this.field = field;
     this.value = value;
@@ -100,7 +100,7 @@ export class ValidationError extends AppError {
     return `Validation échouée: ${this.message}`;
   }
 
-  getDetails(): Record<string, any> {
+  getDetails(): Record<string, unknown> {
     return {
       ...super.getDetails(),
       field: this.field,
@@ -126,7 +126,7 @@ export class AIProviderError extends AppError {
     return `Provider ${this.providerName} indisponible: ${this.message}`;
   }
 
-  getDetails(): Record<string, any> {
+  getDetails(): Record<string, unknown> {
     return {
       ...super.getDetails(),
       providerName: this.providerName,
@@ -150,7 +150,7 @@ export class AIGenerationError extends AppError {
     return `Erreur de génération avec ${this.providerName}: ${this.message}`;
   }
 
-  getDetails(): Record<string, any> {
+  getDetails(): Record<string, unknown> {
     return {
       ...super.getDetails(),
       providerName: this.providerName,
@@ -175,7 +175,7 @@ export class FileSystemError extends AppError {
     return `Erreur système de fichiers: ${this.message}`;
   }
 
-  getDetails(): Record<string, any> {
+  getDetails(): Record<string, unknown> {
     return {
       ...super.getDetails(),
       filePath: this.filePath,
@@ -201,7 +201,7 @@ export class NetworkError extends AppError {
     return `Erreur réseau: ${this.message}`;
   }
 
-  getDetails(): Record<string, any> {
+  getDetails(): Record<string, unknown> {
     return {
       ...super.getDetails(),
       url: this.url,

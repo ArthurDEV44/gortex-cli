@@ -4,24 +4,24 @@
  * This is acceptable as these are the concrete implementations used by infrastructure adapters.
  */
 
-import React, { useState, useEffect } from 'react';
-import { Box, Text } from 'ink';
-import Gradient from 'ink-gradient';
-import { Select, type SelectItem } from '../ui/Select.js';
-import type { AIProvider as AIProviderType, CommitConfig } from '../types.js';
-import { OllamaProvider } from '../ai/providers/ollama.js';
-import { MistralProvider } from '../ai/providers/mistral.js';
-import { OpenAIProvider } from '../ai/providers/openai.js';
-import { icons } from '../theme/colors.js';
+import { Box, Text } from "ink";
+import Gradient from "ink-gradient";
+import { useEffect, useState } from "react";
+import { MistralProvider } from "../ai/providers/mistral.js";
+import { OllamaProvider } from "../ai/providers/ollama.js";
+import { OpenAIProvider } from "../ai/providers/openai.js";
+import { icons } from "../theme/colors.js";
+import type { AIProvider as AIProviderType, CommitConfig } from "../types.js";
+import { Select, type SelectItem } from "../ui/Select.js";
 
-export type CommitMode = 'ai' | 'manual';
+export type CommitMode = "ai" | "manual";
 
 interface Props {
   config: CommitConfig;
   onComplete: (mode: CommitMode, provider?: AIProviderType) => void;
 }
 
-export const CommitModeSelector: React.FC<Props> = ({ config, onComplete }) => {
+export const CommitModeSelector = ({ config, onComplete }: Props) => {
   const [availableProviders, setAvailableProviders] = useState<{
     ollama: boolean;
     mistral: boolean;
@@ -94,24 +94,24 @@ export const CommitModeSelector: React.FC<Props> = ({ config, onComplete }) => {
   if (availableProviders.ollama) {
     aiProviders.push({
       label: `${icons.settings} AI - Ollama (Local)`,
-      value: 'ollama',
-      description: `Génération avec Ollama - ${config.ai?.ollama?.model || 'mistral:7b'}`,
+      value: "ollama",
+      description: `Génération avec Ollama - ${config.ai?.ollama?.model || "mistral:7b"}`,
     });
   }
 
   if (availableProviders.mistral) {
     aiProviders.push({
       label: `${icons.settings} AI - Mistral`,
-      value: 'mistral',
-      description: `Génération avec Mistral AI - ${config.ai?.mistral?.model || 'mistral-small-latest'}`,
+      value: "mistral",
+      description: `Génération avec Mistral AI - ${config.ai?.mistral?.model || "mistral-small-latest"}`,
     });
   }
 
   if (availableProviders.openai) {
     aiProviders.push({
       label: `${icons.settings} AI - OpenAI`,
-      value: 'openai',
-      description: `Génération avec OpenAI - ${config.ai?.openai?.model || 'gpt-4o-mini'}`,
+      value: "openai",
+      description: `Génération avec OpenAI - ${config.ai?.openai?.model || "gpt-4o-mini"}`,
     });
   }
 
@@ -120,8 +120,8 @@ export const CommitModeSelector: React.FC<Props> = ({ config, onComplete }) => {
     ...aiProviders,
     {
       label: `${icons.step} Manuel`,
-      value: 'manual',
-      description: 'Créer le message manuellement (mode classique)',
+      value: "manual",
+      description: "Créer le message manuellement (mode classique)",
     },
   ];
 
@@ -129,10 +129,10 @@ export const CommitModeSelector: React.FC<Props> = ({ config, onComplete }) => {
   const hasAIProviders = aiProviders.length > 0;
 
   const handleSelect = (selected: SelectItem) => {
-    if (selected.value === 'manual') {
-      onComplete('manual');
+    if (selected.value === "manual") {
+      onComplete("manual");
     } else {
-      onComplete('ai', selected.value as AIProviderType);
+      onComplete("ai", selected.value as AIProviderType);
     }
   };
 
@@ -162,14 +162,14 @@ export const CommitModeSelector: React.FC<Props> = ({ config, onComplete }) => {
             <Text dimColor>Pour utiliser l'IA, configurez un provider:</Text>
             <Box marginTop={1}>
               <Text dimColor>
-                • <Text color="cyan">Ollama</Text>: Installez Ollama et
-                lancez "ollama pull mistral:7b"
+                • <Text color="cyan">Ollama</Text>: Installez Ollama et lancez
+                "ollama pull mistral:7b"
               </Text>
             </Box>
             <Box>
               <Text dimColor>
-                • <Text color="cyan">Mistral/OpenAI</Text>: Configurez votre
-                API key dans l'onglet Credentials
+                • <Text color="cyan">Mistral/OpenAI</Text>: Configurez votre API
+                key dans l'onglet Credentials
               </Text>
             </Box>
           </Box>
@@ -186,7 +186,7 @@ export const CommitModeSelector: React.FC<Props> = ({ config, onComplete }) => {
         <Text dimColor>
           {hasAIProviders
             ? `${aiProviders.length} provider(s) AI disponible(s)`
-            : 'Mode manuel uniquement'}
+            : "Mode manuel uniquement"}
         </Text>
       </Box>
     </Box>

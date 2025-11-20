@@ -62,6 +62,7 @@ describe('Integration: CLI Commands with DI', () => {
       getDefaultRemote: vi.fn().mockResolvedValue('origin'),
       hasUpstream: vi.fn().mockResolvedValue(true),
       pushToRemote: vi.fn().mockResolvedValue(undefined),
+      getExistingScopes: vi.fn().mockResolvedValue([]),
     };
 
     root = new CompositionRoot();

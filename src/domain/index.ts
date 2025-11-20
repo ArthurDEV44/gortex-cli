@@ -3,14 +3,11 @@
  * Core business logic with no dependencies on infrastructure or frameworks
  */
 
-// Value Objects
-export * from './value-objects/index.js';
-
 // Entities
-export * from './entities/index.js';
-
+export * from "./entities/index.js";
 // Repository Interfaces
-export * from './repositories/index.js';
-
+export * from "./repositories/index.js";
 // Domain Services
-export * from './services/index.js';
+export * from "./services/index.js";
+// Value Objects
+export * from "./value-objects/index.js";

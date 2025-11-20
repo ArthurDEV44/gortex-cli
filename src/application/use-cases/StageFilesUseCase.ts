@@ -3,7 +3,7 @@
  * Handles staging of files with validation
  */
 
-import { IGitRepository } from '../../domain/repositories/IGitRepository.js';
+import type { IGitRepository } from "../../domain/repositories/IGitRepository.js";
 
 export interface StageFilesRequest {
   files?: string[]; // If undefined, stage all files
@@ -29,7 +29,7 @@ export class StageFilesUseCase {
         return {
           success: false,
           stagedFiles: [],
-          error: 'Not a git repository',
+          error: "Not a git repository",
         };
       }
 
@@ -39,7 +39,7 @@ export class StageFilesUseCase {
         return {
           success: false,
           stagedFiles: [],
-          error: 'No changes to stage',
+          error: "No changes to stage",
         };
       }
 
@@ -52,19 +52,18 @@ export class StageFilesUseCase {
           success: true,
           stagedFiles: allModified,
         };
-      } else {
-        // Stage specific files
-        await this.gitRepository.stageFiles(request.files);
-        return {
-          success: true,
-          stagedFiles: request.files,
-        };
       }
+      // Stage specific files
+      await this.gitRepository.stageFiles(request.files);
+      return {
+        success: true,
+        stagedFiles: request.files,
+      };
     } catch (error) {
       return {
         success: false,
         stagedFiles: [],
-        error: error instanceof Error ? error.message : 'Unknown error',
+        error: error instanceof Error ? error.message : "Unknown error",
       };
     }
   }

@@ -3,7 +3,7 @@
  * Handles all branch-related operations (list, checkout, create, etc.)
  */
 
-import { IGitRepository } from '../../domain/repositories/IGitRepository.js';
+import type { IGitRepository } from "../../domain/repositories/IGitRepository.js";
 
 export interface GetCurrentBranchResult {
   success: boolean;
@@ -61,7 +61,7 @@ export class BranchOperationsUseCase {
       if (!isRepo) {
         return {
           success: false,
-          error: 'Not a git repository',
+          error: "Not a git repository",
         };
       }
 
@@ -73,7 +73,7 @@ export class BranchOperationsUseCase {
     } catch (error) {
       return {
         success: false,
-        error: error instanceof Error ? error.message : 'Unknown error',
+        error: error instanceof Error ? error.message : "Unknown error",
       };
     }
   }
@@ -87,7 +87,7 @@ export class BranchOperationsUseCase {
       if (!isRepo) {
         return {
           success: false,
-          error: 'Not a git repository',
+          error: "Not a git repository",
         };
       }
 
@@ -102,7 +102,7 @@ export class BranchOperationsUseCase {
     } catch (error) {
       return {
         success: false,
-        error: error instanceof Error ? error.message : 'Unknown error',
+        error: error instanceof Error ? error.message : "Unknown error",
       };
     }
   }
@@ -110,13 +110,15 @@ export class BranchOperationsUseCase {
   /**
    * Checks out an existing branch
    */
-  async checkoutBranch(request: CheckoutBranchRequest): Promise<CheckoutBranchResult> {
+  async checkoutBranch(
+    request: CheckoutBranchRequest,
+  ): Promise<CheckoutBranchResult> {
     try {
       const isRepo = await this.gitRepository.isRepository();
       if (!isRepo) {
         return {
           success: false,
-          error: 'Not a git repository',
+          error: "Not a git repository",
         };
       }
 
@@ -139,7 +141,7 @@ export class BranchOperationsUseCase {
     } catch (error) {
       return {
         success: false,
-        error: error instanceof Error ? error.message : 'Unknown error',
+        error: error instanceof Error ? error.message : "Unknown error",
       };
     }
   }
@@ -147,13 +149,15 @@ export class BranchOperationsUseCase {
   /**
    * Creates a new branch and optionally checks it out
    */
-  async createBranch(request: CreateBranchRequest): Promise<CreateBranchResult> {
+  async createBranch(
+    request: CreateBranchRequest,
+  ): Promise<CreateBranchResult> {
     try {
       const isRepo = await this.gitRepository.isRepository();
       if (!isRepo) {
         return {
           success: false,
-          error: 'Not a git repository',
+          error: "Not a git repository",
         };
       }
 
@@ -182,7 +186,7 @@ export class BranchOperationsUseCase {
     } catch (error) {
       return {
         success: false,
-        error: error instanceof Error ? error.message : 'Unknown error',
+        error: error instanceof Error ? error.message : "Unknown error",
       };
     }
   }
@@ -190,13 +194,15 @@ export class BranchOperationsUseCase {
   /**
    * Checks if a branch exists
    */
-  async branchExists(request: BranchExistsRequest): Promise<BranchExistsResult> {
+  async branchExists(
+    request: BranchExistsRequest,
+  ): Promise<BranchExistsResult> {
     try {
       const isRepo = await this.gitRepository.isRepository();
       if (!isRepo) {
         return {
           success: false,
-          error: 'Not a git repository',
+          error: "Not a git repository",
         };
       }
 
@@ -209,7 +215,7 @@ export class BranchOperationsUseCase {
     } catch (error) {
       return {
         success: false,
-        error: error instanceof Error ? error.message : 'Unknown error',
+        error: error instanceof Error ? error.message : "Unknown error",
       };
     }
   }

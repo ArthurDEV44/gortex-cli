@@ -1,18 +1,15 @@
-import type { AIGeneratedCommit, AIConfig } from '../../types.js';
-import type { CommitContext } from './base.js';
-import {
-  ProviderNotAvailableError,
-  GenerationError,
-} from './base.js';
-import { BaseAIProvider } from './BaseAIProvider.js';
+import type { AIConfig, AIGeneratedCommit } from "../../types.js";
 import {
   generateSystemPrompt,
   generateUserPrompt,
   parseAIResponse,
-} from '../prompts/commit-message.js';
+} from "../prompts/commit-message.js";
+import { BaseAIProvider } from "./BaseAIProvider.js";
+import type { CommitContext } from "./base.js";
+import { GenerationError, ProviderNotAvailableError } from "./base.js";
 
 interface OllamaMessage {
-  role: 'system' | 'user' | 'assistant';
+  role: "system" | "user" | "assistant";
   content: string;
 }
 
@@ -20,7 +17,7 @@ interface OllamaRequest {
   model: string;
   messages: OllamaMessage[];
   stream: boolean;
-  format?: 'json' | object; // 'json' for basic JSON mode, or JSON Schema object for structured outputs
+  format?: "json" | object; // 'json' for basic JSON mode, or JSON Schema object for structured outputs
   options?: {
     temperature?: number;
     num_predict?: number;
@@ -41,22 +38,19 @@ interface OllamaResponse {
  */
 export class OllamaProvider extends BaseAIProvider {
   private baseUrl: string;
-  private model: string;
   private timeout: number;
-  private temperature: number;
-  private maxTokens: number;
 
   constructor(config: AIConfig) {
     super();
-    this.baseUrl = config.ollama?.baseUrl || 'http://localhost:11434';
-    this.model = config.ollama?.model || 'mistral:7b';
+    this.baseUrl = config.ollama?.baseUrl || "http://localhost:11434";
+    this.model = config.ollama?.model || "mistral:7b";
     this.timeout = config.ollama?.timeout || 30000;
     this.temperature = config.temperature ?? 0.3;
     this.maxTokens = config.maxTokens ?? 500;
   }
 
   getName(): string {
-    return 'Ollama';
+    return "Ollama";
   }
 
   /**
@@ -77,18 +71,20 @@ export class OllamaProvider extends BaseAIProvider {
         return false;
       }
 
-      const data = (await response.json()) as { models?: any[] };
+      const data = (await response.json()) as {
+        models?: Array<{ name: string }>;
+      };
 
       // Vérifie si le modèle est disponible
       if (data.models) {
-        const modelExists = data.models.some((m: any) =>
-          m.name.includes(this.model.split(':')[0]),
+        const modelExists = data.models.some((m) =>
+          m.name.includes(this.model.split(":")[0]),
         );
         return modelExists;
       }
 
       return false;
-    } catch (error) {
+    } catch (_error) {
       return false;
     }
   }
@@ -104,7 +100,7 @@ export class OllamaProvider extends BaseAIProvider {
     const available = await this.isAvailable();
     if (!available) {
       throw new ProviderNotAvailableError(
-        'Ollama',
+        "Ollama",
         `Serveur Ollama non accessible à ${this.baseUrl} ou modèle ${this.model} non trouvé. Lancez 'ollama pull ${this.model}' pour l'installer.`,
       );
     }
@@ -112,45 +108,46 @@ export class OllamaProvider extends BaseAIProvider {
     try {
       // Définit le JSON Schema pour la structure de réponse attendue
       const jsonSchema = {
-        type: 'object',
+        type: "object",
         properties: {
           type: {
-            type: 'string',
+            type: "string",
             enum: context.availableTypes,
-            description: `The commit type - MUST be exactly one of: ${context.availableTypes.join(', ')}. NO variations like "refactoring" (use "refactor"), "feature" (use "feat"), etc.`,
+            description: `The commit type - MUST be exactly one of: ${context.availableTypes.join(", ")}. NO variations like "refactoring" (use "refactor"), "feature" (use "feat"), etc.`,
           },
           scope: {
-            type: 'string',
-            description: 'The optional scope of the commit',
+            type: "string",
+            description: "The optional scope of the commit",
           },
           subject: {
-            type: 'string',
-            description: 'The commit subject (imperative, max 50 chars, MUST start with lowercase letter)',
+            type: "string",
+            description:
+              "The commit subject (imperative, max 50 chars, MUST start with lowercase letter)",
           },
           body: {
-            type: 'string',
-            description: 'Optional detailed description',
+            type: "string",
+            description: "Optional detailed description",
           },
           breaking: {
-            type: 'boolean',
-            description: 'Whether this is a breaking change',
+            type: "boolean",
+            description: "Whether this is a breaking change",
           },
           breakingDescription: {
-            type: 'string',
-            description: 'Description of the breaking change if applicable',
+            type: "string",
+            description: "Description of the breaking change if applicable",
           },
           confidence: {
-            type: 'integer',
-            description: 'Confidence level (0-100)',
+            type: "integer",
+            description: "Confidence level (0-100)",
             minimum: 0,
             maximum: 100,
           },
           reasoning: {
-            type: 'string',
-            description: 'Explanation of the choices made',
+            type: "string",
+            description: "Explanation of the choices made",
           },
         },
-        required: ['type', 'subject', 'breaking', 'confidence'],
+        required: ["type", "subject", "breaking", "confidence"],
       };
 
       // Construit la requête
@@ -158,11 +155,11 @@ export class OllamaProvider extends BaseAIProvider {
         model: this.model,
         messages: [
           {
-            role: 'system',
+            role: "system",
             content: generateSystemPrompt(context.availableTypes),
           },
           {
-            role: 'user',
+            role: "user",
             content: generateUserPrompt(diff, context),
           },
         ],
@@ -179,9 +176,9 @@ export class OllamaProvider extends BaseAIProvider {
       const timeoutId = setTimeout(() => controller.abort(), this.timeout);
 
       const response = await fetch(`${this.baseUrl}/api/chat`, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(request),
         signal: controller.signal,
@@ -191,21 +188,19 @@ export class OllamaProvider extends BaseAIProvider {
 
       if (!response.ok) {
         const errorText = await response.text();
-        throw new Error(
-          `Ollama API error (${response.status}): ${errorText}`,
-        );
+        throw new Error(`Ollama API error (${response.status}): ${errorText}`);
       }
 
       const data = (await response.json()) as OllamaResponse;
 
       // Avec JSON Schema, la réponse devrait déjà être structurée
       // Essaie d'abord de parser directement le contenu
-      let parsed: any;
+      let parsed: AIGeneratedCommit;
 
       try {
         // Si le contenu est déjà un objet JSON (grâce au schema)
-        parsed = JSON.parse(data.message.content);
-      } catch (parseError) {
+        parsed = JSON.parse(data.message.content) as AIGeneratedCommit;
+      } catch (_parseError) {
         // Fallback sur notre parsing robuste si nécessaire
         parsed = parseAIResponse(data.message.content);
       }
@@ -239,9 +234,7 @@ export class OllamaProvider extends BaseAIProvider {
       if (error instanceof ProviderNotAvailableError) {
         throw error;
       }
-      throw new GenerationError('Ollama', error);
+      throw new GenerationError("Ollama", error);
     }
   }
-
 }
-

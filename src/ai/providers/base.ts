@@ -1,5 +1,8 @@
-import type { AIGeneratedCommit } from '../../types.js';
-import { AIProviderError, AIGenerationError } from '../../shared/errors/index.js';
+import {
+  AIGenerationError,
+  AIProviderError,
+} from "../../shared/errors/index.js";
+import type { AIGeneratedCommit } from "../../types.js";
 
 /**
  * Interface commune pour tous les providers AI

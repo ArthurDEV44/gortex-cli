@@ -1,7 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { Box, Text } from 'ink';
-import Gradient from 'ink-gradient';
-import { colors, createGradient, icons } from '../theme/colors.js';
+import { Box, Text } from "ink";
+import { useEffect, useState } from "react";
+import { colors, createGradient, icons } from "../theme/colors.js";
 
 interface SuccessMessageProps {
   title: string;
@@ -10,12 +9,12 @@ interface SuccessMessageProps {
   icon?: string;
 }
 
-export const SuccessMessage: React.FC<SuccessMessageProps> = ({
+export const SuccessMessage = ({
   title,
   subtitle,
   details,
   icon = icons.success,
-}) => {
+}: SuccessMessageProps) => {
   const [show, setShow] = useState(false);
 
   useEffect(() => {
@@ -48,8 +47,8 @@ export const SuccessMessage: React.FC<SuccessMessageProps> = ({
 
         {details && details.length > 0 && (
           <Box flexDirection="column" marginTop={1}>
-            {details.map((detail, i) => (
-              <Box key={i}>
+            {details.map((detail, index) => (
+              <Box key={`detail-${index}-${detail.substring(0, 20)}`}>
                 <Text color={colors.success}>{icons.pointer}</Text>
                 <Text dimColor> {detail}</Text>
               </Box>

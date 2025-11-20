@@ -1,19 +1,21 @@
-import React, { useState, useEffect } from 'react';
-import { Box, Text } from 'ink';
-import { Select, TextInput, type SelectItem } from '../ui/index.js';
-import { loadConfig } from '../utils/config.js';
-import { formatCommitMessage } from '../utils/validate.js';
-import type { CommitConfig, CommitAnswers } from '../types.js';
-import { icons } from '../theme/colors.js';
+import { Box, Text } from "ink";
+import { useEffect, useState } from "react";
+import { icons } from "../theme/colors.js";
+import type { CommitAnswers, CommitConfig } from "../types.js";
+import { Select, type SelectItem, TextInput } from "../ui/index.js";
+import { loadConfig } from "../utils/config.js";
+import { formatCommitMessage } from "../utils/validate.js";
 
 interface CommitMessageBuilderProps {
   onComplete: (message: string) => void;
 }
 
-type Step = 'type' | 'scope' | 'customScope' | 'subject' | 'body' | 'done';
+type Step = "type" | "scope" | "customScope" | "subject" | "body" | "done";
 
-export const CommitMessageBuilder: React.FC<CommitMessageBuilderProps> = ({ onComplete }) => {
-  const [step, setStep] = useState<Step>('type');
+export const CommitMessageBuilder = ({
+  onComplete,
+}: CommitMessageBuilderProps) => {
+  const [step, setStep] = useState<Step>("type");
   const [config, setConfig] = useState<CommitConfig | null>(null);
   const [answers, setAnswers] = useState<Partial<CommitAnswers>>({});
 
@@ -30,43 +32,48 @@ export const CommitMessageBuilder: React.FC<CommitMessageBuilderProps> = ({ onCo
   }
 
   const handleTypeSelect = (item: SelectItem) => {
-    setAnswers(prev => ({ ...prev, type: item.value }));
+    setAnswers((prev) => ({ ...prev, type: item.value }));
     if (config.scopes && config.scopes.length > 0) {
-      setStep('scope');
+      setStep("scope");
     } else if (config.allowCustomScopes) {
-      setStep('customScope');
+      setStep("customScope");
     } else {
-      setStep('subject');
+      setStep("subject");
     }
   };
 
   const handleScopeSelect = (item: SelectItem) => {
-    if (item.value === '__CUSTOM__') {
-      setStep('customScope');
-    } else if (item.value === '__NONE__') {
-      setAnswers(prev => ({ ...prev, scope: '' }));
-      setStep('subject');
+    if (item.value === "__CUSTOM__") {
+      setStep("customScope");
+    } else if (item.value === "__NONE__") {
+      setAnswers((prev) => ({ ...prev, scope: "" }));
+      setStep("subject");
     } else {
-      setAnswers(prev => ({ ...prev, scope: item.value }));
-      setStep('subject');
+      setAnswers((prev) => ({ ...prev, scope: item.value }));
+      setStep("subject");
     }
   };
 
   const handleCustomScope = (scope: string) => {
-    setAnswers(prev => ({ ...prev, scope: scope.trim() }));
-    setStep('subject');
+    setAnswers((prev) => ({ ...prev, scope: scope.trim() }));
+    setStep("subject");
   };
 
   const handleSubject = (subject: string) => {
-    setAnswers(prev => ({ ...prev, subject: subject.trim() }));
-    setStep('body');
+    setAnswers((prev) => ({ ...prev, subject: subject.trim() }));
+    setStep("body");
   };
 
   const handleBody = (body: string) => {
+    if (!answers.type || !answers.subject) {
+      // This should never happen if the workflow is followed correctly
+      return;
+    }
+
     const finalAnswers: CommitAnswers = {
-      type: answers.type!,
-      scope: answers.scope || '',
-      subject: answers.subject!,
+      type: answers.type,
+      scope: answers.scope || "",
+      subject: answers.subject,
       body: body.trim() || undefined,
     };
 
@@ -74,7 +81,7 @@ export const CommitMessageBuilder: React.FC<CommitMessageBuilderProps> = ({ onCo
       finalAnswers.type,
       finalAnswers.scope || undefined,
       finalAnswers.subject,
-      finalAnswers.body
+      finalAnswers.body,
     );
 
     onComplete(message);
@@ -97,14 +104,16 @@ export const CommitMessageBuilder: React.FC<CommitMessageBuilderProps> = ({ onCo
   return (
     <Box flexDirection="column">
       <Box marginBottom={1}>
-        <Text bold color="blue">{icons.step} Étape 3/5: Message de commit</Text>
+        <Text bold color="blue">
+          {icons.step} Étape 3/5: Message de commit
+        </Text>
       </Box>
 
-      {step === 'type' && (
+      {step === "type" && (
         <Select
           message="Type de commit:"
           items={
-            config.types?.map(t => ({
+            config.types?.map((t) => ({
               label: t.name,
               value: t.value,
             })) || []
@@ -113,26 +122,28 @@ export const CommitMessageBuilder: React.FC<CommitMessageBuilderProps> = ({ onCo
         />
       )}
 
-      {step === 'scope' && (
+      {step === "scope" && (
         <Select
           message="Scope (optionnel):"
           items={[
-            ...(config.scopes?.map(s => ({ label: s, value: s })) || []),
-            { label: '(aucun)', value: '__NONE__' },
-            ...(config.allowCustomScopes ? [{ label: '(personnalisé)', value: '__CUSTOM__' }] : []),
+            ...(config.scopes?.map((s) => ({ label: s, value: s })) || []),
+            { label: "(aucun)", value: "__NONE__" },
+            ...(config.allowCustomScopes
+              ? [{ label: "(personnalisé)", value: "__CUSTOM__" }]
+              : []),
           ]}
           onSelect={handleScopeSelect}
         />
       )}
 
-      {step === 'customScope' && (
+      {step === "customScope" && (
         <TextInput
           message="Scope personnalisé (optionnel, Entrée pour passer):"
           onSubmit={handleCustomScope}
         />
       )}
 
-      {step === 'subject' && (
+      {step === "subject" && (
         <TextInput
           message={`Description courte (${config.minSubjectLength}-${config.maxSubjectLength} caractères):`}
           validate={validateSubject}
@@ -140,7 +151,7 @@ export const CommitMessageBuilder: React.FC<CommitMessageBuilderProps> = ({ onCo
         />
       )}
 
-      {step === 'body' && (
+      {step === "body" && (
         <TextInput
           message="Description longue (optionnel, Entrée pour passer):"
           onSubmit={handleBody}

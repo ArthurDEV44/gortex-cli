@@ -1,18 +1,15 @@
-import type { AIGeneratedCommit, AIConfig } from '../../types.js';
-import type { CommitContext } from './base.js';
-import {
-  ProviderNotAvailableError,
-  GenerationError,
-} from './base.js';
-import { BaseAIProvider } from './BaseAIProvider.js';
+import type { AIConfig, AIGeneratedCommit } from "../../types.js";
 import {
   generateSystemPrompt,
   generateUserPrompt,
   parseAIResponse,
-} from '../prompts/commit-message.js';
+} from "../prompts/commit-message.js";
+import { BaseAIProvider } from "./BaseAIProvider.js";
+import type { CommitContext } from "./base.js";
+import { GenerationError, ProviderNotAvailableError } from "./base.js";
 
 interface MistralMessage {
-  role: 'system' | 'user' | 'assistant';
+  role: "system" | "user" | "assistant";
   content: string;
 }
 
@@ -44,31 +41,27 @@ interface MistralResponse {
 export class MistralProvider extends BaseAIProvider {
   private apiKey: string;
   private baseUrl: string;
-  private model: string;
-  private temperature: number;
-  private maxTokens: number;
 
   constructor(config: AIConfig) {
     const apiKey = config.mistral?.apiKey || process.env.MISTRAL_API_KEY;
 
     if (!apiKey) {
       throw new ProviderNotAvailableError(
-        'Mistral',
+        "Mistral",
         'API key manquante. Configurez "ai.mistral.apiKey" dans .gortexrc ou définissez MISTRAL_API_KEY',
       );
     }
 
     super();
     this.apiKey = apiKey;
-    this.baseUrl =
-      config.mistral?.baseUrl || 'https://api.mistral.ai';
-    this.model = config.mistral?.model || 'mistral-small-latest';
+    this.baseUrl = config.mistral?.baseUrl || "https://api.mistral.ai";
+    this.model = config.mistral?.model || "mistral-small-latest";
     this.temperature = config.temperature ?? 0.3;
     this.maxTokens = config.maxTokens ?? 500;
   }
 
   getName(): string {
-    return 'Mistral AI';
+    return "Mistral AI";
   }
 
   /**
@@ -84,7 +77,7 @@ export class MistralProvider extends BaseAIProvider {
       });
 
       return response.ok;
-    } catch (error) {
+    } catch (_error) {
       return false;
     }
   }
@@ -100,8 +93,8 @@ export class MistralProvider extends BaseAIProvider {
     const available = await this.isAvailable();
     if (!available) {
       throw new ProviderNotAvailableError(
-        'Mistral AI',
-        'API Mistral non accessible. Vérifiez votre clé API et votre connexion internet.',
+        "Mistral AI",
+        "API Mistral non accessible. Vérifiez votre clé API et votre connexion internet.",
       );
     }
 
@@ -111,11 +104,11 @@ export class MistralProvider extends BaseAIProvider {
         model: this.model,
         messages: [
           {
-            role: 'system',
+            role: "system",
             content: generateSystemPrompt(context.availableTypes),
           },
           {
-            role: 'user',
+            role: "user",
             content: generateUserPrompt(diff, context),
           },
         ],
@@ -125,9 +118,9 @@ export class MistralProvider extends BaseAIProvider {
 
       // Appel à l'API Mistral
       const response = await fetch(`${this.baseUrl}/v1/chat/completions`, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
           Authorization: `Bearer ${this.apiKey}`,
         },
         body: JSON.stringify(request),
@@ -135,15 +128,13 @@ export class MistralProvider extends BaseAIProvider {
 
       if (!response.ok) {
         const errorText = await response.text();
-        throw new Error(
-          `Mistral API error (${response.status}): ${errorText}`,
-        );
+        throw new Error(`Mistral API error (${response.status}): ${errorText}`);
       }
 
       const data = (await response.json()) as MistralResponse;
 
       if (!data.choices || data.choices.length === 0) {
-        throw new Error('Aucune réponse de Mistral AI');
+        throw new Error("Aucune réponse de Mistral AI");
       }
 
       // Parse la réponse
@@ -166,9 +157,7 @@ export class MistralProvider extends BaseAIProvider {
       if (error instanceof ProviderNotAvailableError) {
         throw error;
       }
-      throw new GenerationError('Mistral AI', error);
+      throw new GenerationError("Mistral AI", error);
     }
   }
-
 }
-

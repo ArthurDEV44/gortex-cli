@@ -2,7 +2,7 @@
  * Data Transfer Objects for AI generation results
  */
 
-import { CommitMessageDTO } from './CommitMessageDTO.js';
+import type { CommitMessageDTO } from "./CommitMessageDTO.js";
 
 export interface AIGenerationRequestDTO {
   readonly provider: string;

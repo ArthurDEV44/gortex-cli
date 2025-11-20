@@ -3,12 +3,12 @@
  * Displays commit statistics using DI architecture
  */
 
-import React, { useEffect, useState } from 'react';
-import { Box, Text } from 'ink';
-import Spinner from 'ink-spinner';
-import { useCommitHistory } from '../infrastructure/di/hooks.js';
-import type { RepositoryStatsDTO } from '../application/dto/GitStatusDTO.js';
-import { getCommitTypeEmoji } from '../shared/constants/index.js';
+import { Box, Text } from "ink";
+import Spinner from "ink-spinner";
+import { useEffect, useState } from "react";
+import type { RepositoryStatsDTO } from "../application/dto/GitStatusDTO.js";
+import { useCommitHistory } from "../infrastructure/di/hooks.js";
+import { getCommitTypeEmoji } from "../shared/constants/index.js";
 
 interface Props {
   maxCount?: number;
@@ -28,7 +28,7 @@ export function StatsDisplay({ maxCount = 100 }: Props) {
       if (result.success && result.stats) {
         setStats(result.stats);
       } else {
-        setError(result.error || 'Erreur lors de l\'analyse');
+        setError(result.error || "Erreur lors de l'analyse");
       }
       setLoading(false);
     }
@@ -62,8 +62,9 @@ export function StatsDisplay({ maxCount = 100 }: Props) {
   }
 
   const percentage = stats.conventionalPercentage.toFixed(1);
-  const percentageNum = parseFloat(percentage);
-  const color = percentageNum >= 80 ? 'green' : percentageNum >= 50 ? 'yellow' : 'red';
+  const percentageNum = Number.parseFloat(percentage);
+  const color =
+    percentageNum >= 80 ? "green" : percentageNum >= 50 ? "yellow" : "red";
   const nonConventional = stats.totalCommits - stats.conventionalCommits;
 
   return (
@@ -78,10 +79,18 @@ export function StatsDisplay({ maxCount = 100 }: Props) {
       {/* Summary */}
       <Box flexDirection="column" marginBottom={1}>
         <Text bold>Résumé:</Text>
-        <Text color="gray">{'─'.repeat(50)}</Text>
-        <Text>Total de commits analysés:      <Text color="cyan">{stats.totalCommits}</Text></Text>
-        <Text>Commits conventionnels:          <Text color="green">{stats.conventionalCommits}</Text></Text>
-        <Text>Commits non-conventionnels:      <Text color="red">{nonConventional}</Text></Text>
+        <Text color="gray">{"─".repeat(50)}</Text>
+        <Text>
+          Total de commits analysés:{" "}
+          <Text color="cyan">{stats.totalCommits}</Text>
+        </Text>
+        <Text>
+          Commits conventionnels:{" "}
+          <Text color="green">{stats.conventionalCommits}</Text>
+        </Text>
+        <Text>
+          Commits non-conventionnels: <Text color="red">{nonConventional}</Text>
+        </Text>
       </Box>
 
       {/* Compliance Rate */}
@@ -96,16 +105,24 @@ export function StatsDisplay({ maxCount = 100 }: Props) {
       {Object.keys(stats.typeBreakdown).length > 0 && (
         <Box flexDirection="column" marginBottom={1}>
           <Text bold>Répartition par type:</Text>
-          <Text color="gray">{'─'.repeat(50)}</Text>
+          <Text color="gray">{"─".repeat(50)}</Text>
           <Box flexDirection="column">
             {Object.entries(stats.typeBreakdown)
               .sort((a, b) => b[1] - a[1])
               .map(([type, count]) => {
-                const typePercentage = ((count / stats.conventionalCommits) * 100).toFixed(1);
-                const bar = getProgressBar((count / stats.conventionalCommits) * 100, 20);
+                const typePercentage = (
+                  (count / stats.conventionalCommits) *
+                  100
+                ).toFixed(1);
+                const bar = getProgressBar(
+                  (count / stats.conventionalCommits) * 100,
+                  20,
+                );
                 return (
                   <Text key={type}>
-                    {getCommitTypeEmoji(type)} {type.padEnd(10)} {count.toString().padStart(3)} ({typePercentage}%) <Text color="gray">{bar}</Text>
+                    {getCommitTypeEmoji(type)} {type.padEnd(10)}{" "}
+                    {count.toString().padStart(3)} ({typePercentage}%){" "}
+                    <Text color="gray">{bar}</Text>
                   </Text>
                 );
               })}
@@ -116,23 +133,28 @@ export function StatsDisplay({ maxCount = 100 }: Props) {
       {/* Recommendations */}
       {percentageNum < 80 ? (
         <Box flexDirection="column">
-          <Text color="yellow" bold>💡 Recommandations:</Text>
-          <Text color="gray">{'─'.repeat(50)}</Text>
-          <Text>  • Utilisez "npx gortex" pour créer des commits guidés</Text>
-          <Text>  • Installez le hook Git: "npx gortex hooks install"</Text>
-          <Text>  • Partagez les bonnes pratiques avec votre équipe</Text>
+          <Text color="yellow" bold>
+            💡 Recommandations:
+          </Text>
+          <Text color="gray">{"─".repeat(50)}</Text>
+          <Text> • Utilisez "npx gortex" pour créer des commits guidés</Text>
+          <Text> • Installez le hook Git: "npx gortex hooks install"</Text>
+          <Text> • Partagez les bonnes pratiques avec votre équipe</Text>
         </Box>
       ) : (
         <Box>
-          <Text color="green" bold>🎉 Excellent travail ! Votre repo suit bien les conventions de commits.</Text>
+          <Text color="green" bold>
+            🎉 Excellent travail ! Votre repo suit bien les conventions de
+            commits.
+          </Text>
         </Box>
       )}
     </Box>
   );
 }
 
-function getProgressBar(percentage: number, length: number = 30): string {
+function getProgressBar(percentage: number, length = 30): string {
   const filled = Math.round((percentage / 100) * length);
   const empty = length - filled;
-  return '█'.repeat(filled) + '░'.repeat(empty);
+  return "█".repeat(filled) + "░".repeat(empty);
 }

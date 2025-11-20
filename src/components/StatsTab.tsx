@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import { Box, Text } from 'ink';
-import Spinner from 'ink-spinner';
-import { useCommitHistory } from '../infrastructure/di/hooks.js';
-import { colors, icons, getCommitIcon } from '../theme/colors.js';
+import { Box, Text } from "ink";
+import Spinner from "ink-spinner";
+import { useEffect, useState } from "react";
+import { useCommitHistory } from "../infrastructure/di/hooks.js";
+import { colors, getCommitIcon, icons } from "../theme/colors.js";
 
 interface StatsData {
   total: number;
@@ -12,15 +12,15 @@ interface StatsData {
   typeBreakdown: Record<string, number>;
 }
 
-function getProgressBar(percentage: number, length: number = 30): string {
+function getProgressBar(percentage: number, length = 30): string {
   const filled = Math.round((percentage / 100) * length);
   const empty = length - filled;
-  return '█'.repeat(filled) + '░'.repeat(empty);
+  return "█".repeat(filled) + "░".repeat(empty);
 }
 
 // Supprimé - on utilise maintenant getCommitIcon() du thème
 
-export const StatsTab: React.FC = () => {
+export const StatsTab = () => {
   const analyzeCommitHistoryUseCase = useCommitHistory();
 
   const [stats, setStats] = useState<StatsData | null>(null);
@@ -33,10 +33,12 @@ export const StatsTab: React.FC = () => {
         setLoading(true);
 
         // Use clean architecture use case to analyze commit history
-        const result = await analyzeCommitHistoryUseCase.execute({ maxCount: 100 });
+        const result = await analyzeCommitHistoryUseCase.execute({
+          maxCount: 100,
+        });
 
         if (!result.success || !result.stats) {
-          setError(result.error || 'Failed to load stats');
+          setError(result.error || "Failed to load stats");
           return;
         }
 
@@ -50,14 +52,14 @@ export const StatsTab: React.FC = () => {
           typeBreakdown: statsDTO.typeBreakdown,
         });
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to load stats');
+        setError(err instanceof Error ? err.message : "Failed to load stats");
       } finally {
         setLoading(false);
       }
     };
 
     loadStats();
-  }, []);
+  }, [analyzeCommitHistoryUseCase.execute]);
 
   if (loading) {
     return (
@@ -72,16 +74,20 @@ export const StatsTab: React.FC = () => {
   if (error || !stats) {
     return (
       <Box padding={1}>
-        <Text color={colors.error}>{icons.error} Error loading stats: {error || 'Unknown error'}</Text>
+        <Text color={colors.error}>
+          {icons.error} Error loading stats: {error || "Unknown error"}
+        </Text>
       </Box>
     );
   }
 
   const percentage = stats.percentage.toFixed(1);
   const percentageColor =
-    stats.percentage >= 80 ? colors.success :
-    stats.percentage >= 50 ? colors.warning :
-    colors.error;
+    stats.percentage >= 80
+      ? colors.success
+      : stats.percentage >= 50
+        ? colors.warning
+        : colors.error;
 
   return (
     <Box flexDirection="column" padding={1}>
@@ -94,20 +100,22 @@ export const StatsTab: React.FC = () => {
         flexDirection="column"
       >
         <Box marginBottom={1}>
-          <Text bold color={colors.primary}>{icons.stats} Summary</Text>
+          <Text bold color={colors.primary}>
+            {icons.stats} Summary
+          </Text>
         </Box>
 
         <Box flexDirection="column">
           <Box>
-            <Text>Total commits analyzed:      </Text>
+            <Text>Total commits analyzed: </Text>
             <Text color={colors.primary}>{stats.total}</Text>
           </Box>
           <Box>
-            <Text>Conventional commits:         </Text>
+            <Text>Conventional commits: </Text>
             <Text color={colors.success}>{stats.conventional}</Text>
           </Box>
           <Box>
-            <Text>Non-conventional commits:     </Text>
+            <Text>Non-conventional commits: </Text>
             <Text color={colors.error}>{stats.nonConventional}</Text>
           </Box>
         </Box>
@@ -123,7 +131,9 @@ export const StatsTab: React.FC = () => {
         flexDirection="column"
       >
         <Box marginBottom={1}>
-          <Text bold color={percentageColor}>{icons.arrowUp} Compliance Rate</Text>
+          <Text bold color={percentageColor}>
+            {icons.arrowUp} Compliance Rate
+          </Text>
         </Box>
         <Box>
           <Text color={percentageColor}>
@@ -143,19 +153,29 @@ export const StatsTab: React.FC = () => {
           flexDirection="column"
         >
           <Box marginBottom={1}>
-            <Text bold color={colors.primaryLight}>{icons.menu} Type Breakdown</Text>
+            <Text bold color={colors.primaryLight}>
+              {icons.menu} Type Breakdown
+            </Text>
           </Box>
 
           <Box flexDirection="column">
             {Object.entries(stats.typeBreakdown)
               .sort((a, b) => b[1] - a[1])
               .map(([type, count]) => {
-                const typePercentage = ((count / stats.conventional) * 100).toFixed(1);
-                const bar = getProgressBar((count / stats.conventional) * 100, 20);
+                const typePercentage = (
+                  (count / stats.conventional) *
+                  100
+                ).toFixed(1);
+                const bar = getProgressBar(
+                  (count / stats.conventional) * 100,
+                  20,
+                );
                 return (
                   <Box key={type}>
                     <Text>
-                      {getCommitIcon(type)} {type.padEnd(10)} {count.toString().padStart(3)} ({typePercentage}%) <Text dimColor>{bar}</Text>
+                      {getCommitIcon(type)} {type.padEnd(10)}{" "}
+                      {count.toString().padStart(3)} ({typePercentage}%){" "}
+                      <Text dimColor>{bar}</Text>
                     </Text>
                   </Box>
                 );
@@ -175,7 +195,9 @@ export const StatsTab: React.FC = () => {
             flexDirection="column"
           >
             <Box marginBottom={1}>
-              <Text bold color={colors.warning}>{icons.info} Recommendations</Text>
+              <Text bold color={colors.warning}>
+                {icons.info} Recommendations
+              </Text>
             </Box>
             <Box flexDirection="column">
               <Text dimColor>• Use "gortex commit" for guided commits</Text>
@@ -190,7 +212,10 @@ export const StatsTab: React.FC = () => {
             paddingX={2}
             paddingY={1}
           >
-            <Text color={colors.success}>{icons.success} Excellent work! Your repo follows commit conventions well.</Text>
+            <Text color={colors.success}>
+              {icons.success} Excellent work! Your repo follows commit
+              conventions well.
+            </Text>
           </Box>
         )}
       </Box>

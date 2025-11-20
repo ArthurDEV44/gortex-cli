@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
-import { Box, Text, useInput } from 'ink';
-import Gradient from 'ink-gradient';
-import { icons } from '../theme/colors.js';
+import { Box, Text, useInput } from "ink";
+import Gradient from "ink-gradient";
+import { useState } from "react";
+import { icons } from "../theme/colors.js";
 
 interface ConfirmProps {
   message: string;
@@ -9,15 +9,19 @@ interface ConfirmProps {
   onSubmit: (value: boolean) => void;
 }
 
-export const Confirm: React.FC<ConfirmProps> = ({ message, defaultValue = true, onSubmit }) => {
+export const Confirm = ({
+  message,
+  defaultValue = true,
+  onSubmit,
+}: ConfirmProps) => {
   const [value, setValue] = useState(defaultValue);
 
   useInput((input, key) => {
-    if (key.leftArrow || key.rightArrow || input === 'h' || input === 'l') {
+    if (key.leftArrow || key.rightArrow || input === "h" || input === "l") {
       setValue(!value);
-    } else if (input === 'y' || input === 'Y') {
+    } else if (input === "y" || input === "Y") {
       setValue(true);
-    } else if (input === 'n' || input === 'N') {
+    } else if (input === "n" || input === "N") {
       setValue(false);
     } else if (key.return) {
       onSubmit(value);
@@ -34,7 +38,7 @@ export const Confirm: React.FC<ConfirmProps> = ({ message, defaultValue = true, 
 
       <Box
         borderStyle="round"
-        borderColor={value ? 'green' : 'red'}
+        borderColor={value ? "green" : "red"}
         paddingX={2}
         paddingY={1}
       >
@@ -48,7 +52,9 @@ export const Confirm: React.FC<ConfirmProps> = ({ message, defaultValue = true, 
         ) : (
           <Box>
             <Text dimColor>Yes / </Text>
-            <Text color="red" bold>{icons.error} No</Text>
+            <Text color="red" bold>
+              {icons.error} No
+            </Text>
           </Box>
         )}
       </Box>

@@ -4,7 +4,7 @@
 
 export interface FileStatusDTO {
   readonly path: string;
-  readonly status: 'modified' | 'added' | 'deleted' | 'renamed' | 'untracked';
+  readonly status: "modified" | "added" | "deleted" | "renamed" | "untracked";
   readonly label?: string;
 }
 

@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react';
-import { Box, Text } from 'ink';
-import { Confirm } from '../ui/index.js';
-import fs from 'fs/promises';
-import path from 'path';
-import { useGitRepository } from '../infrastructure/di/hooks.js';
-import { icons } from '../theme/colors.js';
+import fs from "node:fs/promises";
+import path from "node:path";
+import { Box, Text } from "ink";
+import { useEffect, useState } from "react";
+import { useGitRepository } from "../infrastructure/di/hooks.js";
+import { icons } from "../theme/colors.js";
+import { Confirm } from "../ui/index.js";
 
 const COMMIT_MSG_HOOK = `#!/bin/sh
 # gortex hook - valide le format des commits
@@ -39,19 +39,19 @@ interface HooksInstallerProps {
   onComplete: (success: boolean) => void;
 }
 
-export const HooksInstaller: React.FC<HooksInstallerProps> = ({ onComplete }) => {
+export const HooksInstaller = ({ onComplete }: HooksInstallerProps) => {
   const gitRepository = useGitRepository();
   const [loading, setLoading] = useState(true);
   const [hookExists, setHookExists] = useState(false);
-  const [hookPath, setHookPath] = useState('');
+  const [hookPath, setHookPath] = useState("");
   const [installing, setInstalling] = useState(false);
 
   useEffect(() => {
     const checkHook = async () => {
       try {
         const gitDir = await gitRepository.getGitDirectory();
-        const hooksDir = path.join(gitDir, 'hooks');
-        const hookFilePath = path.join(hooksDir, 'commit-msg');
+        const hooksDir = path.join(gitDir, "hooks");
+        const hookFilePath = path.join(hooksDir, "commit-msg");
 
         setHookPath(hookFilePath);
 
@@ -63,7 +63,7 @@ export const HooksInstaller: React.FC<HooksInstallerProps> = ({ onComplete }) =>
         }
 
         setLoading(false);
-      } catch (error) {
+      } catch (_error) {
         onComplete(false);
       }
     };
@@ -80,14 +80,17 @@ export const HooksInstaller: React.FC<HooksInstallerProps> = ({ onComplete }) =>
 
     try {
       const gitDir = await gitRepository.getGitDirectory();
-      const hooksDir = path.join(gitDir, 'hooks');
+      const hooksDir = path.join(gitDir, "hooks");
 
       await fs.mkdir(hooksDir, { recursive: true });
       await fs.writeFile(hookPath, COMMIT_MSG_HOOK, { mode: 0o755 });
 
       onComplete(true);
-    } catch (error: any) {
-      console.error('Erreur:', error.message);
+    } catch (error: unknown) {
+      console.error(
+        "Erreur:",
+        error instanceof Error ? error.message : String(error),
+      );
       onComplete(false);
     }
   };
@@ -103,17 +106,25 @@ export const HooksInstaller: React.FC<HooksInstallerProps> = ({ onComplete }) =>
   return (
     <Box flexDirection="column">
       <Box marginBottom={1}>
-        <Text bold color="cyan">Installation du hook Git</Text>
+        <Text bold color="cyan">
+          Installation du hook Git
+        </Text>
       </Box>
 
       {hookExists && (
         <Box marginBottom={1}>
-          <Text color="yellow">{icons.warning} Un hook commit-msg existe déjà</Text>
+          <Text color="yellow">
+            {icons.warning} Un hook commit-msg existe déjà
+          </Text>
         </Box>
       )}
 
       <Confirm
-        message={hookExists ? 'Voulez-vous le remplacer ?' : 'Installer le hook commit-msg ?'}
+        message={
+          hookExists
+            ? "Voulez-vous le remplacer ?"
+            : "Installer le hook commit-msg ?"
+        }
         defaultValue={!hookExists}
         onSubmit={handleConfirm}
       />

@@ -3,14 +3,14 @@
  * Adapts simple-git library to our domain interface
  */
 
-import simpleGit, { SimpleGit } from 'simple-git';
-import {
-  IGitRepository,
-  FileStatus,
+import simpleGit, { type SimpleGit } from "simple-git";
+import type {
   CommitInfo,
   DiffContext,
-} from '../../domain/repositories/IGitRepository.js';
-import { SIZE_LIMITS, GIT_LIMITS } from '../../shared/constants/index.js';
+  FileStatus,
+  IGitRepository,
+} from "../../domain/repositories/IGitRepository.js";
+import { GIT_LIMITS } from "../../shared/constants/index.js";
 
 export class GitRepositoryImpl implements IGitRepository {
   private readonly git: SimpleGit;
@@ -21,7 +21,7 @@ export class GitRepositoryImpl implements IGitRepository {
 
   async isRepository(): Promise<boolean> {
     try {
-      await this.git.revparse(['--git-dir']);
+      await this.git.revparse(["--git-dir"]);
       return true;
     } catch {
       return false;
@@ -29,7 +29,7 @@ export class GitRepositoryImpl implements IGitRepository {
   }
 
   async getGitDirectory(): Promise<string> {
-    const gitDir = await this.git.revparse(['--git-dir']);
+    const gitDir = await this.git.revparse(["--git-dir"]);
     return gitDir.trim();
   }
 
@@ -44,7 +44,7 @@ export class GitRepositoryImpl implements IGitRepository {
       ...status.modified,
       ...status.created,
       ...status.deleted,
-      ...status.renamed.map(r => r.to || r.from),
+      ...status.renamed.map((r) => r.to || r.from),
       ...status.not_added,
     ];
   }
@@ -54,35 +54,35 @@ export class GitRepositoryImpl implements IGitRepository {
     const files: FileStatus[] = [];
 
     // Modified files
-    status.modified.forEach(path => {
-      files.push({ path, status: 'modified' });
+    status.modified.forEach((path) => {
+      files.push({ path, status: "modified" });
     });
 
     // Created files
-    status.created.forEach(path => {
-      files.push({ path, status: 'added' });
+    status.created.forEach((path) => {
+      files.push({ path, status: "added" });
     });
 
     // Deleted files
-    status.deleted.forEach(path => {
-      files.push({ path, status: 'deleted' });
+    status.deleted.forEach((path) => {
+      files.push({ path, status: "deleted" });
     });
 
     // Renamed files
-    status.renamed.forEach(r => {
-      files.push({ path: r.to || r.from, status: 'renamed' });
+    status.renamed.forEach((r) => {
+      files.push({ path: r.to || r.from, status: "renamed" });
     });
 
     // Untracked files
-    status.not_added.forEach(path => {
-      files.push({ path, status: 'untracked' });
+    status.not_added.forEach((path) => {
+      files.push({ path, status: "untracked" });
     });
 
     return files;
   }
 
   async stageAll(): Promise<void> {
-    await this.git.add('.');
+    await this.git.add(".");
   }
 
   async stageFiles(files: string[]): Promise<void> {
@@ -94,8 +94,11 @@ export class GitRepositoryImpl implements IGitRepository {
       await this.git.add(files);
     } catch (error) {
       // If files were deleted, we need to use 'git add -u'
-      if (error instanceof Error && error.message.includes('did not match any files')) {
-        await this.git.add(['-u', ...files]);
+      if (
+        error instanceof Error &&
+        error.message.includes("did not match any files")
+      ) {
+        await this.git.add(["-u", ...files]);
       } else {
         throw error;
       }
@@ -111,7 +114,7 @@ export class GitRepositoryImpl implements IGitRepository {
       maxCount: maxCount || GIT_LIMITS.RECENT_COMMITS_COUNT,
     });
 
-    return log.all.map(commit => ({
+    return log.all.map((commit) => ({
       hash: commit.hash,
       message: commit.message,
       date: commit.date,
@@ -124,32 +127,37 @@ export class GitRepositoryImpl implements IGitRepository {
     const status = await this.git.status();
     let stagedFiles = [
       ...status.staged,
-      ...status.modified.filter(f => status.staged.includes(f)),
+      ...status.modified.filter((f) => status.staged.includes(f)),
     ];
 
     // Filter out non-relevant files for AI context
-    const ignoredFiles = ['pnpm-lock.yaml', 'package-lock.json', 'yarn.lock'];
-    stagedFiles = stagedFiles.filter(file => !ignoredFiles.some(ignored => file.endsWith(ignored)));
-
+    const ignoredFiles = ["pnpm-lock.yaml", "package-lock.json", "yarn.lock"];
+    stagedFiles = stagedFiles.filter(
+      (file) => !ignoredFiles.some((ignored) => file.endsWith(ignored)),
+    );
 
     if (stagedFiles.length === 0) {
       // If only ignored files were staged, treat as no changes
-      throw new Error('Aucun fichier pertinent stagé. Seuls les fichiers de lock ou autres fichiers ignorés ont été détectés.');
+      throw new Error(
+        "Aucun fichier pertinent stagé. Seuls les fichiers de lock ou autres fichiers ignorés ont été détectés.",
+      );
     }
 
     // Get diff of staged files with MORE context lines for better AI understanding
-    const diff = await this.git.diff(['--staged', '--no-color', '-U5']);
+    const diff = await this.git.diff(["--staged", "--no-color", "-U5"]);
 
     if (!diff || diff.trim().length === 0) {
-      throw new Error('Aucun changement détecté dans les fichiers stagés.');
+      throw new Error("Aucun changement détecté dans les fichiers stagés.");
     }
 
     // Get current branch
-    const branch = await this.git.revparse(['--abbrev-ref', 'HEAD']);
+    const branch = await this.git.revparse(["--abbrev-ref", "HEAD"]);
 
     // Get recent commits for context
-    const recentCommitsLog = await this.git.log({ maxCount: GIT_LIMITS.RECENT_COMMITS_COUNT });
-    const recentCommits = recentCommitsLog.all.map(commit => commit.message);
+    const recentCommitsLog = await this.git.log({
+      maxCount: GIT_LIMITS.RECENT_COMMITS_COUNT,
+    });
+    const recentCommits = recentCommitsLog.all.map((commit) => commit.message);
 
     return {
       diff: diff,
@@ -165,7 +173,7 @@ export class GitRepositoryImpl implements IGitRepository {
 
     for (const commit of log.all) {
       const match = commit.message.match(/^(?:\w+)\(([^)]+)\)/);
-      if (match && match[1]) {
+      if (match?.[1]) {
         scopes.add(match[1]);
       }
     }
@@ -174,7 +182,7 @@ export class GitRepositoryImpl implements IGitRepository {
   }
 
   async getCurrentBranch(): Promise<string> {
-    const branch = await this.git.revparse(['--abbrev-ref', 'HEAD']);
+    const branch = await this.git.revparse(["--abbrev-ref", "HEAD"]);
     return branch.trim();
   }
 
@@ -203,17 +211,17 @@ export class GitRepositoryImpl implements IGitRepository {
 
   async getRemoteUrl(remoteName: string): Promise<string> {
     const remotes = await this.git.getRemotes(true);
-    const remote = remotes.find(r => r.name === remoteName);
+    const remote = remotes.find((r) => r.name === remoteName);
     if (!remote) {
       throw new Error(`Remote "${remoteName}" not found`);
     }
-    return remote.refs.fetch || remote.refs.push || '';
+    return remote.refs.fetch || remote.refs.push || "";
   }
 
   async getDefaultRemote(): Promise<string> {
     const remotes = await this.git.getRemotes();
     if (remotes.length === 0) {
-      throw new Error('No remote configured');
+      throw new Error("No remote configured");
     }
     return remotes[0].name;
   }
@@ -221,16 +229,24 @@ export class GitRepositoryImpl implements IGitRepository {
   async hasUpstream(): Promise<boolean> {
     try {
       const branch = await this.getCurrentBranch();
-      const result = await this.git.raw(['rev-parse', '--abbrev-ref', `${branch}@{upstream}`]);
+      const result = await this.git.raw([
+        "rev-parse",
+        "--abbrev-ref",
+        `${branch}@{upstream}`,
+      ]);
       return result.trim().length > 0;
     } catch {
       return false;
     }
   }
 
-  async pushToRemote(remote: string, branch: string, setUpstream?: boolean): Promise<void> {
+  async pushToRemote(
+    remote: string,
+    branch: string,
+    setUpstream?: boolean,
+  ): Promise<void> {
     if (setUpstream) {
-      await this.git.push(['-u', remote, branch]);
+      await this.git.push(["-u", remote, branch]);
     } else {
       await this.git.push(remote, branch);
     }
@@ -249,9 +265,11 @@ export class GitRepositoryImpl implements IGitRepository {
     const fileChunks = this.splitDiffByFile(diff);
 
     // Sort by size (smaller files first - likely more focused changes)
-    const sortedChunks = fileChunks.sort((a, b) => a.content.length - b.content.length);
+    const sortedChunks = fileChunks.sort(
+      (a, b) => a.content.length - b.content.length,
+    );
 
-    let result = '';
+    let result = "";
     let totalLength = 0;
     const includedFiles: string[] = [];
     const excludedFiles: string[] = [];
@@ -259,7 +277,7 @@ export class GitRepositoryImpl implements IGitRepository {
     // Include complete file diffs until we hit the limit
     for (const chunk of sortedChunks) {
       if (totalLength + chunk.content.length <= maxChars) {
-        result += chunk.content + '\n';
+        result += `${chunk.content}\n`;
         totalLength += chunk.content.length + 1;
         includedFiles.push(chunk.filename);
       } else {
@@ -269,9 +287,10 @@ export class GitRepositoryImpl implements IGitRepository {
 
     // Add truncation message with file list
     if (excludedFiles.length > 0) {
-      const truncationMsg = `\n... [Diff tronqué: ${excludedFiles.length} fichier(s) omis pour économiser les tokens] ...\n` +
-        `Fichiers omis: ${excludedFiles.join(', ')}\n` +
-        `Fichiers inclus (${includedFiles.length}): ${includedFiles.join(', ')}\n`;
+      const truncationMsg =
+        `\n... [Diff tronqué: ${excludedFiles.length} fichier(s) omis pour économiser les tokens] ...\n` +
+        `Fichiers omis: ${excludedFiles.join(", ")}\n` +
+        `Fichiers inclus (${includedFiles.length}): ${includedFiles.join(", ")}\n`;
       result = truncationMsg + result;
     }
 
@@ -281,27 +300,29 @@ export class GitRepositoryImpl implements IGitRepository {
   /**
    * Splits a unified diff into chunks per file
    */
-  private splitDiffByFile(diff: string): Array<{ filename: string; content: string }> {
+  private splitDiffByFile(
+    diff: string,
+  ): Array<{ filename: string; content: string }> {
     const chunks: Array<{ filename: string; content: string }> = [];
-    const lines = diff.split('\n');
+    const lines = diff.split("\n");
 
-    let currentFile = '';
+    let currentFile = "";
     let currentContent: string[] = [];
 
     for (const line of lines) {
       // New file marker
-      if (line.startsWith('diff --git')) {
+      if (line.startsWith("diff --git")) {
         // Save previous file
         if (currentFile && currentContent.length > 0) {
           chunks.push({
             filename: currentFile,
-            content: currentContent.join('\n'),
+            content: currentContent.join("\n"),
           });
         }
 
         // Extract filename
         const match = line.match(/diff --git a\/(.+?) b\//);
-        currentFile = match ? match[1] : 'unknown';
+        currentFile = match ? match[1] : "unknown";
         currentContent = [line];
       } else {
         currentContent.push(line);
@@ -312,7 +333,7 @@ export class GitRepositoryImpl implements IGitRepository {
     if (currentFile && currentContent.length > 0) {
       chunks.push({
         filename: currentFile,
-        content: currentContent.join('\n'),
+        content: currentContent.join("\n"),
       });
     }
 

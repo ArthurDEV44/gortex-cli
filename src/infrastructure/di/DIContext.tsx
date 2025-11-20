@@ -3,9 +3,13 @@
  * Provides composition root to React components
  */
 
-import React, { createContext, useContext, useMemo } from 'react';
-import { CompositionRoot, type ApplicationServices } from './CompositionRoot.js';
-import type { ServiceRegistrationOptions } from './ServiceRegistry.js';
+import type React from "react";
+import { createContext, useContext, useMemo } from "react";
+import {
+  type ApplicationServices,
+  CompositionRoot,
+} from "./CompositionRoot.js";
+import type { ServiceRegistrationOptions } from "./ServiceRegistry.js";
 
 /**
  * DI Context value
@@ -33,7 +37,11 @@ interface DIProviderProps {
  * DI Provider Component
  * Provides dependency injection container to React tree
  */
-export const DIProvider: React.FC<DIProviderProps> = ({ children, options, root: providedRoot }) => {
+export const DIProvider = ({
+  children,
+  options,
+  root: providedRoot,
+}: DIProviderProps) => {
   // Create or use provided composition root
   const root = useMemo(() => {
     return providedRoot || new CompositionRoot(options);
@@ -58,7 +66,7 @@ export function useDI(): DIContextValue {
   const context = useContext(DIContext);
 
   if (!context) {
-    throw new Error('useDI must be used within a DIProvider');
+    throw new Error("useDI must be used within a DIProvider");
   }
 
   return context;

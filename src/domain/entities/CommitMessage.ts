@@ -3,9 +3,9 @@
  * Contains business logic and invariants
  */
 
-import { CommitType } from '../value-objects/CommitType.js';
-import { Scope } from '../value-objects/Scope.js';
-import { CommitSubject } from '../value-objects/CommitSubject.js';
+import type { CommitSubject } from "../value-objects/CommitSubject.js";
+import type { CommitType } from "../value-objects/CommitType.js";
+import { Scope } from "../value-objects/Scope.js";
 
 export interface CommitMessageProps {
   type: CommitType;
@@ -32,8 +32,14 @@ export class CommitMessage {
     this.breaking = props.breaking ?? false;
     this.breakingChangeDescription = props.breakingChangeDescription?.trim();
 
-    // Validate invariants
-    this.validate();
+    // Validate body if provided
+    if (
+      this.body !== undefined &&
+      this.body.length > 0 &&
+      this.body.length < 10
+    ) {
+      throw new Error("body too short");
+    }
 
     Object.freeze(this);
   }
@@ -47,24 +53,6 @@ export class CommitMessage {
   }
 
   /**
-   * Validates business rules and invariants
-   */
-  private validate(): void {
-    // If breaking change, description is recommended
-    if (this.breaking && !this.breakingChangeDescription) {
-      // This is a warning-level validation, not an error
-      // Breaking changes should have descriptions, but it's not strictly required
-    }
-
-    // Body should not be too short if provided
-    if (this.body && this.body.length > 0 && this.body.length < 10) {
-      throw new Error(
-        'Commit body too short. Should be at least 10 characters or omitted.'
-      );
-    }
-  }
-
-  /**
    * Formats the commit message as a conventional commit string
    */
   format(): string {
@@ -75,7 +63,7 @@ export class CommitMessage {
     }
 
     if (this.breaking) {
-      message += '!';
+      message += "!";
     }
 
     message += `: ${this.subject.toString()}`;

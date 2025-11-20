@@ -1,7 +1,6 @@
-import React from 'react';
-import { Box, Text } from 'ink';
-import Gradient from 'ink-gradient';
-import { icons } from '../theme/colors.js';
+import { Box, Text } from "ink";
+import Gradient from "ink-gradient";
+import { icons } from "../theme/colors.js";
 
 interface FileDiffPreviewProps {
   files: Array<{
@@ -11,11 +10,14 @@ interface FileDiffPreviewProps {
   maxDisplay?: number;
 }
 
-export const FileDiffPreview: React.FC<FileDiffPreviewProps> = ({ files, maxDisplay = 5 }) => {
+export const FileDiffPreview = ({
+  files,
+  maxDisplay = 5,
+}: FileDiffPreviewProps) => {
   const statusIcons: Record<string, { icon: string; color: string }> = {
-    nouveau: { icon: icons.fileAdded, color: 'green' },
-    modifié: { icon: icons.fileChanged, color: 'yellow' },
-    supprimé: { icon: icons.fileDeleted, color: 'red' },
+    nouveau: { icon: icons.fileAdded, color: "green" },
+    modifié: { icon: icons.fileChanged, color: "yellow" },
+    supprimé: { icon: icons.fileDeleted, color: "red" },
   };
 
   const displayFiles = files.slice(0, maxDisplay);
@@ -37,11 +39,25 @@ export const FileDiffPreview: React.FC<FileDiffPreviewProps> = ({ files, maxDisp
         paddingX={1}
         paddingY={1}
       >
-        {displayFiles.map((file, i) => {
-          const statusInfo = statusIcons[file.status] || { icon: '●', color: 'gray' };
+        {displayFiles.map((file) => {
+          const statusInfo = statusIcons[file.status] || {
+            icon: "●",
+            color: "gray",
+          };
           return (
-            <Box key={i}>
-              <Text color={statusInfo.color as any}>{statusInfo.icon}</Text>
+            <Box key={file.path}>
+              <Text
+                color={
+                  statusInfo.color as
+                    | "green"
+                    | "yellow"
+                    | "red"
+                    | "blue"
+                    | "gray"
+                }
+              >
+                {statusInfo.icon}
+              </Text>
               <Text dimColor> {file.status.padEnd(10)}</Text>
               <Text>{file.path}</Text>
             </Box>
@@ -50,7 +66,9 @@ export const FileDiffPreview: React.FC<FileDiffPreviewProps> = ({ files, maxDisp
 
         {remaining > 0 && (
           <Box marginTop={1}>
-            <Text dimColor italic>... and {remaining} more file{remaining > 1 ? 's' : ''}</Text>
+            <Text dimColor italic>
+              ... and {remaining} more file{remaining > 1 ? "s" : ""}
+            </Text>
           </Box>
         )}
       </Box>

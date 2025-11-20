@@ -1,24 +1,24 @@
-import React, { useState, useEffect } from 'react';
-import { Box, Text } from 'ink';
-import Gradient from 'ink-gradient';
-import { Select, Confirm, TextInput, type SelectItem } from '../ui/index.js';
-import { LoadingSpinner } from './LoadingSpinner.js';
-import { useBranchOperations } from '../infrastructure/di/hooks.js';
-import { icons, commitIcons } from '../theme/colors.js';
+import { Box, Text } from "ink";
+import Gradient from "ink-gradient";
+import { useEffect, useState } from "react";
+import { useBranchOperations } from "../infrastructure/di/hooks.js";
+import { commitIcons, icons } from "../theme/colors.js";
+import { Confirm, Select, type SelectItem, TextInput } from "../ui/index.js";
+import { LoadingSpinner } from "./LoadingSpinner.js";
 
 interface BranchSelectorProps {
   onComplete: (branch: string) => void;
 }
 
-type Step = 'select' | 'create' | 'confirm';
+type Step = "select" | "create" | "confirm";
 
-export const BranchSelector: React.FC<BranchSelectorProps> = ({ onComplete }) => {
+export const BranchSelector = ({ onComplete }: BranchSelectorProps) => {
   const branchOperationsUseCase = useBranchOperations();
 
-  const [step, setStep] = useState<Step>('select');
-  const [currentBranch, setCurrentBranch] = useState<string>('');
+  const [step, setStep] = useState<Step>("select");
+  const [currentBranch, setCurrentBranch] = useState<string>("");
   const [branches, setBranches] = useState<string[]>([]);
-  const [selectedBranch, setSelectedBranch] = useState<string>('');
+  const [selectedBranch, setSelectedBranch] = useState<string>("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -29,7 +29,7 @@ export const BranchSelector: React.FC<BranchSelectorProps> = ({ onComplete }) =>
         const result = await branchOperationsUseCase.getAllBranches();
 
         if (!result.success || !result.branches || !result.currentBranch) {
-          setError(result.error || 'Failed to load branches');
+          setError(result.error || "Failed to load branches");
           setLoading(false);
           return;
         }
@@ -38,13 +38,13 @@ export const BranchSelector: React.FC<BranchSelectorProps> = ({ onComplete }) =>
         setBranches(result.branches);
         setSelectedBranch(result.currentBranch);
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Unexpected error');
+        setError(err instanceof Error ? err.message : "Unexpected error");
       } finally {
         setLoading(false);
       }
     };
     loadBranches();
-  }, []);
+  }, [branchOperationsUseCase]);
 
   if (loading) {
     return <LoadingSpinner message="Loading branches..." />;
@@ -68,19 +68,21 @@ export const BranchSelector: React.FC<BranchSelectorProps> = ({ onComplete }) =>
   }
 
   const handleBranchSelect = async (item: SelectItem) => {
-    if (item.value === '__CREATE_NEW__') {
-      setStep('create');
+    if (item.value === "__CREATE_NEW__") {
+      setStep("create");
     } else {
       setSelectedBranch(item.value);
       if (item.value !== currentBranch) {
         // Use clean architecture use case to checkout branch
-        const result = await branchOperationsUseCase.checkoutBranch({ branchName: item.value });
+        const result = await branchOperationsUseCase.checkoutBranch({
+          branchName: item.value,
+        });
         if (!result.success) {
-          setError(result.error || 'Failed to checkout branch');
+          setError(result.error || "Failed to checkout branch");
           return;
         }
       }
-      setStep('confirm');
+      setStep("confirm");
     }
   };
 
@@ -88,38 +90,40 @@ export const BranchSelector: React.FC<BranchSelectorProps> = ({ onComplete }) =>
     // Use clean architecture use case to create and checkout branch
     const result = await branchOperationsUseCase.createBranch({
       branchName,
-      checkout: true
+      checkout: true,
     });
 
     if (!result.success) {
-      setError(result.error || 'Failed to create branch');
+      setError(result.error || "Failed to create branch");
       return;
     }
 
     setSelectedBranch(branchName);
     setCurrentBranch(branchName);
-    setStep('confirm');
+    setStep("confirm");
   };
 
   const handleConfirm = (confirmed: boolean) => {
     if (confirmed) {
       onComplete(selectedBranch);
     } else {
-      setStep('select');
+      setStep("select");
     }
   };
 
   const validateBranchName = async (input: string): Promise<string | true> => {
     const trimmed = input.trim();
     if (trimmed.length === 0) {
-      return 'Branch name cannot be empty';
+      return "Branch name cannot be empty";
     }
-    if (trimmed.includes(' ')) {
-      return 'Branch name cannot contain spaces';
+    if (trimmed.includes(" ")) {
+      return "Branch name cannot contain spaces";
     }
 
     // Use clean architecture use case to check if branch exists
-    const result = await branchOperationsUseCase.branchExists({ branchName: trimmed });
+    const result = await branchOperationsUseCase.branchExists({
+      branchName: trimmed,
+    });
     if (result.success && result.exists) {
       return `Branch "${trimmed}" already exists`;
     }
@@ -136,19 +140,19 @@ export const BranchSelector: React.FC<BranchSelectorProps> = ({ onComplete }) =>
         </Gradient>
       </Box>
 
-      {step === 'select' && (
+      {step === "select" && (
         <Select
           message="Select or create a branch"
           items={[
-            ...branches.map(b => ({
+            ...branches.map((b) => ({
               label: b === currentBranch ? `${b} ${icons.success}` : b,
               value: b,
-              description: b === currentBranch ? 'Current branch' : undefined,
+              description: b === currentBranch ? "Current branch" : undefined,
             })),
             {
               label: `${commitIcons.feat} Create new branch`,
-              value: '__CREATE_NEW__',
-              description: 'Create and switch to a new branch',
+              value: "__CREATE_NEW__",
+              description: "Create and switch to a new branch",
             },
           ]}
           initialIndex={branches.indexOf(currentBranch)}
@@ -156,7 +160,7 @@ export const BranchSelector: React.FC<BranchSelectorProps> = ({ onComplete }) =>
         />
       )}
 
-      {step === 'create' && (
+      {step === "create" && (
         <TextInput
           message="New branch name:"
           placeholder="feature/my-awesome-feature"
@@ -165,7 +169,7 @@ export const BranchSelector: React.FC<BranchSelectorProps> = ({ onComplete }) =>
         />
       )}
 
-      {step === 'confirm' && (
+      {step === "confirm" && (
         <Box flexDirection="column">
           <Box marginBottom={1}>
             <Text color="green">{icons.success} Selected: </Text>

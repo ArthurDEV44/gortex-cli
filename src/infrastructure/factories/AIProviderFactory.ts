@@ -3,14 +3,14 @@
  * Handles instantiation and configuration of different AI providers
  */
 
-import { IAIProvider } from '../../domain/repositories/IAIProvider.js';
-import { OllamaProviderAdapter } from '../ai/OllamaProviderAdapter.js';
-import { MistralProviderAdapter } from '../ai/MistralProviderAdapter.js';
-import { OpenAIProviderAdapter } from '../ai/OpenAIProviderAdapter.js';
-import type { AIConfig } from '../../types.js';
-import { DEFAULT_AI_CONFIG } from '../../types.js';
+import type { IAIProvider } from "../../domain/repositories/IAIProvider.js";
+import type { AIConfig } from "../../types.js";
+import { DEFAULT_AI_CONFIG } from "../../types.js";
+import { MistralProviderAdapter } from "../ai/MistralProviderAdapter.js";
+import { OllamaProviderAdapter } from "../ai/OllamaProviderAdapter.js";
+import { OpenAIProviderAdapter } from "../ai/OpenAIProviderAdapter.js";
 
-export type AIProviderType = 'ollama' | 'mistral' | 'openai';
+export type AIProviderType = "ollama" | "mistral" | "openai";
 
 export class AIProviderFactory {
   /**
@@ -24,15 +24,17 @@ export class AIProviderFactory {
     const effectiveConfig = config || DEFAULT_AI_CONFIG;
 
     switch (type.toLowerCase()) {
-      case 'ollama':
+      case "ollama":
         return new OllamaProviderAdapter(effectiveConfig);
 
-      case 'mistral':
+      case "mistral":
         return new MistralProviderAdapter(effectiveConfig);
 
-      case 'openai':
+      case "openai":
         if (!config) {
-          throw new Error('OpenAI provider requires configuration with API key');
+          throw new Error(
+            "OpenAI provider requires configuration with API key",
+          );
         }
         return new OpenAIProviderAdapter(config);
 
@@ -52,7 +54,7 @@ export class AIProviderFactory {
     config?: AIConfig,
   ): Promise<IAIProvider | null> {
     try {
-      const provider = this.create(type, config);
+      const provider = AIProviderFactory.create(type, config);
       const isAvailable = await provider.isAvailable();
       return isAvailable ? provider : null;
     } catch {
@@ -65,7 +67,7 @@ export class AIProviderFactory {
    * @returns Array of supported provider type names
    */
   static getSupportedProviders(): AIProviderType[] {
-    return ['ollama', 'mistral', 'openai'];
+    return ["ollama", "mistral", "openai"];
   }
 
   /**
@@ -79,7 +81,7 @@ export class AIProviderFactory {
     config?: AIConfig,
   ): Promise<IAIProvider | null> {
     for (const type of preferredOrder) {
-      const provider = await this.createIfAvailable(type, config);
+      const provider = await AIProviderFactory.createIfAvailable(type, config);
       if (provider) {
         return provider;
       }

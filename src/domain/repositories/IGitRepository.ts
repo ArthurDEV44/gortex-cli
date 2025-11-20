@@ -6,7 +6,7 @@
 
 export interface FileStatus {
   path: string;
-  status: 'modified' | 'added' | 'deleted' | 'renamed' | 'untracked';
+  status: "modified" | "added" | "deleted" | "renamed" | "untracked";
 }
 
 export interface CommitInfo {
@@ -131,5 +131,9 @@ export interface IGitRepository {
   /**
    * Pushes to remote
    */
-  pushToRemote(remote: string, branch: string, setUpstream?: boolean): Promise<void>;
+  pushToRemote(
+    remote: string,
+    branch: string,
+    setUpstream?: boolean,
+  ): Promise<void>;
 }

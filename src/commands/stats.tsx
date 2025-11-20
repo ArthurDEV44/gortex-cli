@@ -3,23 +3,24 @@
  * Migrated from legacy utils/git to DI-based architecture
  */
 
-import React from 'react';
-import { render } from 'ink';
-import chalk from 'chalk';
-import { DIProvider } from '../infrastructure/di/DIContext.js';
-import { CompositionRoot } from '../infrastructure/di/CompositionRoot.js';
-import { ServiceIdentifiers } from '../infrastructure/di/ServiceRegistry.js';
-import type { IGitRepository } from '../domain/repositories/IGitRepository.js';
-import { StatsDisplay } from '../components/StatsDisplay.js';
-import { ErrorMessage } from '../components/ErrorMessage.js';
+import chalk from "chalk";
+import { render } from "ink";
+import { ErrorMessage } from "../components/ErrorMessage.js";
+import { StatsDisplay } from "../components/StatsDisplay.js";
+import type { IGitRepository } from "../domain/repositories/IGitRepository.js";
+import { CompositionRoot } from "../infrastructure/di/CompositionRoot.js";
+import { DIProvider } from "../infrastructure/di/DIContext.js";
+import { ServiceIdentifiers } from "../infrastructure/di/ServiceRegistry.js";
 
-export async function statsCommand(maxCount: number = 100): Promise<void> {
+export async function statsCommand(maxCount = 100): Promise<void> {
   // Create composition root for DI
   const root = new CompositionRoot();
 
   try {
     // Get repository from DI container
-    const gitRepo = root.getContainer().resolve<IGitRepository>(ServiceIdentifiers.GitRepository);
+    const gitRepo = root
+      .getContainer()
+      .resolve<IGitRepository>(ServiceIdentifiers.GitRepository);
 
     // Vérifier qu'on est dans un repo Git
     const isRepo = await gitRepo.isRepository();
@@ -29,10 +30,10 @@ export async function statsCommand(maxCount: number = 100): Promise<void> {
           title="Not a Git Repository"
           message="This directory is not a Git repository"
           suggestions={[
-            'Navigate to a directory with a Git repository',
-            'Initialize a Git repository with: git init',
+            "Navigate to a directory with a Git repository",
+            "Initialize a Git repository with: git init",
           ]}
-        />
+        />,
       );
       await waitUntilExit();
       process.exit(1);
@@ -42,16 +43,15 @@ export async function statsCommand(maxCount: number = 100): Promise<void> {
     const { waitUntilExit } = render(
       <DIProvider root={root}>
         <StatsDisplay maxCount={maxCount} />
-      </DIProvider>
+      </DIProvider>,
     );
 
     await waitUntilExit();
   } catch (error) {
-    console.error(chalk.red('❌ Erreur:'), error);
+    console.error(chalk.red("❌ Erreur:"), error);
     process.exit(1);
   } finally {
     // Cleanup DI container
     root.dispose();
   }
 }
-

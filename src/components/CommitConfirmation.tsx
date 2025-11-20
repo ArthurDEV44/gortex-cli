@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
-import { Box, Text } from 'ink';
-import Gradient from 'ink-gradient';
-import { Confirm } from '../ui/index.js';
-import { LoadingSpinner } from './LoadingSpinner.js';
-import { useStageFiles, useCreateCommit } from '../infrastructure/di/hooks.js';
-import { CommitMessageMapper } from '../application/mappers/CommitMessageMapper.js';
-import { icons } from '../theme/colors.js';
+import { Box, Text } from "ink";
+import Gradient from "ink-gradient";
+import { useState } from "react";
+import { CommitMessageMapper } from "../application/mappers/CommitMessageMapper.js";
+import { useCreateCommit, useStageFiles } from "../infrastructure/di/hooks.js";
+import { icons } from "../theme/colors.js";
+import { Confirm } from "../ui/index.js";
+import { LoadingSpinner } from "./LoadingSpinner.js";
 
 interface CommitConfirmationProps {
   message: string;
@@ -13,11 +13,11 @@ interface CommitConfirmationProps {
   onComplete: (success: boolean) => void;
 }
 
-export const CommitConfirmation: React.FC<CommitConfirmationProps> = ({
+export const CommitConfirmation = ({
   message,
   files,
   onComplete,
-}) => {
+}: CommitConfirmationProps) => {
   const stageFilesUseCase = useStageFiles();
   const createCommitUseCase = useCreateCommit();
 
@@ -36,7 +36,7 @@ export const CommitConfirmation: React.FC<CommitConfirmationProps> = ({
       // Stage files using clean architecture use case
       const stageResult = await stageFilesUseCase.execute({ files });
       if (!stageResult.success) {
-        setError(stageResult.error || 'Failed to stage files');
+        setError(stageResult.error || "Failed to stage files");
         setCommitting(false);
         return;
       }
@@ -45,16 +45,18 @@ export const CommitConfirmation: React.FC<CommitConfirmationProps> = ({
       const messageDTO = CommitMessageMapper.fromFormattedString(message);
 
       // Create commit using clean architecture use case
-      const commitResult = await createCommitUseCase.execute({ message: messageDTO });
+      const commitResult = await createCommitUseCase.execute({
+        message: messageDTO,
+      });
       if (!commitResult.success) {
-        setError(commitResult.error || 'Failed to create commit');
+        setError(commitResult.error || "Failed to create commit");
         setCommitting(false);
         return;
       }
 
       onComplete(true);
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : String(err));
       setCommitting(false);
     }
   };
@@ -66,7 +68,9 @@ export const CommitConfirmation: React.FC<CommitConfirmationProps> = ({
   if (error) {
     return (
       <Box flexDirection="column">
-        <Text color="red">{icons.error} Error: {error}</Text>
+        <Text color="red">
+          {icons.error} Error: {error}
+        </Text>
       </Box>
     );
   }
@@ -89,15 +93,17 @@ export const CommitConfirmation: React.FC<CommitConfirmationProps> = ({
 
         <Box flexDirection="column" marginBottom={1}>
           <Text dimColor>Files ({files.length}):</Text>
-          {files.slice(0, 3).map((file, i) => (
-            <Box key={i} marginLeft={2}>
+          {files.slice(0, 3).map((file) => (
+            <Box key={file} marginLeft={2}>
               <Text color="green">{icons.success}</Text>
               <Text dimColor> {file}</Text>
             </Box>
           ))}
           {files.length > 3 && (
             <Box marginLeft={2}>
-              <Text dimColor italic>... and {files.length - 3} more</Text>
+              <Text dimColor italic>
+                ... and {files.length - 3} more
+              </Text>
             </Box>
           )}
         </Box>
@@ -106,18 +112,24 @@ export const CommitConfirmation: React.FC<CommitConfirmationProps> = ({
           <Text dimColor>Message:</Text>
           <Box marginLeft={2} marginTop={1}>
             <Gradient name="passion">
-              <Text bold>{message.split('\n')[0]}</Text>
+              <Text bold>{message.split("\n")[0]}</Text>
             </Gradient>
           </Box>
-          {message.split('\n').length > 1 && (
+          {message.split("\n").length > 1 && (
             <Box marginLeft={2} marginTop={1}>
-              <Text dimColor>{message.split('\n').slice(1).join('\n').trim()}</Text>
+              <Text dimColor>
+                {message.split("\n").slice(1).join("\n").trim()}
+              </Text>
             </Box>
           )}
         </Box>
       </Box>
 
-      <Confirm message="Create this commit?" defaultValue={true} onSubmit={handleConfirm} />
+      <Confirm
+        message="Create this commit?"
+        defaultValue={true}
+        onSubmit={handleConfirm}
+      />
     </Box>
   );
 };

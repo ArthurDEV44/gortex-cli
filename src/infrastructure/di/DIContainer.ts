@@ -8,9 +8,9 @@
  */
 export enum ServiceLifetime {
   /** New instance created on every resolve */
-  Transient = 'transient',
+  Transient = "transient",
   /** Single instance shared across all resolves */
-  Singleton = 'singleton',
+  Singleton = "singleton",
 }
 
 /**
@@ -30,6 +30,7 @@ interface ServiceDescriptor<T> {
 /**
  * Service identifier (can be a string key or a class constructor)
  */
+// biome-ignore lint/suspicious/noExplicitAny: Constructor parameters need to be flexible for DI container
 export type ServiceIdentifier<T> = string | (new (...args: any[]) => T);
 
 /**
@@ -37,7 +38,7 @@ export type ServiceIdentifier<T> = string | (new (...args: any[]) => T);
  * Manages service registration, resolution, and lifecycle
  */
 export class DIContainer {
-  private services = new Map<string, ServiceDescriptor<any>>();
+  private services = new Map<string, ServiceDescriptor<unknown>>();
 
   /**
    * Registers a service in the container
@@ -116,8 +117,11 @@ export class DIContainer {
     }
 
     // Return existing singleton instance
-    if (descriptor.lifetime === ServiceLifetime.Singleton && descriptor.instance) {
-      return descriptor.instance;
+    if (
+      descriptor.lifetime === ServiceLifetime.Singleton &&
+      descriptor.instance
+    ) {
+      return descriptor.instance as T;
     }
 
     // Create new instance
@@ -128,7 +132,7 @@ export class DIContainer {
       descriptor.instance = instance;
     }
 
-    return instance;
+    return instance as T;
   }
 
   /**
@@ -189,7 +193,7 @@ export class DIContainer {
    * Converts service identifier to string key
    */
   private getKey<T>(identifier: ServiceIdentifier<T>): string {
-    if (typeof identifier === 'string') {
+    if (typeof identifier === "string") {
       return identifier;
     }
     return identifier.name;

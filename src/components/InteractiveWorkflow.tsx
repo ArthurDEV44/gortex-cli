@@ -1,17 +1,17 @@
-import React, { useState } from 'react';
-import { Box } from 'ink';
-import { Brand } from './Brand.js';
-import { TabNavigation, type TabId } from './TabNavigation.js';
-import { CommitTab } from './CommitTab.js';
-import { StatsTab } from './StatsTab.js';
-import type { CommitConfig } from '../types.js';
+import { Box } from "ink";
+import { useState } from "react";
+import type { CommitConfig } from "../types.js";
+import { Brand } from "./Brand.js";
+import { CommitTab } from "./CommitTab.js";
+import { StatsTab } from "./StatsTab.js";
+import { type TabId, TabNavigation } from "./TabNavigation.js";
 
 interface Props {
   config: CommitConfig;
 }
 
-export const InteractiveWorkflow: React.FC<Props> = ({ config: initialConfig }) => {
-  const [activeTab, setActiveTab] = useState<TabId>('commit');
+export const InteractiveWorkflow = ({ config: initialConfig }: Props) => {
+  const [activeTab, setActiveTab] = useState<TabId>("commit");
   const [config] = useState<CommitConfig>(initialConfig);
   const [isCommitWorkflowActive, setIsCommitWorkflowActive] = useState(true);
 
@@ -32,21 +32,19 @@ export const InteractiveWorkflow: React.FC<Props> = ({ config: initialConfig }) 
       <TabNavigation
         activeTab={activeTab}
         onTabChange={handleTabChange}
-        disabled={activeTab === 'commit' && isCommitWorkflowActive}
+        disabled={activeTab === "commit" && isCommitWorkflowActive}
       />
 
       {/* Tab Content */}
       <Box marginTop={1}>
-        {activeTab === 'commit' && (
+        {activeTab === "commit" && (
           <CommitTab
             config={config}
             onWorkflowStateChange={handleWorkflowStateChange}
           />
         )}
 
-        {activeTab === 'stats' && (
-          <StatsTab />
-        )}
+        {activeTab === "stats" && <StatsTab />}
       </Box>
     </Box>
   );

@@ -3,8 +3,8 @@
  * Handles instantiation of repository implementations
  */
 
-import { IGitRepository } from '../../domain/repositories/IGitRepository.js';
-import { GitRepositoryImpl } from '../repositories/GitRepositoryImpl.js';
+import type { IGitRepository } from "../../domain/repositories/IGitRepository.js";
+import { GitRepositoryImpl } from "../repositories/GitRepositoryImpl.js";
 
 export class RepositoryFactory {
   /**
@@ -46,7 +46,7 @@ export class RepositoryFactory {
     workingDir?: string,
   ): Promise<IGitRepository | null> {
     try {
-      return await this.createValidatedGitRepository(workingDir);
+      return await RepositoryFactory.createValidatedGitRepository(workingDir);
     } catch {
       return null;
     }

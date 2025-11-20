@@ -3,4 +3,4 @@
  * Entities have identity and lifecycle
  */
 
-export { CommitMessage, type CommitMessageProps } from './CommitMessage.js';
+export { CommitMessage, type CommitMessageProps } from "./CommitMessage.js";

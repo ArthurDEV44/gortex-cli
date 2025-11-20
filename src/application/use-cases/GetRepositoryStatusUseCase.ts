@@ -3,9 +3,9 @@
  * Retrieves current git status and file information
  */
 
-import { IGitRepository } from '../../domain/repositories/IGitRepository.js';
-import { GitDataMapper } from '../mappers/GitDataMapper.js';
-import { GitStatusDTO, FileStatusDTO } from '../dto/GitStatusDTO.js';
+import type { IGitRepository } from "../../domain/repositories/IGitRepository.js";
+import type { FileStatusDTO, GitStatusDTO } from "../dto/GitStatusDTO.js";
+import { GitDataMapper } from "../mappers/GitDataMapper.js";
 
 export interface RepositoryStatusResult {
   success: boolean;
@@ -27,7 +27,7 @@ export class GetRepositoryStatusUseCase {
       if (!isRepo) {
         return {
           success: false,
-          error: 'Not a git repository',
+          error: "Not a git repository",
         };
       }
 
@@ -37,8 +37,11 @@ export class GetRepositoryStatusUseCase {
       const branch = await this.gitRepository.getCurrentBranch();
 
       // Get file status details
-      const filesWithStatus = await this.gitRepository.getModifiedFilesWithStatus();
-      const filesDTO = filesWithStatus.map(file => GitDataMapper.fileStatusToDTO(file));
+      const filesWithStatus =
+        await this.gitRepository.getModifiedFilesWithStatus();
+      const filesDTO = filesWithStatus.map((file) =>
+        GitDataMapper.fileStatusToDTO(file),
+      );
 
       const statusDTO: GitStatusDTO = {
         hasChanges,
@@ -55,7 +58,7 @@ export class GetRepositoryStatusUseCase {
     } catch (error) {
       return {
         success: false,
-        error: error instanceof Error ? error.message : 'Unknown error',
+        error: error instanceof Error ? error.message : "Unknown error",
       };
     }
   }

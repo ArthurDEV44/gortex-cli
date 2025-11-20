@@ -3,7 +3,7 @@
  * Handles all remote push-related operations
  */
 
-import { IGitRepository } from '../../domain/repositories/IGitRepository.js';
+import type { IGitRepository } from "../../domain/repositories/IGitRepository.js";
 
 export interface CheckRemoteResult {
   success: boolean;
@@ -39,7 +39,7 @@ export class PushOperationsUseCase {
       if (!isRepo) {
         return {
           success: false,
-          error: 'Not a git repository',
+          error: "Not a git repository",
         };
       }
 
@@ -65,7 +65,7 @@ export class PushOperationsUseCase {
     } catch (error) {
       return {
         success: false,
-        error: error instanceof Error ? error.message : 'Unknown error',
+        error: error instanceof Error ? error.message : "Unknown error",
       };
     }
   }
@@ -73,13 +73,15 @@ export class PushOperationsUseCase {
   /**
    * Pushes to remote
    */
-  async pushToRemote(request: PushToRemoteRequest = {}): Promise<PushToRemoteResult> {
+  async pushToRemote(
+    request: PushToRemoteRequest = {},
+  ): Promise<PushToRemoteResult> {
     try {
       const isRepo = await this.gitRepository.isRepository();
       if (!isRepo) {
         return {
           success: false,
-          error: 'Not a git repository',
+          error: "Not a git repository",
         };
       }
 
@@ -88,22 +90,29 @@ export class PushOperationsUseCase {
       if (!hasRemote) {
         return {
           success: false,
-          error: 'No remote configured',
+          error: "No remote configured",
         };
       }
 
       // Get remote name (use provided or default)
-      const remoteName = request.remote || (await this.gitRepository.getDefaultRemote());
+      const remoteName =
+        request.remote || (await this.gitRepository.getDefaultRemote());
 
       // Get branch name (use provided or current)
-      const branchName = request.branch || (await this.gitRepository.getCurrentBranch());
+      const branchName =
+        request.branch || (await this.gitRepository.getCurrentBranch());
 
       // Determine if we need to set upstream
       const hasUpstream = await this.gitRepository.hasUpstream();
-      const setUpstream = request.setUpstream !== undefined ? request.setUpstream : !hasUpstream;
+      const setUpstream =
+        request.setUpstream !== undefined ? request.setUpstream : !hasUpstream;
 
       // Push
-      await this.gitRepository.pushToRemote(remoteName, branchName, setUpstream);
+      await this.gitRepository.pushToRemote(
+        remoteName,
+        branchName,
+        setUpstream,
+      );
 
       return {
         success: true,
@@ -113,7 +122,7 @@ export class PushOperationsUseCase {
     } catch (error) {
       return {
         success: false,
-        error: error instanceof Error ? error.message : 'Unknown error',
+        error: error instanceof Error ? error.message : "Unknown error",
       };
     }
   }

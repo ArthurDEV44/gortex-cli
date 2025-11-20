@@ -1,6 +1,6 @@
-import simpleGit from 'simple-git';
-import type { CommitContext } from './providers/base.js';
-import { SIZE_LIMITS, GIT_LIMITS } from '../shared/constants/index.js';
+import simpleGit from "simple-git";
+import { GIT_LIMITS } from "../shared/constants/index.js";
+import type { CommitContext } from "./providers/base.js";
 
 const git = simpleGit();
 
@@ -9,7 +9,7 @@ const git = simpleGit();
  */
 export async function analyzeStagedChanges(): Promise<{
   diff: string;
-  context: Omit<CommitContext, 'availableTypes' | 'availableScopes'>;
+  context: Omit<CommitContext, "availableTypes" | "availableScopes">;
 }> {
   // Récupère les fichiers stagés
   const status = await git.status();
@@ -19,21 +19,25 @@ export async function analyzeStagedChanges(): Promise<{
   ];
 
   if (stagedFiles.length === 0) {
-    throw new Error('Aucun fichier stagé. Utilisez "git add" pour stager des fichiers.');
+    throw new Error(
+      'Aucun fichier stagé. Utilisez "git add" pour stager des fichiers.',
+    );
   }
 
   // Récupère le diff des fichiers stagés
-  const diff = await git.diff(['--staged', '--no-color']);
+  const diff = await git.diff(["--staged", "--no-color"]);
 
   if (!diff || diff.trim().length === 0) {
-    throw new Error('Aucun changement détecté dans les fichiers stagés.');
+    throw new Error("Aucun changement détecté dans les fichiers stagés.");
   }
 
   // Récupère la branche courante
-  const branch = await git.revparse(['--abbrev-ref', 'HEAD']);
+  const branch = await git.revparse(["--abbrev-ref", "HEAD"]);
 
   // Récupère quelques commits récents pour contexte
-  const recentCommitsLog = await git.log({ maxCount: GIT_LIMITS.RECENT_COMMITS_COUNT });
+  const recentCommitsLog = await git.log({
+    maxCount: GIT_LIMITS.RECENT_COMMITS_COUNT,
+  });
   const recentCommits = recentCommitsLog.all.map((commit) => commit.message);
 
   return {
@@ -45,4 +49,3 @@ export async function analyzeStagedChanges(): Promise<{
     },
   };
 }
-

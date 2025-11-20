@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
-import { Box, Text, useInput } from 'ink';
-import Gradient from 'ink-gradient';
-import { icons } from '../theme/colors.js';
+import { Box, Text, useInput } from "ink";
+import Gradient from "ink-gradient";
+import { useState } from "react";
+import { icons } from "../theme/colors.js";
 
 export interface MultiSelectItem {
   label: string;
@@ -17,41 +17,47 @@ interface MultiSelectProps {
   minSelection?: number;
 }
 
-export const MultiSelect: React.FC<MultiSelectProps> = ({
+export const MultiSelect = ({
   message,
   items: initialItems,
   onSubmit,
   minSelection = 1,
-}) => {
+}: MultiSelectProps) => {
   const [items, setItems] = useState<MultiSelectItem[]>(
-    initialItems.map(item => ({ ...item, checked: item.checked ?? false }))
+    initialItems.map((item) => ({ ...item, checked: item.checked ?? false })),
   );
   const [cursor, setCursor] = useState(0);
 
   useInput((input, key) => {
-    if (key.upArrow || input === 'k') {
-      setCursor(prev => (prev > 0 ? prev - 1 : items.length - 1));
-    } else if (key.downArrow || input === 'j') {
-      setCursor(prev => (prev < items.length - 1 ? prev + 1 : 0));
-    } else if (input === ' ') {
-      setItems(prev =>
-        prev.map((item, i) => (i === cursor ? { ...item, checked: !item.checked } : item))
+    if (key.upArrow || input === "k") {
+      setCursor((prev) => (prev > 0 ? prev - 1 : items.length - 1));
+    } else if (key.downArrow || input === "j") {
+      setCursor((prev) => (prev < items.length - 1 ? prev + 1 : 0));
+    } else if (input === " ") {
+      setItems((prev) =>
+        prev.map((item, i) =>
+          i === cursor ? { ...item, checked: !item.checked } : item,
+        ),
       );
     } else if (key.return) {
-      const selected = items.filter(item => item.checked).map(item => item.value);
+      const selected = items
+        .filter((item) => item.checked)
+        .map((item) => item.value);
       if (selected.length >= minSelection) {
         onSubmit(selected);
       }
-    } else if (input === 'a') {
+    } else if (input === "a") {
       // Select all
-      setItems(prev => prev.map(item => ({ ...item, checked: true })));
-    } else if (input === 'i') {
+      setItems((prev) => prev.map((item) => ({ ...item, checked: true })));
+    } else if (input === "i") {
       // Invert selection
-      setItems(prev => prev.map(item => ({ ...item, checked: !item.checked })));
+      setItems((prev) =>
+        prev.map((item) => ({ ...item, checked: !item.checked })),
+      );
     }
   });
 
-  const selectedCount = items.filter(item => item.checked).length;
+  const selectedCount = items.filter((item) => item.checked).length;
   const isValid = selectedCount >= minSelection;
 
   return (
@@ -64,7 +70,7 @@ export const MultiSelect: React.FC<MultiSelectProps> = ({
 
       <Box marginBottom={1}>
         <Text dimColor>Selected: </Text>
-        <Text color={isValid ? 'green' : 'yellow'} bold>
+        <Text color={isValid ? "green" : "yellow"} bold>
           {selectedCount}
         </Text>
         <Text dimColor> / {items.length}</Text>
@@ -88,18 +94,22 @@ export const MultiSelect: React.FC<MultiSelectProps> = ({
                     <Text bold>{icons.pointer} </Text>
                   </Gradient>
                 ) : (
-                  <Text dimColor>  </Text>
+                  <Text dimColor> </Text>
                 )}
-                <Text color={item.checked ? 'green' : isCursor ? 'cyan' : undefined}>
-                  {item.checked ? '◉ ' : '◯ '}
+                <Text
+                  color={item.checked ? "green" : isCursor ? "cyan" : undefined}
+                >
+                  {item.checked ? "◉ " : "◯ "}
                 </Text>
-                <Text color={isCursor ? 'cyan' : undefined} bold={isCursor}>
+                <Text color={isCursor ? "cyan" : undefined} bold={isCursor}>
                   {item.label}
                 </Text>
               </Box>
               {isCursor && item.description && (
                 <Box marginLeft={4} marginTop={0}>
-                  <Text dimColor italic>{item.description}</Text>
+                  <Text dimColor italic>
+                    {item.description}
+                  </Text>
                 </Box>
               )}
             </Box>

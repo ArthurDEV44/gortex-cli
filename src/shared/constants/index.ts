@@ -5,7 +5,7 @@
  * to improve maintainability and avoid duplication.
  */
 
-export * from './timing.js';
-export * from './limits.js';
-export * from './ai-defaults.js';
-export * from './commit-types.js';
+export * from "./ai-defaults.js";
+export * from "./commit-types.js";
+export * from "./limits.js";
+export * from "./timing.js";

@@ -4,7 +4,7 @@
  * Part of the Domain layer - contains no implementation details
  */
 
-import { CommitMessage } from '../entities/CommitMessage.js';
+import type { CommitMessage } from "../entities/CommitMessage.js";
 
 export interface AIGenerationContext {
   diff: string;
@@ -40,7 +40,9 @@ export interface IAIProvider {
    * Generates a commit message based on the given context
    * @throws Error if generation fails or provider is not available
    */
-  generateCommitMessage(context: AIGenerationContext): Promise<AIGenerationResult>;
+  generateCommitMessage(
+    context: AIGenerationContext,
+  ): Promise<AIGenerationResult>;
 
   /**
    * Validates provider configuration

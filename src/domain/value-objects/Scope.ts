@@ -21,13 +21,13 @@ export class Scope {
     // Empty string or whitespace-only is invalid
     const trimmed = scope.trim();
     if (trimmed.length === 0) {
-      throw new Error('Scope cannot be empty or whitespace-only');
+      throw new Error("Scope cannot be empty or whitespace-only");
     }
 
     // Validate format: lowercase alphanumeric with hyphens
     if (!/^[a-z0-9-]+$/.test(trimmed)) {
       throw new Error(
-        'Scope must contain only lowercase letters, numbers, and hyphens'
+        "Scope must contain only lowercase letters, numbers, and hyphens",
       );
     }
 
@@ -66,6 +66,6 @@ export class Scope {
    * Returns the string representation
    */
   toString(): string {
-    return this.value ?? '';
+    return this.value ?? "";
   }
 }

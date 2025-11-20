@@ -15,9 +15,9 @@
  * TODO Phase 11: Complete removal after all components are migrated
  */
 
-import { simpleGit, SimpleGit, LogResult } from 'simple-git';
-import type { CommitStats } from '../types.js';
-import { isConventionalCommit, parseConventionalCommit } from './validate.js';
+import { type LogResult, type SimpleGit, simpleGit } from "simple-git";
+import type { CommitStats } from "../types.js";
+import { isConventionalCommit, parseConventionalCommit } from "./validate.js";
 
 const git: SimpleGit = simpleGit();
 
@@ -26,7 +26,7 @@ const git: SimpleGit = simpleGit();
  */
 export async function isGitRepository(): Promise<boolean> {
   try {
-    await git.revparse(['--git-dir']);
+    await git.revparse(["--git-dir"]);
     return true;
   } catch {
     return false;
@@ -46,14 +46,14 @@ export async function hasChanges(): Promise<boolean> {
  */
 export async function getModifiedFiles(): Promise<string[]> {
   const status = await git.status();
-  return status.files.map(file => file.path);
+  return status.files.map((file) => file.path);
 }
 
 /**
  * Stage tous les fichiers
  */
 export async function stageAll(): Promise<void> {
-  await git.add('.');
+  await git.add(".");
 }
 
 /**
@@ -66,14 +66,14 @@ export async function createCommit(message: string): Promise<void> {
 /**
  * Récupère l'historique des commits
  */
-export async function getCommitHistory(maxCount: number = 100): Promise<LogResult> {
+export async function getCommitHistory(maxCount = 100): Promise<LogResult> {
   return await git.log({ maxCount });
 }
 
 /**
  * Analyse les statistiques des commits
  */
-export async function analyzeCommitStats(maxCount: number = 100): Promise<CommitStats> {
+export async function analyzeCommitStats(maxCount = 100): Promise<CommitStats> {
   const log = await getCommitHistory(maxCount);
   const commits = log.all;
 
@@ -110,7 +110,7 @@ export async function analyzeCommitStats(maxCount: number = 100): Promise<Commit
  * Récupère le chemin du dossier .git
  */
 export async function getGitDir(): Promise<string> {
-  const gitDir = await git.revparse(['--git-dir']);
+  const gitDir = await git.revparse(["--git-dir"]);
   return gitDir.trim();
 }
 
@@ -118,7 +118,7 @@ export async function getGitDir(): Promise<string> {
  * Récupère la branche actuelle
  */
 export async function getCurrentBranch(): Promise<string> {
-  const branch = await git.revparse(['--abbrev-ref', 'HEAD']);
+  const branch = await git.revparse(["--abbrev-ref", "HEAD"]);
   return branch.trim();
 }
 
@@ -140,7 +140,9 @@ export async function checkoutBranch(branch: string): Promise<void> {
 /**
  * Crée une nouvelle branche et bascule dessus
  */
-export async function createAndCheckoutBranch(branchName: string): Promise<void> {
+export async function createAndCheckoutBranch(
+  branchName: string,
+): Promise<void> {
   await git.checkoutLocalBranch(branchName);
 }
 
@@ -155,9 +157,11 @@ export async function branchExists(branchName: string): Promise<boolean> {
 /**
  * Récupère les fichiers modifiés avec leur statut
  */
-export async function getModifiedFilesWithStatus(): Promise<Array<{ path: string; status: string }>> {
+export async function getModifiedFilesWithStatus(): Promise<
+  Array<{ path: string; status: string }>
+> {
   const status = await git.status();
-  return status.files.map(file => ({
+  return status.files.map((file) => ({
     path: file.path,
     status: getStatusLabel(file.working_dir, file.index),
   }));
@@ -167,13 +171,13 @@ export async function getModifiedFilesWithStatus(): Promise<Array<{ path: string
  * Convertit les codes de statut Git en labels lisibles
  */
 function getStatusLabel(workingDir: string, index: string): string {
-  if (index === 'A') return 'nouveau';
-  if (index === 'M') return 'modifié';
-  if (index === 'D') return 'supprimé';
-  if (workingDir === 'M') return 'modifié';
-  if (workingDir === 'D') return 'supprimé';
-  if (workingDir === '?') return 'non suivi';
-  return 'modifié';
+  if (index === "A") return "nouveau";
+  if (index === "M") return "modifié";
+  if (index === "D") return "supprimé";
+  if (workingDir === "M") return "modifié";
+  if (workingDir === "D") return "supprimé";
+  if (workingDir === "?") return "non suivi";
+  return "modifié";
 }
 
 /**
@@ -190,10 +194,13 @@ export async function stageFiles(files: string[]): Promise<void> {
   for (const file of files) {
     try {
       await git.add(file);
-    } catch (error: any) {
+    } catch (error: unknown) {
       // Si le fichier est supprimé, git add échoue
       // On ignore l'erreur, on gèrera les suppressions après
-      if (!error.message?.includes('did not match any files')) {
+      if (
+        error instanceof Error &&
+        !error.message?.includes("did not match any files")
+      ) {
         throw error;
       }
     }
@@ -202,7 +209,7 @@ export async function stageFiles(files: string[]): Promise<void> {
   // Ensuite, stage explicitement tous les fichiers supprimés avec git add -u .
   // Cette commande ne génère pas d'erreur même si aucun fichier n'est supprimé
   try {
-    await git.raw(['add', '-u', '.']);
+    await git.raw(["add", "-u", "."]);
   } catch {
     // Ignorer les erreurs de git add -u
   }
@@ -226,48 +233,49 @@ export async function hasRemote(): Promise<boolean> {
 export async function getDefaultRemote(): Promise<string> {
   const remotes = await git.getRemotes();
   if (remotes.length === 0) {
-    throw new Error('Aucun remote configuré');
+    throw new Error("Aucun remote configuré");
   }
   // Chercher 'origin' en priorité
-  const origin = remotes.find(r => r.name === 'origin');
+  const origin = remotes.find((r) => r.name === "origin");
   return origin ? origin.name : remotes[0].name;
 }
 
 /**
  * Récupère l'URL du remote
  */
-export async function getRemoteUrl(remote: string = 'origin'): Promise<string | null> {
+export async function getRemoteUrl(remote = "origin"): Promise<string | null> {
   try {
     const remotes = await git.getRemotes(true);
-    const remoteObj = remotes.find(r => r.name === remote);
+    const remoteObj = remotes.find((r) => r.name === remote);
     return remoteObj?.refs.push || null;
   } catch {
     return null;
   }
 }
 
-
 /**
  * Push la branche actuelle vers le remote
  */
-export async function pushToRemote(remote: string, branch: string, setUpstream: boolean = false): Promise<void> {
+export async function pushToRemote(
+  remote: string,
+  branch: string,
+  setUpstream = false,
+): Promise<void> {
   if (setUpstream) {
-    await git.push(['-u', remote, branch]);
+    await git.push(["-u", remote, branch]);
   } else {
     await git.push(remote, branch);
   }
 }
-
 
 /**
  * Vérifie si la branche actuelle track un remote
  */
 export async function hasUpstream(): Promise<boolean> {
   try {
-    await git.revparse(['--abbrev-ref', '@{upstream}']);
+    await git.revparse(["--abbrev-ref", "@{upstream}"]);
     return true;
   } catch {
     return false;
   }
 }
-

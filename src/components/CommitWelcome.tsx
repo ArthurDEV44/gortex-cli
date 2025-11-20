@@ -1,15 +1,13 @@
-import React from 'react';
-import { Box, Text, useInput } from 'ink';
-import Gradient from 'ink-gradient';
-import { colors, createGradient, icons } from '../theme/colors.js';
+import { Box, Text, useInput } from "ink";
+import { colors, createGradient, icons } from "../theme/colors.js";
 
 interface CommitWelcomeProps {
   onStart: () => void;
 }
 
-export const CommitWelcome: React.FC<CommitWelcomeProps> = ({ onStart }) => {
+export const CommitWelcome = ({ onStart }: CommitWelcomeProps) => {
   useInput((input, key) => {
-    if (key.return || input === ' ') {
+    if (key.return || input === " ") {
       onStart();
     }
   });
@@ -25,7 +23,9 @@ export const CommitWelcome: React.FC<CommitWelcomeProps> = ({ onStart }) => {
       >
         <Box justifyContent="center" marginBottom={1}>
           <Text bold color={colors.primary}>
-            {createGradient.warmth(`${icons.commit} Create a Conventional Commit`)}
+            {createGradient.warmth(
+              `${icons.commit} Create a Conventional Commit`,
+            )}
           </Text>
         </Box>
 
@@ -34,11 +34,14 @@ export const CommitWelcome: React.FC<CommitWelcomeProps> = ({ onStart }) => {
             This workflow will guide you through creating a commit:
           </Text>
           <Box marginTop={1} flexDirection="column">
-            <Text dimColor>  {icons.branch} Select or create a branch</Text>
-            <Text dimColor>  {icons.fileChanged} Choose files to stage</Text>
-            <Text dimColor>  {icons.step} Generate commit message (AI or Manual)</Text>
-            <Text dimColor>  {icons.success} Confirm and commit</Text>
-            <Text dimColor>  {icons.push} Push to remote (optional)</Text>
+            <Text dimColor> {icons.branch} Select or create a branch</Text>
+            <Text dimColor> {icons.fileChanged} Choose files to stage</Text>
+            <Text dimColor>
+              {" "}
+              {icons.step} Generate commit message (AI or Manual)
+            </Text>
+            <Text dimColor> {icons.success} Confirm and commit</Text>
+            <Text dimColor> {icons.push} Push to remote (optional)</Text>
           </Box>
         </Box>
 
@@ -49,7 +52,9 @@ export const CommitWelcome: React.FC<CommitWelcomeProps> = ({ onStart }) => {
             paddingX={2}
             paddingY={0}
           >
-            <Text bold color={colors.success}>Press Enter or Space to start</Text>
+            <Text bold color={colors.success}>
+              Press Enter or Space to start
+            </Text>
           </Box>
         </Box>
 

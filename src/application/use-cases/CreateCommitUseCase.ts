@@ -3,9 +3,9 @@
  * Orchestrates the flow of creating and committing changes
  */
 
-import { IGitRepository } from '../../domain/repositories/IGitRepository.js';
-import { CommitMessageMapper } from '../mappers/CommitMessageMapper.js';
-import { CommitMessageDTO } from '../dto/CommitMessageDTO.js';
+import type { IGitRepository } from "../../domain/repositories/IGitRepository.js";
+import type { CommitMessageDTO } from "../dto/CommitMessageDTO.js";
+import { CommitMessageMapper } from "../mappers/CommitMessageMapper.js";
 
 export interface CreateCommitRequest {
   message: CommitMessageDTO;
@@ -33,8 +33,8 @@ export class CreateCommitUseCase {
       if (!isRepo) {
         return {
           success: false,
-          formattedMessage: '',
-          error: 'Not a git repository',
+          formattedMessage: "",
+          error: "Not a git repository",
         };
       }
 
@@ -43,8 +43,8 @@ export class CreateCommitUseCase {
       if (!validation.valid) {
         return {
           success: false,
-          formattedMessage: '',
-          error: `Invalid commit message: ${validation.errors.join(', ')}`,
+          formattedMessage: "",
+          error: `Invalid commit message: ${validation.errors.join(", ")}`,
         };
       }
 
@@ -65,12 +65,13 @@ export class CreateCommitUseCase {
           return {
             success: true,
             formattedMessage,
-            error: 'Commit created but no remote configured for push',
+            error: "Commit created but no remote configured for push",
             pushed: false,
           };
         }
 
-        const remote = request.remote || (await this.gitRepository.getDefaultRemote());
+        const remote =
+          request.remote || (await this.gitRepository.getDefaultRemote());
         const branch = await this.gitRepository.getCurrentBranch();
         const hasUpstream = await this.gitRepository.hasUpstream();
 
@@ -86,8 +87,8 @@ export class CreateCommitUseCase {
     } catch (error) {
       return {
         success: false,
-        formattedMessage: '',
-        error: error instanceof Error ? error.message : 'Unknown error',
+        formattedMessage: "",
+        error: error instanceof Error ? error.message : "Unknown error",
       };
     }
   }

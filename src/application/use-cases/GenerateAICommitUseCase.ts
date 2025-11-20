@@ -3,13 +3,16 @@
  * Orchestrates AI generation with context from git repository
  */
 
-import { IGitRepository } from '../../domain/repositories/IGitRepository.js';
-import { IAIProvider, AIGenerationContext } from '../../domain/repositories/IAIProvider.js';
-import { CommitMessageMapper } from '../mappers/CommitMessageMapper.js';
-import { AIGenerationResultDTO } from '../dto/AIGenerationDTO.js';
-import { getCommitTypeValues } from '../../shared/constants/commit-types.js';
-import { SIZE_LIMITS } from '../../shared/constants/limits.js';
-import { GitRepositoryImpl } from '../../infrastructure/repositories/GitRepositoryImpl.js';
+import type {
+  AIGenerationContext,
+  IAIProvider,
+} from "../../domain/repositories/IAIProvider.js";
+import type { IGitRepository } from "../../domain/repositories/IGitRepository.js";
+import { GitRepositoryImpl } from "../../infrastructure/repositories/GitRepositoryImpl.js";
+import { getCommitTypeValues } from "../../shared/constants/commit-types.js";
+import { SIZE_LIMITS } from "../../shared/constants/limits.js";
+import type { AIGenerationResultDTO } from "../dto/AIGenerationDTO.js";
+import { CommitMessageMapper } from "../mappers/CommitMessageMapper.js";
 
 export interface GenerateAICommitRequest {
   provider: IAIProvider;
@@ -22,7 +25,9 @@ export class GenerateAICommitUseCase {
   /**
    * Executes the AI commit generation use case
    */
-  async execute(request: GenerateAICommitRequest): Promise<AIGenerationResultDTO> {
+  async execute(
+    request: GenerateAICommitRequest,
+  ): Promise<AIGenerationResultDTO> {
     try {
       // Validate the repository
       const isRepo = await this.gitRepository.isRepository();
@@ -30,7 +35,7 @@ export class GenerateAICommitUseCase {
         return {
           success: false,
           provider: request.provider.getName(),
-          error: 'Not a git repository',
+          error: "Not a git repository",
         };
       }
 
@@ -52,11 +57,15 @@ export class GenerateAICommitUseCase {
       if (diffForAI.length > SIZE_LIMITS.MAX_DIFF_LENGTH) {
         // Use smart truncation if repository implements it
         if (this.gitRepository instanceof GitRepositoryImpl) {
-          diffForAI = this.gitRepository.smartTruncateDiff(diffForAI, SIZE_LIMITS.MAX_DIFF_LENGTH);
+          diffForAI = this.gitRepository.smartTruncateDiff(
+            diffForAI,
+            SIZE_LIMITS.MAX_DIFF_LENGTH,
+          );
         } else {
           // Fallback to simple truncation
           diffForAI = diffForAI.substring(0, SIZE_LIMITS.MAX_DIFF_LENGTH);
-          diffForAI += '\n\n[... Diff tronqué en raison de limitations de taille ...]';
+          diffForAI +=
+            "\n\n[... Diff tronqué en raison de limitations de taille ...]";
         }
       }
 
@@ -93,7 +102,10 @@ export class GenerateAICommitUseCase {
       return {
         success: false,
         provider: request.provider.getName(),
-        error: error instanceof Error ? error.message : 'Unknown error during AI generation',
+        error:
+          error instanceof Error
+            ? error.message
+            : "Unknown error during AI generation",
       };
     }
   }

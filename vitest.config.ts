@@ -1,4 +1,4 @@
-import { defineConfig } from 'vitest/config';
+import { defineConfig } from "vitest/config";
 
 export default defineConfig({
   test: {
@@ -6,26 +6,26 @@ export default defineConfig({
     globals: true,
 
     // Test environment
-    environment: 'node',
+    environment: "node",
 
     // Include test files
-    include: ['src/**/*.{test,spec}.{ts,tsx}'],
+    include: ["src/**/*.{test,spec}.{ts,tsx}"],
 
     // Exclude patterns
     exclude: [
-      'node_modules',
-      'dist',
-      '.git',
-      '.cache',
-      '**/node_modules/**',
-      '**/dist/**',
+      "node_modules",
+      "dist",
+      ".git",
+      ".cache",
+      "**/node_modules/**",
+      "**/dist/**",
     ],
 
     // Coverage configuration
     coverage: {
-      provider: 'v8',
+      provider: "v8",
       enabled: true,
-      reporter: ['text', 'json', 'html', 'lcov'],
+      reporter: ["text", "json", "html", "lcov"],
 
       // Coverage thresholds (80% target)
       thresholds: {
@@ -36,18 +36,17 @@ export default defineConfig({
       },
 
       // Files to include in coverage
-      include: ['src/**/*.{ts,tsx}'],
+      include: ["src/**/*.{ts,tsx}"],
 
       // Files to exclude from coverage
       exclude: [
-        'src/**/*.{test,spec}.{ts,tsx}',
-        'src/**/__mocks__/**',
-        'src/index.ts', // Entry point, mostly imports
-        'src/types.ts', // Type definitions only
-        '**/node_modules/**',
-        '**/dist/**',
+        "src/**/*.{test,spec}.{ts,tsx}",
+        "src/**/__mocks__/**",
+        "src/index.ts", // Entry point, mostly imports
+        "src/types.ts", // Type definitions only
+        "**/node_modules/**",
+        "**/dist/**",
       ],
-
     },
 
     // Mock configuration
@@ -61,10 +60,10 @@ export default defineConfig({
 
     // Parallel execution
     isolate: true,
-    pool: 'threads',
+    pool: "threads",
 
     // Reporter configuration
-    reporters: ['verbose'],
+    reporters: ["verbose"],
 
     // Watch mode configuration
     watch: false,
@@ -73,7 +72,7 @@ export default defineConfig({
   // Resolve configuration for ESM
   resolve: {
     alias: {
-      '@': '/src',
+      "@": "/src",
     },
   },
 });

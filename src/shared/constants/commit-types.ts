@@ -8,17 +8,17 @@
  * These are the widely-recognized emojis for conventional commits
  */
 export const COMMIT_TYPE_EMOJIS = {
-  feat: '✨',
-  fix: '🐛',
-  docs: '📝',
-  style: '💄',
-  refactor: '♻️',
-  perf: '⚡️',
-  test: '✅',
-  build: '📦',
-  ci: '👷',
-  chore: '🔧',
-  revert: '⏪',
+  feat: "✨",
+  fix: "🐛",
+  docs: "📝",
+  style: "💄",
+  refactor: "♻️",
+  perf: "⚡️",
+  test: "✅",
+  build: "📦",
+  ci: "👷",
+  chore: "🔧",
+  revert: "⏪",
 } as const;
 
 /**
@@ -26,17 +26,17 @@ export const COMMIT_TYPE_EMOJIS = {
  * Used in UI for a more subtle, professional appearance
  */
 export const COMMIT_TYPE_ICONS = {
-  feat: '✦',      // Feature - Star spike
-  fix: '◆',       // Fix - Diamond
-  docs: '◈',      // Documentation - Empty diamond
-  style: '◇',     // Style - Lozenge
-  refactor: '⟲',  // Refactor - Circle arrow
-  perf: '⚡',     // Performance - Lightning
-  test: '✓',      // Test - Check
-  build: '▣',     // Build - Square with dot
-  ci: '⚙',        // CI - Gear
-  chore: '○',     // Chore - Circle
-  revert: '↶',    // Revert - Return arrow
+  feat: "✦", // Feature - Star spike
+  fix: "◆", // Fix - Diamond
+  docs: "◈", // Documentation - Empty diamond
+  style: "◇", // Style - Lozenge
+  refactor: "⟲", // Refactor - Circle arrow
+  perf: "⚡", // Performance - Lightning
+  test: "✓", // Test - Check
+  build: "▣", // Build - Square with dot
+  ci: "⚙", // CI - Gear
+  chore: "○", // Chore - Circle
+  revert: "↶", // Revert - Return arrow
 } as const;
 
 /**
@@ -45,8 +45,10 @@ export const COMMIT_TYPE_ICONS = {
  * @param fallback - Fallback emoji if type not found (default: 📌)
  * @returns The corresponding emoji
  */
-export function getCommitTypeEmoji(type: string, fallback = '📌'): string {
-  return COMMIT_TYPE_EMOJIS[type as keyof typeof COMMIT_TYPE_EMOJIS] || fallback;
+export function getCommitTypeEmoji(type: string, fallback = "📌"): string {
+  return (
+    COMMIT_TYPE_EMOJIS[type as keyof typeof COMMIT_TYPE_EMOJIS] || fallback
+  );
 }
 
 /**
@@ -55,7 +57,7 @@ export function getCommitTypeEmoji(type: string, fallback = '📌'): string {
  * @param fallback - Fallback icon if type not found (default: ○)
  * @returns The corresponding icon
  */
-export function getCommitTypeIcon(type: string, fallback = '○'): string {
+export function getCommitTypeIcon(type: string, fallback = "○"): string {
   return COMMIT_TYPE_ICONS[type as keyof typeof COMMIT_TYPE_ICONS] || fallback;
 }
 
@@ -75,80 +77,84 @@ export interface CommitTypeMetadata {
  */
 export const COMMIT_TYPES: CommitTypeMetadata[] = [
   {
-    value: 'feat',
+    value: "feat",
     emoji: COMMIT_TYPE_EMOJIS.feat,
     icon: COMMIT_TYPE_ICONS.feat,
-    name: 'feat:     ✦ Nouvelle fonctionnalité',
-    description: 'Une nouvelle fonctionnalité',
+    name: "feat:     ✦ Nouvelle fonctionnalité",
+    description: "Une nouvelle fonctionnalité",
   },
   {
-    value: 'fix',
+    value: "fix",
     emoji: COMMIT_TYPE_EMOJIS.fix,
     icon: COMMIT_TYPE_ICONS.fix,
-    name: 'fix:      ◆ Correction de bug',
-    description: 'Une correction de bug',
+    name: "fix:      ◆ Correction de bug",
+    description: "Une correction de bug",
   },
   {
-    value: 'docs',
+    value: "docs",
     emoji: COMMIT_TYPE_EMOJIS.docs,
     icon: COMMIT_TYPE_ICONS.docs,
-    name: 'docs:     ◈ Documentation',
-    description: 'Changements de documentation uniquement',
+    name: "docs:     ◈ Documentation",
+    description: "Changements de documentation uniquement",
   },
   {
-    value: 'style',
+    value: "style",
     emoji: COMMIT_TYPE_EMOJIS.style,
     icon: COMMIT_TYPE_ICONS.style,
-    name: 'style:    ◇ Style',
-    description: "Changements qui n'affectent pas le sens du code (espaces, formatage, etc.)",
+    name: "style:    ◇ Style",
+    description:
+      "Changements qui n'affectent pas le sens du code (espaces, formatage, etc.)",
   },
   {
-    value: 'refactor',
+    value: "refactor",
     emoji: COMMIT_TYPE_EMOJIS.refactor,
     icon: COMMIT_TYPE_ICONS.refactor,
-    name: 'refactor: ⟲ Refactoring',
-    description: "Changement de code qui ne corrige pas de bug ni n'ajoute de fonctionnalité",
+    name: "refactor: ⟲ Refactoring",
+    description:
+      "Changement de code qui ne corrige pas de bug ni n'ajoute de fonctionnalité",
   },
   {
-    value: 'perf',
+    value: "perf",
     emoji: COMMIT_TYPE_EMOJIS.perf,
     icon: COMMIT_TYPE_ICONS.perf,
-    name: 'perf:     ⚡ Performance',
-    description: 'Amélioration des performances',
+    name: "perf:     ⚡ Performance",
+    description: "Amélioration des performances",
   },
   {
-    value: 'test',
+    value: "test",
     emoji: COMMIT_TYPE_EMOJIS.test,
     icon: COMMIT_TYPE_ICONS.test,
-    name: 'test:     ✓ Tests',
-    description: 'Ajout ou modification de tests',
+    name: "test:     ✓ Tests",
+    description: "Ajout ou modification de tests",
   },
   {
-    value: 'build',
+    value: "build",
     emoji: COMMIT_TYPE_EMOJIS.build,
     icon: COMMIT_TYPE_ICONS.build,
-    name: 'build:    ▣ Build',
-    description: 'Changements qui affectent le système de build ou les dépendances',
+    name: "build:    ▣ Build",
+    description:
+      "Changements qui affectent le système de build ou les dépendances",
   },
   {
-    value: 'ci',
+    value: "ci",
     emoji: COMMIT_TYPE_EMOJIS.ci,
     icon: COMMIT_TYPE_ICONS.ci,
-    name: 'ci:       ⚙ CI',
-    description: 'Changements dans les fichiers de configuration CI',
+    name: "ci:       ⚙ CI",
+    description: "Changements dans les fichiers de configuration CI",
   },
   {
-    value: 'chore',
+    value: "chore",
     emoji: COMMIT_TYPE_EMOJIS.chore,
     icon: COMMIT_TYPE_ICONS.chore,
-    name: 'chore:    ○ Chore',
-    description: 'Autres changements qui ne modifient pas les fichiers src ou test',
+    name: "chore:    ○ Chore",
+    description:
+      "Autres changements qui ne modifient pas les fichiers src ou test",
   },
   {
-    value: 'revert',
+    value: "revert",
     emoji: COMMIT_TYPE_EMOJIS.revert,
     icon: COMMIT_TYPE_ICONS.revert,
-    name: 'revert:   ↶ Revert',
+    name: "revert:   ↶ Revert",
     description: "Annulation d'un commit précédent",
   },
 ];

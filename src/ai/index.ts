@@ -1,30 +1,30 @@
-import type { AIConfig, AIGeneratedCommit, CommitConfig } from '../types.js';
-import type { AIProvider, CommitContext } from './providers/base.js';
-import { OllamaProvider } from './providers/ollama.js';
-import { MistralProvider } from './providers/mistral.js';
-import { OpenAIProvider } from './providers/openai.js';
-import { ProviderNotAvailableError } from './providers/base.js';
+import type { AIConfig, AIGeneratedCommit, CommitConfig } from "../types.js";
+import type { AIProvider, CommitContext } from "./providers/base.js";
+import { ProviderNotAvailableError } from "./providers/base.js";
+import { MistralProvider } from "./providers/mistral.js";
+import { OllamaProvider } from "./providers/ollama.js";
+import { OpenAIProvider } from "./providers/openai.js";
 
 /**
  * Factory pour créer le bon provider
  */
 export function createAIProvider(config: AIConfig): AIProvider {
-  const provider = config.provider || 'ollama';
+  const provider = config.provider || "ollama";
 
   switch (provider) {
-    case 'ollama':
+    case "ollama":
       return new OllamaProvider(config);
 
-    case 'mistral':
+    case "mistral":
       return new MistralProvider(config);
 
-    case 'openai':
+    case "openai":
       return new OpenAIProvider(config);
 
-    case 'disabled':
+    case "disabled":
       throw new ProviderNotAvailableError(
-        'disabled',
-        'AI désactivé dans la configuration',
+        "disabled",
+        "AI désactivé dans la configuration",
       );
 
     default:
@@ -41,7 +41,7 @@ export class AICommitService {
 
   constructor(config: CommitConfig) {
     if (!config.ai?.enabled) {
-      throw new Error('AI non activé dans la configuration');
+      throw new Error("AI non activé dans la configuration");
     }
 
     this.config = config;
@@ -53,7 +53,7 @@ export class AICommitService {
    */
   async generateCommitMessage(
     diff: string,
-    context: Omit<CommitContext, 'availableTypes' | 'availableScopes'>,
+    context: Omit<CommitContext, "availableTypes" | "availableScopes">,
   ): Promise<AIGeneratedCommit> {
     const availableTypes = (this.config.types || []).map((t) => t.value);
     const availableScopes = this.config.scopes || [];
@@ -84,5 +84,5 @@ export class AICommitService {
 
 // Export des providers pour usage direct si nécessaire
 export { OllamaProvider, MistralProvider, OpenAIProvider };
-export { analyzeStagedChanges, detectScopeFromFiles } from './analyzer.js';
-export type { AIProvider, CommitContext } from './providers/base.js';
+export { analyzeStagedChanges } from "./analyzer.js";
+export type { AIProvider, CommitContext } from "./providers/base.js";

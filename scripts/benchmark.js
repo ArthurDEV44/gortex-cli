@@ -5,16 +5,16 @@
  * Measures execution time of key operations
  */
 
-import { performance } from 'perf_hooks';
+import { performance } from "node:perf_hooks";
 
 // ANSI colors
 const colors = {
-  reset: '\x1b[0m',
-  bright: '\x1b[1m',
-  green: '\x1b[32m',
-  yellow: '\x1b[33m',
-  blue: '\x1b[36m',
-  red: '\x1b[31m',
+  reset: "\x1b[0m",
+  bright: "\x1b[1m",
+  green: "\x1b[32m",
+  yellow: "\x1b[33m",
+  blue: "\x1b[36m",
+  red: "\x1b[31m",
 };
 
 class Benchmark {
@@ -53,14 +53,14 @@ class Benchmark {
     console.log(`  P95: ${p95.toFixed(2)}ms`);
 
     // Performance rating
-    let rating = 'Excellent';
+    let rating = "Excellent";
     let ratingColor = colors.green;
 
     if (avg > 100) {
-      rating = 'Needs Improvement';
+      rating = "Needs Improvement";
       ratingColor = colors.red;
     } else if (avg > 50) {
-      rating = 'Good';
+      rating = "Good";
       ratingColor = colors.yellow;
     }
 
@@ -70,13 +70,13 @@ class Benchmark {
 
 // Benchmark: Module loading time
 async function benchmarkModuleLoading() {
-  const bench = new Benchmark('Module Loading Time');
+  const bench = new Benchmark("Module Loading Time");
 
   await bench.run(async () => {
     // Simulate module loading
     const start = performance.now();
     // In real scenario, this would import the main module
-    await new Promise(resolve => setTimeout(resolve, 0));
+    await new Promise((resolve) => setTimeout(resolve, 0));
     return performance.now() - start;
   }, 50);
 }
@@ -103,28 +103,28 @@ async function benchmarkDIContainer() {
     }
   }
 
-  const bench = new Benchmark('DI Container Resolution (Simulated)');
+  const bench = new Benchmark("DI Container Resolution (Simulated)");
 
   await bench.run(() => {
     const container = new MockContainer();
-    container.register('TestService', () => ({ test: true }));
-    const service = container.resolve('TestService');
+    container.register("TestService", () => ({ test: true }));
+    const service = container.resolve("TestService");
     return service;
   }, 1000);
 }
 
 // Benchmark: Object creation
 async function benchmarkObjectCreation() {
-  const bench = new Benchmark('Entity Object Creation (CommitMessage)');
+  const bench = new Benchmark("Entity Object Creation (CommitMessage)");
 
   await bench.run(() => {
     // Simulate creating domain entities
     const entities = [];
     for (let i = 0; i < 100; i++) {
       entities.push({
-        type: 'feat',
-        subject: 'test commit',
-        scope: 'test',
+        type: "feat",
+        subject: "test commit",
+        scope: "test",
         timestamp: Date.now(),
       });
     }
@@ -134,32 +134,46 @@ async function benchmarkObjectCreation() {
 
 // Benchmark: Value Object validation
 async function benchmarkValidation() {
-  const bench = new Benchmark('Value Object Validation');
+  const bench = new Benchmark("Value Object Validation");
 
   await bench.run(() => {
-    const validTypes = ['feat', 'fix', 'docs', 'style', 'refactor', 'perf', 'test', 'build', 'ci', 'chore'];
+    const validTypes = [
+      "feat",
+      "fix",
+      "docs",
+      "style",
+      "refactor",
+      "perf",
+      "test",
+      "build",
+      "ci",
+      "chore",
+    ];
 
     for (let i = 0; i < 100; i++) {
       const type = validTypes[i % validTypes.length];
       const isValid = validTypes.includes(type);
-      if (!isValid) throw new Error('Invalid type');
+      if (!isValid) throw new Error("Invalid type");
     }
   }, 100);
 }
 
 // Benchmark: Array operations
 async function benchmarkArrayOperations() {
-  const bench = new Benchmark('Array Operations (Map/Filter/Reduce)');
+  const bench = new Benchmark("Array Operations (Map/Filter/Reduce)");
 
   await bench.run(() => {
     const data = Array.from({ length: 1000 }, (_, i) => ({
       id: i,
-      type: i % 2 === 0 ? 'feat' : 'fix',
+      type: i % 2 === 0 ? "feat" : "fix",
       timestamp: Date.now() - i * 1000,
     }));
 
-    const filtered = data.filter(item => item.type === 'feat');
-    const mapped = filtered.map(item => ({ ...item, formatted: `${item.type}: ${item.id}` }));
+    const filtered = data.filter((item) => item.type === "feat");
+    const mapped = filtered.map((item) => ({
+      ...item,
+      formatted: `${item.type}: ${item.id}`,
+    }));
     const reduced = mapped.reduce((acc, item) => acc + item.id, 0);
 
     return reduced;
@@ -168,7 +182,9 @@ async function benchmarkArrayOperations() {
 
 // Main benchmark suite
 async function runBenchmarks() {
-  console.log(`\n${colors.bright}${colors.blue}⚡ GORTEX CLI Performance Benchmarks${colors.reset}\n`);
+  console.log(
+    `\n${colors.bright}${colors.blue}⚡ GORTEX CLI Performance Benchmarks${colors.reset}\n`,
+  );
   console.log(`${colors.bright}Environment:${colors.reset}`);
   console.log(`  Node.js: ${process.version}`);
   console.log(`  Platform: ${process.platform}`);
@@ -181,23 +197,43 @@ async function runBenchmarks() {
     await benchmarkValidation();
     await benchmarkArrayOperations();
 
-    console.log(`\n${colors.bright}${colors.green}✓ All benchmarks completed${colors.reset}\n`);
+    console.log(
+      `\n${colors.bright}${colors.green}✓ All benchmarks completed${colors.reset}\n`,
+    );
 
     // Summary
     console.log(`${colors.bright}Performance Summary:${colors.reset}`);
-    console.log(`  ${colors.green}✓${colors.reset} Module loading: < 1ms (excellent)`);
-    console.log(`  ${colors.green}✓${colors.reset} DI Container: < 1ms per resolution (excellent)`);
-    console.log(`  ${colors.green}✓${colors.reset} Object creation: < 10ms for 100 objects (excellent)`);
-    console.log(`  ${colors.green}✓${colors.reset} Validation: < 5ms for 100 validations (excellent)`);
-    console.log(`  ${colors.green}✓${colors.reset} Array operations: < 10ms for 1000 items (excellent)`);
+    console.log(
+      `  ${colors.green}✓${colors.reset} Module loading: < 1ms (excellent)`,
+    );
+    console.log(
+      `  ${colors.green}✓${colors.reset} DI Container: < 1ms per resolution (excellent)`,
+    );
+    console.log(
+      `  ${colors.green}✓${colors.reset} Object creation: < 10ms for 100 objects (excellent)`,
+    );
+    console.log(
+      `  ${colors.green}✓${colors.reset} Validation: < 5ms for 100 validations (excellent)`,
+    );
+    console.log(
+      `  ${colors.green}✓${colors.reset} Array operations: < 10ms for 1000 items (excellent)`,
+    );
 
     console.log(`\n${colors.bright}Conclusion:${colors.reset}`);
-    console.log(`  GORTEX CLI has ${colors.green}excellent performance${colors.reset} for all core operations.`);
-    console.log(`  The Clean Architecture with DI adds ${colors.green}minimal overhead${colors.reset}.`);
-    console.log(`  All operations complete in ${colors.green}< 100ms${colors.reset}, providing a smooth user experience.\n`);
-
+    console.log(
+      `  GORTEX CLI has ${colors.green}excellent performance${colors.reset} for all core operations.`,
+    );
+    console.log(
+      `  The Clean Architecture with DI adds ${colors.green}minimal overhead${colors.reset}.`,
+    );
+    console.log(
+      `  All operations complete in ${colors.green}< 100ms${colors.reset}, providing a smooth user experience.\n`,
+    );
   } catch (error) {
-    console.error(`\n${colors.red}Error running benchmarks:${colors.reset}`, error.message);
+    console.error(
+      `\n${colors.red}Error running benchmarks:${colors.reset}`,
+      error.message,
+    );
     process.exit(1);
   }
 }

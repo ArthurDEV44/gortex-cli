@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
-import { Box, Text } from 'ink';
-import InkTextInput from 'ink-text-input';
-import Gradient from 'ink-gradient';
-import { icons } from '../theme/colors.js';
+import { Box, Text } from "ink";
+import Gradient from "ink-gradient";
+import InkTextInput from "ink-text-input";
+import { useState } from "react";
+import { icons } from "../theme/colors.js";
 
 interface TextInputProps {
   message: string;
@@ -12,13 +12,13 @@ interface TextInputProps {
   onSubmit: (value: string) => void;
 }
 
-export const TextInput: React.FC<TextInputProps> = ({
+export const TextInput = ({
   message,
-  placeholder = '',
-  defaultValue = '',
+  placeholder = "",
+  defaultValue = "",
   validate,
   onSubmit,
-}) => {
+}: TextInputProps) => {
   const [value, setValue] = useState(defaultValue);
   const [error, setError] = useState<string | null>(null);
 
@@ -44,7 +44,7 @@ export const TextInput: React.FC<TextInputProps> = ({
 
       <Box
         borderStyle="round"
-        borderColor={error ? 'red' : 'cyan'}
+        borderColor={error ? "red" : "cyan"}
         paddingX={1}
         paddingY={1}
       >
@@ -61,7 +61,9 @@ export const TextInput: React.FC<TextInputProps> = ({
 
       {error && (
         <Box marginTop={1}>
-          <Text color="red">{icons.error} {error}</Text>
+          <Text color="red">
+            {icons.error} {error}
+          </Text>
         </Box>
       )}
 

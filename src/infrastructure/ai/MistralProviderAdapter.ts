@@ -3,14 +3,14 @@
  * Adapts the existing Mistral implementation to IAIProvider interface
  */
 
-import { MistralProvider } from '../../ai/providers/mistral.js';
-import {
-  IAIProvider,
+import { MistralProvider } from "../../ai/providers/mistral.js";
+import type {
   AIGenerationContext,
   AIGenerationResult,
-} from '../../domain/repositories/IAIProvider.js';
-import { CommitMessageService } from '../../domain/services/CommitMessageService.js';
-import type { AIConfig } from '../../types.js';
+  IAIProvider,
+} from "../../domain/repositories/IAIProvider.js";
+import { CommitMessageService } from "../../domain/services/CommitMessageService.js";
+import type { AIConfig } from "../../types.js";
 
 export class MistralProviderAdapter implements IAIProvider {
   private readonly provider: MistralProvider;
@@ -20,14 +20,16 @@ export class MistralProviderAdapter implements IAIProvider {
   }
 
   getName(): string {
-    return 'Mistral';
+    return "Mistral";
   }
 
   async isAvailable(): Promise<boolean> {
     return await this.provider.isAvailable();
   }
 
-  async generateCommitMessage(context: AIGenerationContext): Promise<AIGenerationResult> {
+  async generateCommitMessage(
+    context: AIGenerationContext,
+  ): Promise<AIGenerationResult> {
     // Convert context to the format expected by the legacy provider
     const legacyContext = {
       files: context.files,
@@ -38,7 +40,10 @@ export class MistralProviderAdapter implements IAIProvider {
     };
 
     // Call the legacy provider
-    const result = await this.provider.generateCommitMessage(context.diff, legacyContext);
+    const result = await this.provider.generateCommitMessage(
+      context.diff,
+      legacyContext,
+    );
 
     // Convert result to domain entity using service
     const commitMessage = CommitMessageService.createFromAIGenerated({
