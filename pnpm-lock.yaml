@@ -999,7 +999,7 @@ packages:
       tinyrainbow: 3.0.3
     dev: true
 
-  /@vitest/mocker@4.0.10(vite@7.2.2):
+  /@vitest/mocker@4.0.10(vite@7.2.4):
     resolution: {integrity: sha512-e2OfdexYkjkg8Hh3L9NVEfbwGXq5IZbDovkf30qW2tOh7Rh9sVtmSr2ztEXOFbymNxS4qjzLXUQIvATvN4B+lg==}
     peerDependencies:
       msw: ^2.4.9
@@ -1013,7 +1013,7 @@ packages:
       '@vitest/spy': 4.0.10
       estree-walker: 3.0.3
       magic-string: 0.30.21
-      vite: 7.2.2(@types/node@24.10.1)(tsx@4.20.6)
+      vite: 7.2.4(@types/node@24.10.1)(tsx@4.20.6)
     dev: true
 
   /@vitest/pretty-format@4.0.10:
@@ -2521,8 +2521,8 @@ packages:
       spdx-expression-parse: 3.0.1
     dev: false
 
-  /vite@7.2.2(@types/node@24.10.1)(tsx@4.20.6):
-    resolution: {integrity: sha512-BxAKBWmIbrDgrokdGZH1IgkIk/5mMHDreLDmCJ0qpyJaAteP8NvMhkwr/ZCQNqNH97bw/dANTE9PDzqwJghfMQ==}
+  /vite@7.2.4(@types/node@24.10.1)(tsx@4.20.6):
+    resolution: {integrity: sha512-NL8jTlbo0Tn4dUEXEsUg8KeyG/Lkmc4Fnzb8JXN/Ykm9G4HNImjtABMJgkQoVjOBN/j2WAwDTRytdqJbZsah7w==}
     engines: {node: ^20.19.0 || >=22.12.0}
     hasBin: true
     peerDependencies:
@@ -2609,7 +2609,7 @@ packages:
     dependencies:
       '@types/node': 24.10.1
       '@vitest/expect': 4.0.10
-      '@vitest/mocker': 4.0.10(vite@7.2.2)
+      '@vitest/mocker': 4.0.10(vite@7.2.4)
       '@vitest/pretty-format': 4.0.10
       '@vitest/runner': 4.0.10
       '@vitest/snapshot': 4.0.10
@@ -2627,7 +2627,7 @@ packages:
       tinyexec: 0.3.2
       tinyglobby: 0.2.15
       tinyrainbow: 3.0.3
-      vite: 7.2.2(@types/node@24.10.1)(tsx@4.20.6)
+      vite: 7.2.4(@types/node@24.10.1)(tsx@4.20.6)
       why-is-node-running: 2.3.0
     transitivePeerDependencies:
       - jiti
