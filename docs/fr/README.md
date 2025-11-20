@@ -12,7 +12,7 @@
 
 </div>
 
-<img src="assets/images/gortex-cli.png" alt="Gortex CLI Banner" width="100%">
+<img src="../../assets/images/gortex-cli.png" alt="Gortex CLI Banner" width="100%">
 
 ---
 
