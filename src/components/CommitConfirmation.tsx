@@ -2,7 +2,7 @@ import { Box, Text } from "ink";
 import Gradient from "ink-gradient";
 import { useState } from "react";
 import { CommitMessageMapper } from "../application/mappers/CommitMessageMapper.js";
-import { useCreateCommit, useStageFiles } from "../infrastructure/di/hooks.js";
+import { useCreateCommit } from "../infrastructure/di/hooks.js";
 import { icons } from "../theme/colors.js";
 import { Confirm } from "../ui/index.js";
 import { LoadingSpinner } from "./LoadingSpinner.js";
@@ -18,7 +18,6 @@ export const CommitConfirmation = ({
   files,
   onComplete,
 }: CommitConfirmationProps) => {
-  const stageFilesUseCase = useStageFiles();
   const createCommitUseCase = useCreateCommit();
 
   const [committing, setCommitting] = useState(false);
@@ -33,13 +32,8 @@ export const CommitConfirmation = ({
     setCommitting(true);
 
     try {
-      // Stage files using clean architecture use case
-      const stageResult = await stageFilesUseCase.execute({ files });
-      if (!stageResult.success) {
-        setError(stageResult.error || "Failed to stage files");
-        setCommitting(false);
-        return;
-      }
+      // Files are already staged in CommitTab, no need to stage again
+      // Just create the commit with the staged files
 
       // Parse formatted message string to DTO
       const messageDTO = CommitMessageMapper.fromFormattedString(message);

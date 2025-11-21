@@ -131,39 +131,110 @@ describe('GitRepositoryImpl', () => {
 
   describe('stageFiles', () => {
     it('should stage specified files', async () => {
-      const files = ['file1.ts', 'file2.ts'];
+      vi.mocked(mockGit.status)!.mockResolvedValue({
+        modified: ['file1.ts', 'file2.ts'],
+        not_added: [],
+        deleted: [],
+        staged: [],
+        files: [],
+        created: [],
+        renamed: [],
+        conflicted: [],
+        current: 'main',
+        tracking: null,
+        ahead: 0,
+        behind: 0,
+        detached: false,
+        isClean: () => false,
+      });
 
+      const files = ['file1.ts', 'file2.ts'];
       await repository.stageFiles(files);
 
       expect(vi.mocked(mockGit.add)!).toHaveBeenCalledWith(files);
+      expect(vi.mocked(mockGit.rm)!).not.toHaveBeenCalled();
     });
 
     it('should handle single file', async () => {
+      vi.mocked(mockGit.status)!.mockResolvedValue({
+        modified: ['file.ts'],
+        not_added: [],
+        deleted: [],
+        staged: [],
+        files: [],
+        created: [],
+        renamed: [],
+        conflicted: [],
+        current: 'main',
+        tracking: null,
+        ahead: 0,
+        behind: 0,
+        detached: false,
+        isClean: () => false,
+      });
+
       await repository.stageFiles(['file.ts']);
 
       expect(vi.mocked(mockGit.add)!).toHaveBeenCalledWith(['file.ts']);
+      expect(vi.mocked(mockGit.rm)!).not.toHaveBeenCalled();
     });
 
     it('should handle deleted files', async () => {
-      const files = ['deleted1.ts', 'deleted2.ts'];
+      vi.mocked(mockGit.status)!.mockResolvedValue({
+        modified: [],
+        not_added: [],
+        deleted: ['deleted1.ts', 'deleted2.ts'],
+        staged: [],
+        files: [],
+        created: [],
+        renamed: [],
+        conflicted: [],
+        current: 'main',
+        tracking: null,
+        ahead: 0,
+        behind: 0,
+        detached: false,
+        isClean: () => false,
+      });
 
+      const files = ['deleted1.ts', 'deleted2.ts'];
       await repository.stageFiles(files);
 
-      expect(vi.mocked(mockGit.add)!).toHaveBeenCalledWith(files);
+      expect(vi.mocked(mockGit.rm)!).toHaveBeenCalledWith(files);
+      expect(vi.mocked(mockGit.add)!).not.toHaveBeenCalled();
     });
 
     it('should handle mix of modified and deleted files', async () => {
-      const files = ['modified.ts', 'deleted.ts', 'added.ts'];
+      vi.mocked(mockGit.status)!.mockResolvedValue({
+        modified: ['modified.ts'],
+        not_added: ['added.ts'],
+        deleted: ['deleted.ts'],
+        staged: [],
+        files: [],
+        created: [],
+        renamed: [],
+        conflicted: [],
+        current: 'main',
+        tracking: null,
+        ahead: 0,
+        behind: 0,
+        detached: false,
+        isClean: () => false,
+      });
 
+      const files = ['modified.ts', 'deleted.ts', 'added.ts'];
       await repository.stageFiles(files);
 
-      expect(vi.mocked(mockGit.add)!).toHaveBeenCalledWith(files);
+      expect(vi.mocked(mockGit.add)!).toHaveBeenCalledWith(['modified.ts', 'added.ts']);
+      expect(vi.mocked(mockGit.rm)!).toHaveBeenCalledWith(['deleted.ts']);
     });
 
     it('should not call git add when files array is empty', async () => {
       await repository.stageFiles([]);
 
       expect(vi.mocked(mockGit.add)!).not.toHaveBeenCalled();
+      expect(vi.mocked(mockGit.rm)!).not.toHaveBeenCalled();
+      expect(vi.mocked(mockGit.status)!).not.toHaveBeenCalled();
     });
   });
 

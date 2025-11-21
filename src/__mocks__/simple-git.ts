@@ -107,6 +107,7 @@ export const mockGit: Partial<SimpleGit> = {
 
   // Staging operations
   add: vi.fn().mockResolvedValue(undefined),
+  rm: vi.fn().mockResolvedValue(undefined),
 
   // Commit operations
   commit: vi.fn().mockResolvedValue({ commit: 'abc123' }),

@@ -90,9 +90,31 @@ export class GitRepositoryImpl implements IGitRepository {
       return;
     }
 
-    // Git add handles all types of changes including deleted files
-    // No need for special handling with -u flag
-    await this.git.add(files);
+    // Get the status to determine which files are deleted
+    const status = await this.git.status();
+    const deletedFiles = new Set(status.deleted);
+
+    // Separate files into deleted and non-deleted
+    const filesToAdd: string[] = [];
+    const filesToRemove: string[] = [];
+
+    for (const file of files) {
+      if (deletedFiles.has(file)) {
+        filesToRemove.push(file);
+      } else {
+        filesToAdd.push(file);
+      }
+    }
+
+    // Stage non-deleted files with git add
+    if (filesToAdd.length > 0) {
+      await this.git.add(filesToAdd);
+    }
+
+    // Stage deleted files with git rm
+    if (filesToRemove.length > 0) {
+      await this.git.rm(filesToRemove);
+    }
   }
 
   async createCommit(message: string): Promise<void> {

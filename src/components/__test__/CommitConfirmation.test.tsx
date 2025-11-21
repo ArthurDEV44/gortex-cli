@@ -132,35 +132,16 @@ describe('CommitConfirmation', () => {
   it('should call onComplete with true when commit succeeds', async () => {
     const files = ['file1.ts'];
     const message = 'feat: add new feature';
-    
+
     render(
       <CommitConfirmation message={message} files={files} onComplete={mockOnComplete} />
     );
-    
+
     await vi.waitFor(() => {
-      expect(mockStageFilesUseCase.execute).toHaveBeenCalledWith({ files });
+      // Files are already staged in CommitTab, so stageFiles should NOT be called here
+      expect(mockStageFilesUseCase.execute).not.toHaveBeenCalled();
       expect(mockCreateCommitUseCase.execute).toHaveBeenCalled();
       expect(mockOnComplete).toHaveBeenCalledWith(true);
-    }, { timeout: 2000 });
-  });
-
-  it('should display error when staging fails', async () => {
-    mockStageFilesUseCase.execute.mockResolvedValue({
-      success: false,
-      error: 'Failed to stage files',
-    });
-    
-    const files = ['file1.ts'];
-    const message = 'feat: add new feature';
-    
-    const { lastFrame } = render(
-      <CommitConfirmation message={message} files={files} onComplete={mockOnComplete} />
-    );
-    
-    await vi.waitFor(() => {
-      const output = stripAnsi(lastFrame() || '');
-      expect(output).toContain('Error');
-      expect(output).toContain('Failed to stage files');
     }, { timeout: 2000 });
   });
 
@@ -185,17 +166,17 @@ describe('CommitConfirmation', () => {
   });
 
   it('should display loading state when committing', async () => {
-    mockStageFilesUseCase.execute.mockImplementation(
+    mockCreateCommitUseCase.execute.mockImplementation(
       () => new Promise(() => {}) // Never resolves
     );
-    
+
     const files = ['file1.ts'];
     const message = 'feat: add new feature';
-    
+
     const { lastFrame } = render(
       <CommitConfirmation message={message} files={files} onComplete={mockOnComplete} />
     );
-    
+
     await vi.waitFor(() => {
       const output = stripAnsi(lastFrame() || '');
       expect(output).toContain('Creating commit');
