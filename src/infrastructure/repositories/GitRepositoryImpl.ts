@@ -90,19 +90,9 @@ export class GitRepositoryImpl implements IGitRepository {
       return;
     }
 
-    try {
-      await this.git.add(files);
-    } catch (error) {
-      // If files were deleted, we need to use 'git add -u'
-      if (
-        error instanceof Error &&
-        error.message.includes("did not match any files")
-      ) {
-        await this.git.add(["-u", ...files]);
-      } else {
-        throw error;
-      }
-    }
+    // Git add handles all types of changes including deleted files
+    // No need for special handling with -u flag
+    await this.git.add(files);
   }
 
   async createCommit(message: string): Promise<void> {

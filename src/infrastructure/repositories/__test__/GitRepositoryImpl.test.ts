@@ -143,6 +143,28 @@ describe('GitRepositoryImpl', () => {
 
       expect(vi.mocked(mockGit.add)!).toHaveBeenCalledWith(['file.ts']);
     });
+
+    it('should handle deleted files', async () => {
+      const files = ['deleted1.ts', 'deleted2.ts'];
+
+      await repository.stageFiles(files);
+
+      expect(vi.mocked(mockGit.add)!).toHaveBeenCalledWith(files);
+    });
+
+    it('should handle mix of modified and deleted files', async () => {
+      const files = ['modified.ts', 'deleted.ts', 'added.ts'];
+
+      await repository.stageFiles(files);
+
+      expect(vi.mocked(mockGit.add)!).toHaveBeenCalledWith(files);
+    });
+
+    it('should not call git add when files array is empty', async () => {
+      await repository.stageFiles([]);
+
+      expect(vi.mocked(mockGit.add)!).not.toHaveBeenCalled();
+    });
   });
 
   describe('stageAll', () => {
