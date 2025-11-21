@@ -1,6 +1,6 @@
 {
   "name": "gortex-cli",
-  "version": "2.0.4",
+  "version": "2.0.5",
   "description": "Interactive CLI with tabbed interface and AI integration: complete Git workflow with intelligent conventional commit generation",
   "type": "module",
   "main": "dist/index.js",
