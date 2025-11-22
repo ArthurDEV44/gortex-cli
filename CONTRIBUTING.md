@@ -100,6 +100,15 @@ feature/* (your work)
 
 The maintainer will review, test, and merge approved contributions from `contributors` → `dev` → `main`.
 
+**🔒 Protected Files:**
+
+Some files are protected and **cannot be modified** by contributors:
+- `.github/workflows/` - CI/CD workflows (security critical)
+- `package.json`, `tsconfig.json`, `vitest.config.ts` - Core configuration
+- `.github/CODEOWNERS` - Code ownership rules
+
+If your contribution requires changes to these files, open an issue first to discuss with the maintainer.
+
 ---
 
 ## 📜 Code of Conduct

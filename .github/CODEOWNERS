@@ -1,0 +1,25 @@
+# CODEOWNERS file
+# These owners will be the default owners for everything in the repo.
+# Unless a later match takes precedence, @ArthurDEV44 will be requested for
+# review when someone opens a pull request.
+
+# Global ownership
+* @ArthurDEV44
+
+# Critical files - require maintainer approval
+/.github/workflows/ @ArthurDEV44
+/.github/CODEOWNERS @ArthurDEV44
+/package.json @ArthurDEV44
+/tsconfig.json @ArthurDEV44
+/vitest.config.ts @ArthurDEV44
+
+# Security-sensitive areas
+/src/infrastructure/ @ArthurDEV44
+/.npmignore @ArthurDEV44
+
+# Domain layer - extra scrutiny
+/src/domain/ @ArthurDEV44
+
+# Documentation - can be more lenient
+/docs/ @ArthurDEV44
+README.md @ArthurDEV44

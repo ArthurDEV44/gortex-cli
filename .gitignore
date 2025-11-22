@@ -10,6 +10,3 @@ coverage/
 # Claude
 .claude/
 CLAUDE.md
-
-# Branch protection
-BRANCH_PROTECTION.md
