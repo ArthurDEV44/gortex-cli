@@ -1,17 +1,23 @@
 {
-  "name": "commitformat",
-  "version": "1.0.0",
-  "description": "CLI interactif pour créer des commits conventionnels avec validation et statistiques",
+  "name": "gortex-cli",
+  "version": "2.0.5",
+  "description": "Interactive CLI with tabbed interface and AI integration: complete Git workflow with intelligent conventional commit generation",
   "type": "module",
   "main": "dist/index.js",
   "bin": {
-    "commitformat": "./dist/index.js"
+    "gortex": "dist/index.js"
   },
   "scripts": {
     "dev": "tsx src/index.ts",
     "build": "tsup",
     "start": "node dist/index.js",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "lint": "biome check .",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:ui": "vitest --ui",
+    "test:coverage": "vitest run --coverage",
+    "test:coverage:ui": "vitest --ui --coverage"
   },
   "keywords": [
     "git",
@@ -24,36 +30,54 @@
     "semantic-versioning",
     "developer-tools"
   ],
-  "author": "",
+  "author": "Arthur Jean",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/username/commitformat.git"
+    "url": "git+https://github.com/ArthurDEV44/gortex-cli.git"
   },
   "bugs": {
-    "url": "https://github.com/username/commitformat/issues"
+    "url": "https://github.com/ArthurDEV44/gortex-cli/issues"
   },
-  "homepage": "https://github.com/username/commitformat#readme",
+  "homepage": "https://github.com/ArthurDEV44/gortex-cli#readme",
   "files": [
     "dist",
     "README.md",
     "LICENSE",
     "CHANGELOG.md",
-    ".commitformatrc.example"
+    ".gortexrc.example"
   ],
   "dependencies": {
-    "chalk": "^5.3.0",
-    "commander": "^11.1.0",
+    "chalk": "^5.6.2",
+    "chalk-animation": "^2.0.3",
+    "commander": "^14.0.2",
     "cosmiconfig": "^9.0.0",
-    "inquirer": "^9.2.12",
-    "simple-git": "^3.21.0"
+    "figlet": "^1.9.4",
+    "gradient-string": "^3.0.0",
+    "ink": "^6.5.1",
+    "ink-big-text": "^2.0.0",
+    "ink-gradient": "^3.0.0",
+    "ink-link": "^5.0.0",
+    "ink-select-input": "^6.2.0",
+    "ink-spinner": "^5.0.0",
+    "ink-text-input": "^6.0.0",
+    "react": "^19.2.0",
+    "simple-git": "^3.30.0"
   },
   "devDependencies": {
-    "@types/inquirer": "^9.0.7",
-    "@types/node": "^20.10.4",
+    "@biomejs/biome": "2.3.6",
+    "@types/figlet": "^1.7.0",
+    "@types/gradient-string": "^1.1.6",
+    "@types/node": "^24.10.1",
+    "@types/react": "^19.2.6",
+    "@vitest/coverage-v8": "^4.0.10",
+    "@vitest/ui": "^4.0.10",
+    "ink-testing-library": "^4.0.0",
+    "strip-ansi": "^7.1.2",
     "tsup": "^8.5.1",
-    "tsx": "^4.7.0",
-    "typescript": "^5.3.3"
+    "tsx": "^4.20.6",
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.10"
   },
   "engines": {
     "node": ">=18.0.0"

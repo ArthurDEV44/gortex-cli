@@ -10,7 +10,8 @@ export function isConventionalCommit(message: string): boolean {
   // - feat(auth): add login
   // - fix!: breaking change
   // - feat(api)!: breaking change in api
-  const conventionalPattern = /^(feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert)(\(.+\))?!?: .{3,}/;
+  const conventionalPattern =
+    /^(feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert)(\(.+\))?!?: .{3,}/;
 
   return conventionalPattern.test(message.trim());
 }
@@ -45,7 +46,7 @@ export function formatCommitMessage(
   subject: string,
   body?: string,
   breaking?: boolean,
-  breakingDescription?: string
+  breakingDescription?: string,
 ): string {
   let message = type;
 
@@ -54,7 +55,7 @@ export function formatCommitMessage(
   }
 
   if (breaking) {
-    message += '!';
+    message += "!";
   }
 
   message += `: ${subject}`;

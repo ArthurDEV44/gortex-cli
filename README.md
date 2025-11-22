@@ -1,436 +1,191 @@
-# CommitFormat
+<div align="center">
 
-CLI interactif pour créer des commits conventionnels avec validation, hooks Git et statistiques.
+# GORTEX CLI
 
-## Pourquoi CommitFormat ?
+[![npm version](https://badge.fury.io/js/gortex-cli.svg)](https://www.npmjs.com/package/gortex-cli)
+[![npm downloads](https://img.shields.io/npm/dm/gortex-cli.svg)](https://www.npmjs.com/package/gortex-cli)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-**Problème réel :** Personne n'écrit de bons messages de commit. On se retrouve avec des "fix stuff", "wip", "test" qui rendent impossible la génération automatique de changelogs et la compréhension de l'historique du projet.
+CLI for building reliable, assisted, and auditable conventional commits.
 
-**Solution :** CommitFormat vous guide à travers un processus interactif pour créer des commits qui suivent le format [Conventional Commits](https://www.conventionalcommits.org/).
+[Installation](#installation) • [Usage](#usage) • [Architecture](#architecture)
 
-### Avantages
+</div>
 
-- 📝 **Commits lisibles** : Messages clairs et structurés
-- 📚 **Changelog automatique** : Génération facile de notes de version
-- 🎯 **Onboarding simplifié** : Questions guidées pour les nouveaux contributeurs
-- 📊 **Suivi de qualité** : Statistiques sur la conformité de vos commits
-- 🔒 **Validation automatique** : Hooks Git pour garantir le format
+<img src="assets/images/gortex-cli.png" alt="Gortex CLI Banner" width="100%">
+
+## Project goal
+
+Gortex CLI makes the commit phase as rigorous as the implementation phase.
+
+- **Guidance** – a multi-step flow that surfaces the right checks (branch, files, message, push)  
+- **Consistency** – a builder aligned with the Conventional Commits spec, with real-time validation  
+- **Contextual help** – AI-assisted generation (local or remote) and visual previews of staged files
+
+The outcome is short, precise, review-friendly commits without leaving the terminal.
+
+## Value proposition
+
+- **Traceability** – every commit documents the need and scope  
+- **Standardization** – conventions are enforced while the developer acts, not via a late lint  
+- **Controlled AI** – Gortex auto-detects Ollama, Mistral, or OpenAI and stays local whenever possible  
+- **End-to-end workflow** – branch selection, targeted staging, message generation, optional push
+
+## Key capabilities
+
+- Interactive 8-step workflow (branch ➜ files ➜ staging ➜ generation ➜ message ➜ confirmation ➜ push ➜ recap)
+- Diff previews for staged files
+- Commit generation via Ollama, Mistral AI, or OpenAI with automatic fallback to manual editing
+- Keyboard-first navigation (Tab, arrows, Vim j/k/h/l, quick actions `a`, `i`)
+- Real-time validation of conventional commits, including breaking-change handling
+- `.gortexrc` configuration (Cosmiconfig) to tune AI providers, conventions, and git preferences
+
+## Architecture
+
+| Layer | Role | Key tech |
+|-------|------|----------|
+| Domain | Entities, value objects, contracts | TypeScript |
+| Application | Use cases and orchestration | Services, DTOs, validation |
+| Infrastructure | Git, AI providers, DI | simple-git, Ollama/OpenAI/Mistral adapters |
+| Presentation | CLI interface | Ink, Commander, React components |
+
+Reference points:
+
+- 918 tests across 67 files (91.63 % coverage)  
+- ~177.62 KB ESM bundle, ~1203 ms build  
+- Node ≥ 18, distributed via npm/pnpm/yarn/bun  
+- Full design notes in `docs/ARCHITECTURE.md`
 
 ## Installation
 
-CommitFormat supporte tous les gestionnaires de paquets modernes : **npm**, **pnpm**, **yarn** et **bun**.
-
-### Installation globale
-
-Choisissez votre gestionnaire de paquets préféré :
-
-#### NPM
-```bash
-npm install -g commitformat
-```
-
-#### PNPM
-```bash
-pnpm add -g commitformat
-```
-
-#### Yarn
-```bash
-yarn global add commitformat
-```
-
-#### Bun
-```bash
-bun add -g commitformat
-```
-
-### Utilisation sans installation
-
-Vous pouvez également utiliser CommitFormat directement sans installation :
-
-#### NPX (npm)
-```bash
-npx commitformat
-```
-
-#### PNPM
-```bash
-pnpm dlx commitformat
-```
-
-#### Yarn
-```bash
-yarn dlx commitformat
-```
-
-#### Bunx (Bun)
-```bash
-bunx commitformat
-```
-
-### Installation en tant que dépendance de développement
-
-Pour l'ajouter à un projet spécifique :
-
 ```bash
 # npm
-npm install -D commitformat
+npm install -g gortex-cli
 
-# pnpm
-pnpm add -D commitformat
+# pnpm (recommended)
+pnpm add -g gortex-cli
 
 # yarn
-yarn add -D commitformat
+yarn global add gortex-cli
 
 # bun
-bun add -D commitformat
+bun add -g gortex-cli
+
+# try without installing
+npx gortex-cli
 ```
 
-Puis ajoutez un script dans votre `package.json` :
-```json
-{
-  "scripts": {
-    "commit": "commitformat"
-  }
-}
-```
+## Usage
 
-## Utilisation
-
-### Créer un commit interactif
+Run inside a Git repository:
 
 ```bash
-npx commitformat
-# ou simplement
-commitformat
+gortex
 ```
 
-Le CLI vous guidera à travers :
-1. **Type de commit** (feat, fix, docs, etc.)
-2. **Scope** (partie du code affectée)
-3. **Description** courte et claire
-4. **Corps** du message (optionnel)
-5. **Breaking changes** (optionnel)
+The guided flow covers:
 
-Exemple de résultat :
-```
-feat(auth): add password reset functionality
-```
+1. Selecting or creating the branch  
+2. Picking files to commit with inline diff previews  
+3. Staging the selected items  
+4. Choosing AI or manual message creation  
+5. Validating the message (including breaking changes)  
+6. Confirming, optionally pushing, then reviewing the recap
 
-### Installer les hooks Git
-
-Pour valider automatiquement le format des commits :
+Helpful commands:
 
 ```bash
-commitformat hooks install
+gortex --help
+gortex help-format
 ```
 
-Cela créera un hook `commit-msg` qui validera tous vos commits.
+## AI integration
 
-Pour désinstaller :
-```bash
-commitformat hooks uninstall
-```
+- **Ollama** (recommended):
+  ```bash
+  curl -fsSL https://ollama.com/install.sh | sh
+  ollama pull devstral:24b
+  ollama serve   # http://localhost:11434
+  ```
+- **Mistral / OpenAI**: automatically used when API keys are detected in the environment or config.
+- Fallback sequence:
+  1. Ollama when available (local & private)  
+  2. Mistral / OpenAI depending on available keys  
+  3. Manual editing if no provider responds
 
-### Analyser les statistiques du repo
+Tips:
 
-Voyez combien de vos commits suivent les conventions :
+- Keep `ollama serve` running to avoid repeated cold starts.  
+- Match model size to your hardware (`phi:2.7b` for lightweight laptops, `mistral-nemo:12b` for workstations).  
+- Keep commits focused so AI suggestions stay accurate.
 
-```bash
-commitformat stats
-```
+## Conventional commits reference
 
-Analyser les 200 derniers commits :
-```bash
-commitformat stats -n 200
-```
+| Type | Purpose |
+|------|---------|
+| `feat` | new feature |
+| `fix` | bug fix |
+| `docs` | documentation |
+| `style` | formatting / non-functional |
+| `refactor` | internal restructuring |
+| `perf` | performance |
+| `test` | tests |
+| `build` | build/package |
+| `ci` | continuous integration |
+| `chore` | maintenance |
 
-Exemple de sortie :
-```
-📊 Analyse des 100 derniers commits...
-
-Résumé:
-──────────────────────────────────────────────────
-Total de commits analysés:      100
-Commits conventionnels:          87
-Commits non-conventionnels:      13
-
-Taux de conformité:
-87.0% ████████████████████████████░░░
-
-Répartition par type:
-──────────────────────────────────────────────────
-  ✨ feat        42 (48.3%) ████████████░░░░░░░░
-  🐛 fix         28 (32.2%) ██████████░░░░░░░░░░
-  📝 docs        10 (11.5%) ████░░░░░░░░░░░░░░░░
-  ♻️  refactor    7 (8.0%)  ███░░░░░░░░░░░░░░░░░
-```
-
-## Configuration personnalisée
-
-Créez un fichier `.commitformatrc` à la racine de votre projet :
-
-```json
-{
-  "types": [
-    {
-      "value": "feat",
-      "name": "feat:     ✨ Nouvelle fonctionnalité",
-      "description": "Une nouvelle fonctionnalité"
-    },
-    {
-      "value": "fix",
-      "name": "fix:      🐛 Correction de bug",
-      "description": "Une correction de bug"
-    }
-  ],
-  "scopes": ["auth", "api", "ui", "database"],
-  "allowCustomScopes": true,
-  "maxSubjectLength": 100,
-  "minSubjectLength": 3
-}
-```
-
-Formats de configuration supportés :
-- `.commitformatrc`
-- `.commitformatrc.json`
-- `.commitformatrc.js`
-- `commitformat.config.js`
-- Clé `commitformat` dans `package.json`
-
-## Format des commits
-
-### Structure
+Examples:
 
 ```
-<type>(<scope>): <description>
-
-[corps optionnel]
-
-[footer optionnel]
-```
-
-### Types disponibles
-
-| Type | Emoji | Description |
-|------|-------|-------------|
-| `feat` | ✨ | Nouvelle fonctionnalité |
-| `fix` | 🐛 | Correction de bug |
-| `docs` | 📝 | Documentation |
-| `style` | 💄 | Formatage, style |
-| `refactor` | ♻️ | Refactorisation |
-| `perf` | ⚡️ | Amélioration de performance |
-| `test` | ✅ | Ajout/modification de tests |
-| `build` | 📦 | Changements du build |
-| `ci` | 👷 | Configuration CI |
-| `chore` | 🔧 | Maintenance, dépendances |
-| `revert` | ⏪ | Annulation d'un commit |
-
-### Exemples
-
-Commit simple :
-```
-feat(auth): add login functionality
-```
-
-Avec scope :
-```
+feat(auth): add OAuth2 authentication
 fix(api): resolve timeout on large requests
+docs(readme): update installation instructions
+refactor(core): simplify error handling
 ```
 
-Breaking change :
+Breaking change:
+
 ```
 feat(api)!: change authentication method
 
-BREAKING CHANGE: JWT tokens are now required for all API calls
+BREAKING CHANGE: Previous auth tokens are now invalid
 ```
 
-Avec corps :
-```
-refactor(core): simplify error handling
+## Contributing
 
-- Consolidate error types
-- Add better error messages
-- Improve logging
-```
+1. Fork + feature branch  
+2. `pnpm install`, `pnpm dev`  
+3. Run `pnpm test`, `pnpm typecheck`, `pnpm lint` before submitting  
+4. Use Gortex CLI to format your own commits
 
-## Commandes
+Additional docs:
 
-### Commit
+- `CONTRIBUTING.md`
+- `docs/ARCHITECTURE.md`
+- `docs/USE_CASES.md`
+- `docs/MIGRATION_GUIDE.md`
 
-```bash
-commitformat
-# ou
-commitformat commit
-# ou
-commitformat c
-```
-
-Crée un commit interactif au format conventionnel.
-
-### Hooks
-
-```bash
-# Installer le hook
-commitformat hooks install
-commitformat hooks i
-
-# Désinstaller le hook
-commitformat hooks uninstall
-commitformat hooks u
-```
-
-Gère les hooks Git pour valider automatiquement le format.
-
-### Stats
-
-```bash
-# Analyser les 100 derniers commits (par défaut)
-commitformat stats
-
-# Analyser un nombre spécifique de commits
-commitformat stats -n 200
-commitformat stats --number 200
-
-# Alias
-commitformat s -n 50
-```
-
-Affiche les statistiques de conformité du repository.
-
-### Aide
-
-```bash
-# Aide générale
-commitformat --help
-
-# Aide sur le format
-commitformat help-format
-```
-
-## Intégration avec des outils existants
-
-### Husky
-
-Si vous utilisez déjà Husky, vous pouvez ajouter la validation selon votre package manager :
-
-```bash
-# npm
-npx husky add .husky/commit-msg 'npx commitformat hooks install'
-
-# pnpm
-pnpm exec husky add .husky/commit-msg 'pnpm dlx commitformat hooks install'
-
-# yarn
-yarn husky add .husky/commit-msg 'yarn dlx commitformat hooks install'
-
-# bun
-bunx husky add .husky/commit-msg 'bunx commitformat hooks install'
-```
-
-### Commitlint
-
-CommitFormat est compatible avec commitlint. Vous pouvez utiliser les deux ensemble ou choisir l'un ou l'autre selon vos préférences.
-
-## Développement
-
-### Installation en local
-
-CommitFormat supporte tous les package managers. Utilisez celui que vous préférez !
-
-```bash
-git clone <repo-url>
-cd CommitFormat
-
-# Choisissez votre package manager
-npm install   # ou
-pnpm install  # ou
-yarn install  # ou
-bun install
-```
-
-### Scripts de développement
-
-Tous les scripts fonctionnent avec n'importe quel package manager :
-
-```bash
-# Mode développement
-npm run dev      # ou pnpm run dev, yarn dev, bun run dev
-
-# Build
-npm run build    # ou pnpm run build, yarn build, bun run build
-
-# Vérifier les types
-npm run typecheck  # ou pnpm run typecheck, yarn typecheck, bun run typecheck
-```
-
-### Scripts intelligents (recommandé)
-
-Le projet inclut des scripts Bash qui détectent automatiquement votre package manager :
-
-```bash
-# Installation automatique
-./scripts/install.sh
-
-# Développement
-./scripts/dev.sh
-
-# Build
-./scripts/build.sh
-```
-
-Ces scripts détectent automatiquement si vous utilisez npm, pnpm, yarn ou bun en regardant :
-1. Les fichiers de lock existants (pnpm-lock.yaml, bun.lockb, yarn.lock, package-lock.json)
-2. Les commandes disponibles sur votre système
-
-### Structure du projet
+Repository overview:
 
 ```
-CommitFormat/
+gortex-cli/
 ├── src/
-│   ├── commands/
-│   │   ├── commit.ts      # Commande de commit interactif
-│   │   ├── hooks.ts       # Gestion des hooks Git
-│   │   └── stats.ts       # Analyse des statistiques
-│   ├── utils/
-│   │   ├── config.ts      # Chargement de la configuration
-│   │   ├── git.ts         # Opérations Git
-│   │   └── validate.ts    # Validation des commits
-│   ├── cli.ts             # Configuration du CLI
-│   ├── index.ts           # Point d'entrée
-│   └── types.ts           # Définitions TypeScript
-├── package.json
-├── tsconfig.json
-└── README.md
+│   ├── domain/
+│   ├── application/
+│   ├── infrastructure/
+│   ├── components/
+│   └── commands/
+├── docs/
+└── __tests__/
 ```
 
-## Stack technique
+## License
 
-- **TypeScript** : Type safety et meilleure DX
-- **Commander** : Parsing des arguments CLI
-- **Inquirer** : Prompts interactifs
-- **Chalk** : Couleurs dans le terminal
-- **simple-git** : Opérations Git
-- **cosmiconfig** : Chargement de configuration
-- **tsup** : Bundler rapide pour TypeScript
+MIT © [Arthur Jean](https://github.com/ArthurDEV44)
 
-## Support Multi-Package Managers
+<div align="center">
 
-CommitFormat fonctionne avec **tous** les gestionnaires de paquets modernes :
+**[⬆ back to top](#gortex-cli)**
 
-- 📦 **npm** - Le standard, inclus avec Node.js
-- ⚡ **pnpm** - Rapide et efficace, économise l'espace disque
-- 🧶 **yarn** - Workspaces puissants, résolution déterministe
-- 🥟 **bun** - Ultra-rapide, runtime tout-en-un
+</div>
 
-Pour plus de détails sur l'utilisation de chaque package manager, consultez [PACKAGE_MANAGERS.md](./PACKAGE_MANAGERS.md).
-
-## Licence
-
-MIT
-
-## Contribution
-
-Les contributions sont les bienvenues ! N'hésitez pas à ouvrir une issue ou une pull request.
-
-Pensez à utiliser CommitFormat pour vos commits dans ce projet ! 😉
