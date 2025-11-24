@@ -788,7 +788,7 @@ export function logCommitGeneration(
     final: finalMessage,
     metrics,
     provider: "ollama",
-    model: "devstral:24b",
+    model: "magistral:24b",
   };
 
   appendToFile(".gortex/quality-metrics.jsonl", JSON.stringify(logEntry) + "\n");

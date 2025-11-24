@@ -500,7 +500,7 @@ export function generateReasoningSystemPrompt(): string {
   return `Tu es un expert en analyse de code et architecture logicielle.
 Ta tâche est d'analyser les changements de code et de fournir une analyse structurée qui guidera la génération d'un message de commit.
 
-Réponds UNIQUEMENT en JSON avec cette structure exacte:
+Réponds en format JSON valide (sans markdown, sans balises \`\`\`json) avec cette structure exacte:
 {
   "architecturalContext": "string - Couche/Module affecté (domain, application, infrastructure, presentation) et rôle de chaque fichier",
   "changeIntention": "string - Pourquoi ce changement était nécessaire, problème résolu, bénéfice",
@@ -508,7 +508,9 @@ Réponds UNIQUEMENT en JSON avec cette structure exacte:
   "keySymbols": ["string"] - Liste des symboles centraux (classes, fonctions, interfaces) modifiés,
   "suggestedType": "feat|fix|refactor|..." - Type de commit suggéré,
   "complexityJustification": "string - Justification de la complexité (simple/moderate/complex)"
-}`;
+}
+
+CRITIQUE: Retourne UNIQUEMENT l'objet JSON, SANS texte avant ou après, SANS balises markdown \`\`\`json.`;
 }
 
 /**
@@ -647,21 +649,25 @@ Ta tâche est d'évaluer et d'améliorer un message de commit généré par une 
 
 Tu dois vérifier la qualité selon ces critères:
 1. Subject sémantique (pas de généralisations comme "update files", "fix stuff")
-2. Body qui explique le POURQUOI, pas seulement le QUOI
-3. Symboles clés mentionnés (fonctions, classes, modules modifiés)
-4. Type cohérent avec le pattern de changement détecté
-5. Clarté et précision du message
+2. Subject MAXIMUM 100 caractères (CONTRAINTE STRICTE - tronquer si nécessaire)
+3. Body qui explique le POURQUOI, pas seulement le QUOI
+4. Symboles clés mentionnés (fonctions, classes, modules modifiés)
+5. Type cohérent avec le pattern de changement détecté
+6. Clarté et précision du message
 
-Réponds en JSON avec cette structure:
+Réponds en format JSON valide (sans markdown, sans balises \`\`\`json) avec cette structure:
 {
   "isGoodQuality": boolean,
   "issues": string[] (liste des problèmes détectés, vide si isGoodQuality = true),
-  "improvedSubject": string (optionnel, seulement si le subject peut être amélioré),
+  "improvedSubject": string (optionnel, seulement si le subject peut être amélioré, MAXIMUM 100 chars),
   "improvedBody": string (optionnel, seulement si le body peut être amélioré),
   "reasoning": string (explication de ta vérification)
 }
 
-Si le message est déjà de bonne qualité, retourne isGoodQuality: true sans améliorations.
+CRITIQUE:
+- Si improvedSubject dépasse 100 caractères, TRONQUE-LE intelligemment
+- Retourne UNIQUEMENT l'objet JSON, SANS texte avant ou après, SANS balises markdown \`\`\`json
+- Si le message est déjà de bonne qualité, retourne isGoodQuality: true sans améliorations
 Si des améliorations sont nécessaires, propose improvedSubject et/ou improvedBody.`;
 }
 

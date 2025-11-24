@@ -45,7 +45,7 @@ export class OllamaProvider extends BaseAIProvider {
   constructor(config: AIConfig) {
     super();
     this.baseUrl = config.ollama?.baseUrl || "http://localhost:11434";
-    this.model = config.ollama?.model || "devstral:24b";
+    this.model = config.ollama?.model || "magistral:24b";
     this.timeout = config.ollama?.timeout || 30000;
     this.temperature = config.temperature ?? 0.5;
     this.topP = config.topP ?? 0.9;

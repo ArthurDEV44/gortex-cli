@@ -37,7 +37,7 @@ describe('AICommitGenerator', () => {
       enabled: true,
       provider: 'ollama',
       ollama: {
-        model: 'devstral:24b',
+        model: 'magistral:24b',
         baseUrl: 'http://localhost:11434',
       },
     },

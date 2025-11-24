@@ -104,20 +104,34 @@ gortex help-format
 - **Ollama** (recommended):
   ```bash
   curl -fsSL https://ollama.com/install.sh | sh
-  ollama pull devstral:24b
+  ollama pull magistral:24b
   ollama serve   # http://localhost:11434
   ```
 - **Mistral / OpenAI**: automatically used when API keys are detected in the environment or config.
 - Fallback sequence:
-  1. Ollama when available (local & private)  
-  2. Mistral / OpenAI depending on available keys  
+  1. Ollama when available (local & private)
+  2. Mistral / OpenAI depending on available keys
   3. Manual editing if no provider responds
+
+**Recommended model: Magistral 24B**
+
+Magistral is Mistral AI's first reasoning-focused model, specifically designed for multi-step logic and Chain-of-Thought reasoning. It excels at GORTEX CLI's core workflow:
+- **10x faster** token throughput for reasoning tasks
+- **Native structured generation** (JSON) optimized for commit message analysis
+- **Transparent reasoning traces** that improve commit message quality
+- **Multilingual support** with strong performance across languages
+
+Alternative models:
+- `magistral:24b` – Code-focused model (good for understanding diffs, but slower at reasoning)
+- `phi:2.7b` – Lightweight for resource-constrained laptops
+- `mistral-nemo:12b` – Balanced option for mid-range hardware
 
 Tips:
 
-- Keep `ollama serve` running to avoid repeated cold starts.  
-- Match model size to your hardware (`phi:2.7b` for lightweight laptops, `mistral-nemo:12b` for workstations).  
-- Keep commits focused so AI suggestions stay accurate.
+- Keep `ollama serve` running to avoid repeated cold starts
+- Magistral works best with `temperature: 0.4` for reasoning tasks (already configured in defaults)
+- Increase timeout to 60s in `.gortexrc` for Chain-of-Thought reasoning
+- Keep commits focused so AI suggestions stay accurate
 
 ## Conventional commits reference
 

@@ -7,8 +7,8 @@
  */
 export const OLLAMA_DEFAULTS = {
   BASE_URL: "http://localhost:11434",
-  MODEL: "devstral:24b",
-  TIMEOUT: 30000,
+  MODEL: "magistral:24b",
+  TIMEOUT: 120000, // 120s for Chain-of-Thought + Verification mode
 } as const;
 
 /**
@@ -33,8 +33,8 @@ export const OPENAI_DEFAULTS = {
  * AI generation parameters
  */
 export const AI_GENERATION = {
-  /** Default temperature for AI responses (0.5 recommended for better creativity/coherence balance) */
-  TEMPERATURE: 0.5,
+  /** Default temperature for AI responses (0.4 recommended for reasoning models like Magistral) */
+  TEMPERATURE: 0.4,
 
   /** Top-p sampling parameter (0.9 recommended for focused but diverse outputs) */
   TOP_P: 0.9,

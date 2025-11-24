@@ -64,13 +64,13 @@
   "ai": {
     "enabled": true,
     "provider": "ollama",
-    "temperature": 0.5,
+    "temperature": 0.4,
     "topP": 0.9,
     "maxTokens": 500,
     "ollama": {
-      "model": "devstral:24b",
+      "model": "magistral:24b",
       "baseUrl": "http://localhost:11434",
-      "timeout": 30000
+      "timeout": 120000
     }
   }
 }

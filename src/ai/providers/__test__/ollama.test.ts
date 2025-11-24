@@ -26,7 +26,7 @@ describe('OllamaProvider', () => {
     provider: 'ollama',
     ollama: {
       baseUrl: 'http://localhost:11434',
-      model: 'devstral:24b',
+      model: 'magistral:24b',
     },
     temperature: 0.3,
     maxTokens: 500,
@@ -85,7 +85,7 @@ describe('OllamaProvider', () => {
         ok: true,
         json: async () => ({
           models: [
-            { name: 'devstral:24b' },
+            { name: 'magistral:24b' },
             { name: 'llama3:8b' },
           ],
         }),
@@ -179,7 +179,7 @@ describe('OllamaProvider', () => {
         ok: true,
         json: async () => ({
           models: [
-            { name: 'devstral:24b-instruct' }, // Différent tag mais même modèle
+            { name: 'magistral:24b-instruct' }, // Différent tag mais même modèle
           ],
         }),
       });
@@ -209,7 +209,7 @@ describe('OllamaProvider', () => {
       (global.fetch as any).mockResolvedValueOnce({
         ok: true,
         json: async () => ({
-          models: [{ name: 'devstral:24b' }],
+          models: [{ name: 'magistral:24b' }],
         }),
       });
 
@@ -228,7 +228,7 @@ describe('OllamaProvider', () => {
           }),
         },
         done: true,
-        model: 'devstral:24b',
+        model: 'magistral:24b',
       };
 
       (global.fetch as any).mockResolvedValueOnce({
@@ -267,7 +267,7 @@ describe('OllamaProvider', () => {
       (global.fetch as any).mockResolvedValueOnce({
         ok: true,
         json: async () => ({
-          models: [{ name: 'devstral:24b' }],
+          models: [{ name: 'magistral:24b' }],
         }),
       });
 
@@ -282,7 +282,7 @@ describe('OllamaProvider', () => {
           }),
         },
         done: true,
-        model: 'devstral:24b',
+        model: 'magistral:24b',
       };
 
       (global.fetch as any).mockResolvedValueOnce({
@@ -309,7 +309,7 @@ describe('OllamaProvider', () => {
       (global.fetch as any).mockResolvedValueOnce({
         ok: true,
         json: async () => ({
-          models: [{ name: 'devstral:24b' }],
+          models: [{ name: 'magistral:24b' }],
         }),
       });
 
@@ -324,7 +324,7 @@ describe('OllamaProvider', () => {
           }),
         },
         done: true,
-        model: 'devstral:24b',
+        model: 'magistral:24b',
       };
 
       (global.fetch as any).mockResolvedValueOnce({
@@ -349,7 +349,7 @@ describe('OllamaProvider', () => {
       (global.fetch as any).mockResolvedValueOnce({
         ok: true,
         json: async () => ({
-          models: [{ name: 'devstral:24b' }],
+          models: [{ name: 'magistral:24b' }],
         }),
       });
 
@@ -359,7 +359,7 @@ describe('OllamaProvider', () => {
           content: 'Invalid JSON content', // Pas un JSON valide
         },
         done: true,
-        model: 'devstral:24b',
+        model: 'magistral:24b',
       };
 
       (global.fetch as any).mockResolvedValueOnce({
@@ -378,7 +378,7 @@ describe('OllamaProvider', () => {
       (global.fetch as any).mockResolvedValueOnce({
         ok: true,
         json: async () => ({
-          models: [{ name: 'devstral:24b' }],
+          models: [{ name: 'magistral:24b' }],
         }),
       });
 
@@ -399,7 +399,7 @@ describe('OllamaProvider', () => {
       (global.fetch as any).mockResolvedValueOnce({
         ok: true,
         json: async () => ({
-          models: [{ name: 'devstral:24b' }],
+          models: [{ name: 'magistral:24b' }],
         }),
       });
 
@@ -414,7 +414,7 @@ describe('OllamaProvider', () => {
           }),
         },
         done: true,
-        model: 'devstral:24b',
+        model: 'magistral:24b',
       };
 
       (global.fetch as any).mockResolvedValueOnce({
@@ -433,7 +433,7 @@ describe('OllamaProvider', () => {
       (global.fetch as any).mockResolvedValueOnce({
         ok: true,
         json: async () => ({
-          models: [{ name: 'devstral:24b' }],
+          models: [{ name: 'magistral:24b' }],
         }),
       });
 
@@ -448,7 +448,7 @@ describe('OllamaProvider', () => {
           }),
         },
         done: true,
-        model: 'devstral:24b',
+        model: 'magistral:24b',
       };
 
       (global.fetch as any).mockResolvedValueOnce({
@@ -467,7 +467,7 @@ describe('OllamaProvider', () => {
       (global.fetch as any).mockResolvedValueOnce({
         ok: true,
         json: async () => ({
-          models: [{ name: 'devstral:24b' }],
+          models: [{ name: 'magistral:24b' }],
         }),
       });
 
@@ -485,7 +485,7 @@ describe('OllamaProvider', () => {
       (global.fetch as any).mockResolvedValueOnce({
         ok: true,
         json: async () => ({
-          models: [{ name: 'devstral:24b' }],
+          models: [{ name: 'magistral:24b' }],
         }),
       });
 
@@ -501,7 +501,7 @@ describe('OllamaProvider', () => {
           }),
         },
         done: true,
-        model: 'devstral:24b',
+        model: 'magistral:24b',
       };
 
       (global.fetch as any).mockResolvedValueOnce({
@@ -528,7 +528,7 @@ describe('OllamaProvider', () => {
       (global.fetch as any).mockResolvedValueOnce({
         ok: true,
         json: async () => ({
-          models: [{ name: 'devstral:24b' }],
+          models: [{ name: 'magistral:24b' }],
         }),
       });
 
@@ -543,7 +543,7 @@ describe('OllamaProvider', () => {
           }),
         },
         done: true,
-        model: 'devstral:24b',
+        model: 'magistral:24b',
       };
 
       (global.fetch as any).mockResolvedValueOnce({
@@ -573,7 +573,7 @@ describe('OllamaProvider', () => {
       (global.fetch as any).mockResolvedValueOnce({
         ok: true,
         json: async () => ({
-          models: [{ name: 'devstral:24b' }],
+          models: [{ name: 'magistral:24b' }],
         }),
       });
 
@@ -588,7 +588,7 @@ describe('OllamaProvider', () => {
           }),
         },
         done: true,
-        model: 'devstral:24b',
+        model: 'magistral:24b',
       };
 
       (global.fetch as any).mockResolvedValueOnce({
@@ -612,7 +612,7 @@ describe('OllamaProvider', () => {
       (global.fetch as any).mockResolvedValueOnce({
         ok: true,
         json: async () => ({
-          models: [{ name: 'devstral:24b' }],
+          models: [{ name: 'magistral:24b' }],
         }),
       });
 
@@ -627,7 +627,7 @@ describe('OllamaProvider', () => {
           }),
         },
         done: true,
-        model: 'devstral:24b',
+        model: 'magistral:24b',
       };
 
       (global.fetch as any).mockResolvedValueOnce({
@@ -646,7 +646,7 @@ describe('OllamaProvider', () => {
       (global.fetch as any).mockResolvedValueOnce({
         ok: true,
         json: async () => ({
-          models: [{ name: 'devstral:24b' }],
+          models: [{ name: 'magistral:24b' }],
         }),
       });
 
@@ -661,7 +661,7 @@ describe('OllamaProvider', () => {
           }),
         },
         done: true,
-        model: 'devstral:24b',
+        model: 'magistral:24b',
       };
 
       (global.fetch as any).mockResolvedValueOnce({
