@@ -15,7 +15,11 @@ import type {
 } from "../../domain/repositories/IAIProvider.js";
 import type { IGitRepository } from "../../domain/repositories/IGitRepository.js";
 import type { IASTDiffAnalyzer } from "../../domain/services/ASTDiffAnalyzer.js";
-import { DiffAnalyzer } from "../../domain/services/DiffAnalyzer.js";
+import {
+  type DiffAnalysis,
+  DiffAnalyzer,
+  type ModifiedSymbol,
+} from "../../domain/services/DiffAnalyzer.js";
 import { GitRepositoryImpl } from "../../infrastructure/repositories/GitRepositoryImpl.js";
 import { getCommitTypeValues } from "../../shared/constants/commit-types.js";
 import { SIZE_LIMITS } from "../../shared/constants/limits.js";
@@ -103,6 +107,25 @@ export class GenerateAICommitUseCase {
       // Select relevant few-shot examples based on analysis
       const fewShotExamples = selectRelevantExamples(diffAnalysis, 5);
 
+      // Semantic diff summarization for large diffs
+      let semanticSummary: string | undefined;
+      const summaryThreshold =
+        SIZE_LIMITS.MAX_DIFF_LENGTH * SIZE_LIMITS.SEMANTIC_SUMMARY_THRESHOLD;
+      if (diffForAI.length > summaryThreshold) {
+        try {
+          semanticSummary = await this.summarizeDiffSemantics(
+            diffForAI,
+            diffAnalysis,
+            request.provider,
+          );
+        } catch (error) {
+          // If summarization fails, continue without it (graceful degradation)
+          console.warn(
+            `Semantic diff summarization failed: ${error instanceof Error ? error.message : String(error)}. Continuing without summary.`,
+          );
+        }
+      }
+
       // Chain-of-Thought Step 1: Generate structured reasoning analysis
       let reasoningAnalysis: ReasoningAnalysis | undefined;
       try {
@@ -159,6 +182,8 @@ export class GenerateAICommitUseCase {
           : undefined,
         // Add few-shot examples for better guidance
         fewShotExamples,
+        // Add semantic summary if available (for large diffs)
+        semanticSummary,
       };
 
       // Chain-of-Thought Step 2: Generate commit message using the reasoning analysis
@@ -184,6 +209,62 @@ export class GenerateAICommitUseCase {
             ? error.message
             : "Unknown error during AI generation",
       };
+    }
+  }
+
+  /**
+   * Summarizes a large diff semantically before sending to AI
+   * This helps the AI understand the "why" and architectural impact
+   * rather than getting lost in implementation details
+   */
+  private async summarizeDiffSemantics(
+    diff: string,
+    analysis: DiffAnalysis,
+    provider: IAIProvider,
+  ): Promise<string> {
+    const summarySystemPrompt = `Tu es un expert en analyse architecturale de code.
+Ta tâche est de résumer des changements de code au niveau SÉMANTIQUE, en te concentrant sur l'architecture et l'intention plutôt que sur les détails d'implémentation.
+
+Génère un résumé structuré et concis (${SIZE_LIMITS.MAX_SEMANTIC_SUMMARY_TOKENS} tokens maximum) qui couvre:
+1. QUOI: Les composants/systèmes créés ou modifiés (noms de classes, services, modules)
+2. POURQUOI: L'intention architecturale derrière ces changements
+3. COMMENT: Les transformations clés au niveau conceptuel
+4. IMPACT: Les conséquences sur le reste du système
+
+Sois concis, focus sur l'ARCHITECTURE, pas les détails techniques.`;
+
+    const summaryUserPrompt = `Résume ces changements de code au niveau SÉMANTIQUE:
+
+ANALYSE AUTOMATIQUE:
+- Symboles modifiés: ${analysis.modifiedSymbols.map((s: ModifiedSymbol) => s.name).join(", ") || "Aucun"}
+- Pattern dominant: ${analysis.changePatterns[0]?.description || "N/A"}
+- Complexité: ${analysis.complexity}
+- Fichiers modifiés: ${analysis.summary.filesChanged}
+
+DIFF COMPLET:
+\`\`\`
+${diff.substring(0, Math.floor(SIZE_LIMITS.MAX_DIFF_LENGTH * 0.8))}${diff.length > Math.floor(SIZE_LIMITS.MAX_DIFF_LENGTH * 0.8) ? "\n[... diff tronqué ...]" : ""}
+\`\`\`
+
+Génère un résumé structuré en 3-5 points concis qui capture l'essence architecturale de ces changements.`;
+
+    try {
+      const summaryResponse = await provider.generateText(
+        summarySystemPrompt,
+        summaryUserPrompt,
+        {
+          temperature: 0.6, // Slightly higher for more creative summarization
+          maxTokens: SIZE_LIMITS.MAX_SEMANTIC_SUMMARY_TOKENS,
+          format: "text",
+        },
+      );
+
+      return summaryResponse.trim();
+    } catch (error) {
+      // If summarization fails, return undefined (will be handled by caller)
+      throw new Error(
+        `Failed to generate semantic summary: ${error instanceof Error ? error.message : String(error)}`,
+      );
     }
   }
 }

@@ -26,6 +26,7 @@ export interface AIGenerationContext {
   analysis?: DiffAnalysis; // Optional structured analysis of the diff
   reasoning?: ReasoningContext; // Optional Chain-of-Thought reasoning analysis
   fewShotExamples?: CommitExample[]; // Optional few-shot learning examples
+  semanticSummary?: string; // Optional semantic summary for large diffs
 }
 
 export interface AIGenerationResult {

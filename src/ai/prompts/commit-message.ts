@@ -133,6 +133,7 @@ export function generateUserPrompt(
   analysis?: DiffAnalysis,
   reasoning?: ReasoningAnalysis,
   fewShotExamples?: CommitExample[],
+  semanticSummary?: string,
 ): string {
   const parts = ["<context>"];
   parts.push(`  <branch>${context.branch}</branch>`);
@@ -169,6 +170,20 @@ export function generateUserPrompt(
       parts.push(`  <commit>${commit}</commit>`);
     });
     parts.push("</recent_commits>");
+  }
+
+  // Add semantic summary if available (for large diffs)
+  if (semanticSummary) {
+    parts.push("");
+    parts.push("<semantic_summary>");
+    parts.push(
+      "  <!-- Résumé sémantique du diff pour faciliter la compréhension des changements architecturaux -->",
+    );
+    parts.push(
+      "  <!-- Ce résumé capture l'essence des changements sans les détails d'implémentation -->",
+    );
+    parts.push(`  ${semanticSummary}`);
+    parts.push("</semantic_summary>");
   }
 
   // Add Chain-of-Thought reasoning if available

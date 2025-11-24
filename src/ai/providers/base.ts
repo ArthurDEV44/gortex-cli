@@ -43,6 +43,7 @@ export interface CommitContext {
   recentCommits?: string[];
   reasoning?: ReasoningAnalysis; // Optional Chain-of-Thought reasoning
   fewShotExamples?: CommitExample[]; // Optional few-shot learning examples
+  semanticSummary?: string; // Optional semantic summary for large diffs
 }
 
 /**
