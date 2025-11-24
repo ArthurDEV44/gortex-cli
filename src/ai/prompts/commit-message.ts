@@ -1,4 +1,5 @@
 import type { DiffAnalysis } from "../../domain/services/DiffAnalyzer.js";
+import type { ProjectStyle } from "../../domain/services/ProjectStyleAnalyzer.js";
 import type { AIGeneratedCommit } from "../../types.js";
 import type { CommitExample } from "../examples/commit-samples.js";
 import type { CommitContext } from "../providers/base.js";
@@ -145,6 +146,7 @@ export function generateUserPrompt(
   reasoning?: ReasoningAnalysis,
   fewShotExamples?: CommitExample[],
   semanticSummary?: string,
+  projectStyle?: ProjectStyle,
 ): string {
   const parts = ["<context>"];
   parts.push(`  <branch>${context.branch}</branch>`);
@@ -195,6 +197,40 @@ export function generateUserPrompt(
     );
     parts.push(`  ${semanticSummary}`);
     parts.push("</semantic_summary>");
+  }
+
+  // Add project style analysis if available
+  if (projectStyle) {
+    parts.push("");
+    parts.push("<project_style>");
+    parts.push(
+      "  <!-- Style de commit appris de l'historique du projet pour aligner avec la culture du dépôt -->",
+    );
+    parts.push(
+      `  <preferred_types>${projectStyle.preferredTypes.join(", ")}</preferred_types>`,
+    );
+    parts.push(
+      `  <avg_subject_length>${projectStyle.avgSubjectLength}</avg_subject_length>`,
+    );
+    parts.push(`  <detail_level>${projectStyle.detailLevel}</detail_level>`);
+    if (projectStyle.commonScopes.length > 0) {
+      parts.push("  <common_scopes>");
+      projectStyle.commonScopes.forEach((scope) => {
+        parts.push(`    <scope>${scope}</scope>`);
+      });
+      parts.push("  </common_scopes>");
+    }
+    if (projectStyle.templates.length > 0) {
+      parts.push("  <common_templates>");
+      projectStyle.templates.forEach((template) => {
+        parts.push(`    <template>${template}</template>`);
+      });
+      parts.push("  </common_templates>");
+    }
+    parts.push(
+      `  <convention_compliance>${projectStyle.conventionCompliance}%</convention_compliance>`,
+    );
+    parts.push("</project_style>");
   }
 
   // Add Chain-of-Thought reasoning if available

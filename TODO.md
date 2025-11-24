@@ -24,8 +24,8 @@ Ce plan traduit les recommandations de `GENERATE_AI_AUDIT.md` en travaux aligné
 
 - [x] **Self-verification loop**  
   ✅ Implémenté : Ajout de l'interface `VerificationResult` et des fonctions `generateVerificationSystemPrompt()` / `generateVerificationUserPrompt()` dans `commit-message.ts`. Implémentation de la boucle de vérification dans `GenerateAICommitUseCase` qui évalue automatiquement la qualité du commit généré selon 5 critères (subject sémantique, body explicatif, symboles clés mentionnés, type cohérent, clarté). Si des améliorations sont proposées (`improvedSubject` ou `improvedBody`), elles sont appliquées automatiquement et la confiance est réduite de 10% (x0.9). Gestion d'erreur avec fallback gracieux si la vérification échoue.
-- [ ] **ProjectStyleAnalyzer**  
-  Créer `src/domain/services/ProjectStyleAnalyzer.ts`, exposer la dépendance git via `IGitRepository`, puis enrichir `GenerateAICommitUseCase` pour intégrer `<project_style>` dans les prompts.
+- [x] **ProjectStyleAnalyzer**  
+  ✅ Implémenté : Création de l'interface `IProjectStyleAnalyzer` et du type `ProjectStyle` dans `src/domain/services/ProjectStyleAnalyzer.ts`. Implémentation `ProjectStyleAnalyzerImpl` dans `src/infrastructure/services/` qui analyse l'historique Git (100 commits par défaut) pour extraire : types préférés (top 3), longueur moyenne des subjects, scopes communs, niveau de détail (detailed/concise), templates de subjects, conformité aux conventional commits. Enregistrement dans `ServiceRegistry` comme singleton. Intégration dans `GenerateAICommitUseCase` avec fallback gracieux si l'analyse échoue. Ajout de `<project_style>` dans `generateUserPrompt()` avec toutes les métriques. Transmission via `AIGenerationContext` et `CommitContext` à tous les providers (Ollama, Mistral, OpenAI).
 - [ ] **Support des guidelines projet**  
   Ajouter `src/utils/projectGuidelines.ts`, charger `.claude/commands/commit.md` ou équivalents et inclure le contenu dans le prompt s’il existe.
 

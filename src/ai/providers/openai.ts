@@ -120,6 +120,7 @@ export class OpenAIProvider extends BaseAIProvider {
               context.reasoning,
               context.fewShotExamples,
               context.semanticSummary,
+              context.projectStyle,
             ),
           },
         ],

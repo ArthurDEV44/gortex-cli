@@ -24,6 +24,10 @@ import {
   DiffAnalyzer,
   type ModifiedSymbol,
 } from "../../domain/services/DiffAnalyzer.js";
+import type {
+  IProjectStyleAnalyzer,
+  ProjectStyle,
+} from "../../domain/services/ProjectStyleAnalyzer.js";
 import { CommitSubject } from "../../domain/value-objects/CommitSubject.js";
 import { GitRepositoryImpl } from "../../infrastructure/repositories/GitRepositoryImpl.js";
 import { getCommitTypeValues } from "../../shared/constants/commit-types.js";
@@ -42,6 +46,7 @@ export class GenerateAICommitUseCase {
   constructor(
     private readonly gitRepository: IGitRepository,
     astAnalyzer?: IASTDiffAnalyzer,
+    private readonly projectStyleAnalyzer?: IProjectStyleAnalyzer,
   ) {
     this.diffAnalyzer = new DiffAnalyzer();
     // Configure AST analyzer if available
@@ -111,6 +116,22 @@ export class GenerateAICommitUseCase {
 
       // Select relevant few-shot examples based on analysis
       const fewShotExamples = selectRelevantExamples(diffAnalysis, 5);
+
+      // Analyze project style from commit history
+      let projectStyle: ProjectStyle | undefined;
+      if (this.projectStyleAnalyzer) {
+        try {
+          projectStyle = await this.projectStyleAnalyzer.analyzeProjectStyle(
+            this.gitRepository,
+            100,
+          );
+        } catch (error) {
+          // If style analysis fails, continue without it (graceful degradation)
+          console.warn(
+            `Project style analysis failed: ${error instanceof Error ? error.message : String(error)}. Continuing without project style.`,
+          );
+        }
+      }
 
       // Semantic diff summarization for large diffs
       let semanticSummary: string | undefined;
@@ -189,6 +210,8 @@ export class GenerateAICommitUseCase {
         fewShotExamples,
         // Add semantic summary if available (for large diffs)
         semanticSummary,
+        // Add project style analysis if available
+        projectStyle,
       };
 
       // Chain-of-Thought Step 2: Generate commit message using the reasoning analysis

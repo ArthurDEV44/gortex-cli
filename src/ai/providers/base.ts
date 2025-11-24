@@ -32,6 +32,7 @@ export interface AIProvider {
   getName(): string;
 }
 
+import type { ProjectStyle } from "../../domain/services/ProjectStyleAnalyzer.js";
 import type { CommitExample } from "../examples/commit-samples.js";
 import type { ReasoningAnalysis } from "../prompts/commit-message.js";
 
@@ -44,6 +45,7 @@ export interface CommitContext {
   reasoning?: ReasoningAnalysis; // Optional Chain-of-Thought reasoning
   fewShotExamples?: CommitExample[]; // Optional few-shot learning examples
   semanticSummary?: string; // Optional semantic summary for large diffs
+  projectStyle?: ProjectStyle; // Optional project style analysis from commit history
 }
 
 /**
