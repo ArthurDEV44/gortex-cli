@@ -150,7 +150,8 @@ export class GenerateAICommitUseCase {
       // DISABLED by default for local models (timeout issues with large diffs)
       // Enable with GORTEX_ENABLE_SEMANTIC_SUMMARY=true
       let semanticSummary: string | undefined;
-      const enableSemanticSummary = process.env.GORTEX_ENABLE_SEMANTIC_SUMMARY === "true";
+      const enableSemanticSummary =
+        process.env.GORTEX_ENABLE_SEMANTIC_SUMMARY === "true";
       const summaryThreshold =
         SIZE_LIMITS.MAX_DIFF_LENGTH * SIZE_LIMITS.SEMANTIC_SUMMARY_THRESHOLD;
 
@@ -167,79 +168,87 @@ export class GenerateAICommitUseCase {
             `Semantic diff summarization failed: ${error instanceof Error ? error.message : String(error)}. Continuing without summary.`,
           );
         }
-      } else if (process.env.GORTEX_DEBUG === "true" && diffForAI.length > summaryThreshold) {
-        console.log("\n⏭️  [DEBUG] Semantic Summary DISABLED (set GORTEX_ENABLE_SEMANTIC_SUMMARY=true to enable)");
+      } else if (
+        process.env.GORTEX_DEBUG === "true" &&
+        diffForAI.length > summaryThreshold
+      ) {
+        console.log(
+          "\n⏭️  [DEBUG] Semantic Summary DISABLED (set GORTEX_ENABLE_SEMANTIC_SUMMARY=true to enable)",
+        );
       }
 
       // Chain-of-Thought Step 1: Generate structured reasoning analysis
       // DISABLED by default for local models (too slow - 60s+ timeout issues)
       // Enable with GORTEX_ENABLE_CHAIN_OF_THOUGHT=true
       let reasoningAnalysis: ReasoningAnalysis | undefined;
-      const enableChainOfThought = process.env.GORTEX_ENABLE_CHAIN_OF_THOUGHT === "true";
+      const enableChainOfThought =
+        process.env.GORTEX_ENABLE_CHAIN_OF_THOUGHT === "true";
 
       if (enableChainOfThought) {
-      try {
-        const reasoningSystemPrompt = generateReasoningSystemPrompt();
-        const reasoningUserPrompt = generateReasoningUserPrompt(
-          diffForAI,
-          diffAnalysis,
-          diffContext.files,
-        );
+        try {
+          const reasoningSystemPrompt = generateReasoningSystemPrompt();
+          const reasoningUserPrompt = generateReasoningUserPrompt(
+            diffForAI,
+            diffAnalysis,
+            diffContext.files,
+          );
 
-        const reasoningResponse = await request.provider.generateText(
-          reasoningSystemPrompt,
-          reasoningUserPrompt,
-          {
-            temperature: 0.4, // Lower temperature for more structured reasoning
-            maxTokens: 800,
-            format: "json",
-          },
-        );
+          const reasoningResponse = await request.provider.generateText(
+            reasoningSystemPrompt,
+            reasoningUserPrompt,
+            {
+              temperature: 0.4, // Lower temperature for more structured reasoning
+              maxTokens: 800,
+              format: "json",
+            },
+          );
 
-        // DEBUG: Log raw response from AI
-        if (process.env.GORTEX_DEBUG === "true") {
-          console.log("\n🔍 [DEBUG] Chain-of-Thought RAW RESPONSE:");
-          console.log("─".repeat(80));
-          console.log(reasoningResponse);
-          console.log("─".repeat(80));
+          // DEBUG: Log raw response from AI
+          if (process.env.GORTEX_DEBUG === "true") {
+            console.log("\n🔍 [DEBUG] Chain-of-Thought RAW RESPONSE:");
+            console.log("─".repeat(80));
+            console.log(reasoningResponse);
+            console.log("─".repeat(80));
+          }
+
+          // Parse the reasoning analysis with robust markdown/JSON extraction
+          const cleanedReasoning = reasoningResponse
+            .trim()
+            // Remove markdown code blocks (```json ... ``` or ``` ... ```)
+            .replace(/```json\s*/g, "")
+            .replace(/```\s*/g, "")
+            // Remove any leading/trailing markdown headers or text
+            .replace(/^#{1,6}\s+.*$/gm, "") // Remove markdown headers like ### Analysis
+            .replace(/^[^{]*/g, "") // Remove everything before first {
+            .replace(/[^}]*$/g, "") // Remove everything after last }
+            .trim();
+
+          // DEBUG: Log cleaned JSON
+          if (process.env.GORTEX_DEBUG === "true") {
+            console.log("\n🔍 [DEBUG] Chain-of-Thought CLEANED JSON:");
+            console.log("─".repeat(80));
+            console.log(cleanedReasoning);
+            console.log("─".repeat(80));
+          }
+
+          reasoningAnalysis = JSON.parse(cleanedReasoning) as ReasoningAnalysis;
+        } catch (error) {
+          // If reasoning fails, continue without it (graceful degradation)
+          // Log the error but don't fail the entire generation
+          if (process.env.GORTEX_DEBUG === "true") {
+            console.error("\n❌ [DEBUG] Chain-of-Thought ERROR:");
+            console.error("─".repeat(80));
+            console.error(error);
+            console.error("─".repeat(80));
+          }
+          console.warn(
+            `Chain-of-Thought reasoning failed: ${error instanceof Error ? error.message : String(error)}. Continuing with standard generation.`,
+          );
         }
-
-        // Parse the reasoning analysis with robust markdown/JSON extraction
-        const cleanedReasoning = reasoningResponse
-          .trim()
-          // Remove markdown code blocks (```json ... ``` or ``` ... ```)
-          .replace(/```json\s*/g, "")
-          .replace(/```\s*/g, "")
-          // Remove any leading/trailing markdown headers or text
-          .replace(/^#{1,6}\s+.*$/gm, "") // Remove markdown headers like ### Analysis
-          .replace(/^[^{]*/g, "") // Remove everything before first {
-          .replace(/[^}]*$/g, "") // Remove everything after last }
-          .trim();
-
-        // DEBUG: Log cleaned JSON
-        if (process.env.GORTEX_DEBUG === "true") {
-          console.log("\n🔍 [DEBUG] Chain-of-Thought CLEANED JSON:");
-          console.log("─".repeat(80));
-          console.log(cleanedReasoning);
-          console.log("─".repeat(80));
-        }
-
-        reasoningAnalysis = JSON.parse(cleanedReasoning) as ReasoningAnalysis;
-      } catch (error) {
-        // If reasoning fails, continue without it (graceful degradation)
-        // Log the error but don't fail the entire generation
-        if (process.env.GORTEX_DEBUG === "true") {
-          console.error("\n❌ [DEBUG] Chain-of-Thought ERROR:");
-          console.error("─".repeat(80));
-          console.error(error);
-          console.error("─".repeat(80));
-        }
-        console.warn(
-          `Chain-of-Thought reasoning failed: ${error instanceof Error ? error.message : String(error)}. Continuing with standard generation.`,
-        );
-      }
       } else if (process.env.GORTEX_DEBUG === "true") {
-        console.log("\n⏭️  [DEBUG] Chain-of-Thought DISABLED (set GORTEX_ENABLE_CHAIN_OF_THOUGHT=true to enable)");
+        console.log(
+          "\n⏭️  [DEBUG] Chain-of-Thought DISABLED (set GORTEX_ENABLE_CHAIN_OF_THOUGHT=true to enable)",
+        );
       }
 
       // Build AI generation context with diff analysis, reasoning, and few-shot examples
@@ -278,105 +287,108 @@ export class GenerateAICommitUseCase {
       // Self-Verification Loop: Let AI evaluate and improve its own proposal
       // DISABLED by default for local models (adds 30-60s latency)
       // Enable with GORTEX_ENABLE_VERIFICATION=true
-      const enableVerification = process.env.GORTEX_ENABLE_VERIFICATION === "true";
+      const enableVerification =
+        process.env.GORTEX_ENABLE_VERIFICATION === "true";
 
       if (enableVerification) {
-      try {
-        const verificationSystemPrompt = generateVerificationSystemPrompt();
-        const verificationUserPrompt = generateVerificationUserPrompt(
-          {
-            type: result.message.getType().toString(),
-            scope: result.message.getScope().isEmpty()
-              ? undefined
-              : result.message.getScope().toString(),
-            subject: result.message.getSubject().toString(),
-            body: result.message.getBody(),
-          },
-          diffAnalysis,
-          reasoningAnalysis?.suggestedType,
-        );
+        try {
+          const verificationSystemPrompt = generateVerificationSystemPrompt();
+          const verificationUserPrompt = generateVerificationUserPrompt(
+            {
+              type: result.message.getType().toString(),
+              scope: result.message.getScope().isEmpty()
+                ? undefined
+                : result.message.getScope().toString(),
+              subject: result.message.getSubject().toString(),
+              body: result.message.getBody(),
+            },
+            diffAnalysis,
+            reasoningAnalysis?.suggestedType,
+          );
 
-        const verificationResponse = await request.provider.generateText(
-          verificationSystemPrompt,
-          verificationUserPrompt,
-          {
-            temperature: 0.4, // Lower temperature for more structured verification
-            maxTokens: 500,
-            format: "json",
-          },
-        );
+          const verificationResponse = await request.provider.generateText(
+            verificationSystemPrompt,
+            verificationUserPrompt,
+            {
+              temperature: 0.4, // Lower temperature for more structured verification
+              maxTokens: 500,
+              format: "json",
+            },
+          );
 
-        // DEBUG: Log raw verification response
-        if (process.env.GORTEX_DEBUG === "true") {
-          console.log("\n🔍 [DEBUG] Self-Verification RAW RESPONSE:");
-          console.log("─".repeat(80));
-          console.log(verificationResponse);
-          console.log("─".repeat(80));
+          // DEBUG: Log raw verification response
+          if (process.env.GORTEX_DEBUG === "true") {
+            console.log("\n🔍 [DEBUG] Self-Verification RAW RESPONSE:");
+            console.log("─".repeat(80));
+            console.log(verificationResponse);
+            console.log("─".repeat(80));
+          }
+
+          // Parse verification result with robust markdown/JSON extraction
+          const cleanedVerification = verificationResponse
+            .trim()
+            // Remove markdown code blocks (```json ... ``` or ``` ... ```)
+            .replace(/```json\s*/g, "")
+            .replace(/```\s*/g, "")
+            // Remove any leading/trailing markdown headers or text
+            .replace(/^#{1,6}\s+.*$/gm, "") // Remove markdown headers
+            .replace(/^[^{]*/g, "") // Remove everything before first {
+            .replace(/[^}]*$/g, "") // Remove everything after last }
+            .trim();
+
+          // DEBUG: Log cleaned verification JSON
+          if (process.env.GORTEX_DEBUG === "true") {
+            console.log("\n🔍 [DEBUG] Self-Verification CLEANED JSON:");
+            console.log("─".repeat(80));
+            console.log(cleanedVerification);
+            console.log("─".repeat(80));
+          }
+
+          const verification: VerificationResult = JSON.parse(
+            cleanedVerification,
+          ) as VerificationResult;
+
+          // If improvements are suggested, apply them
+          if (
+            !verification.isGoodQuality &&
+            (verification.improvedSubject || verification.improvedBody)
+          ) {
+            // Re-create CommitMessage with improvements
+            const improvedMessage = CommitMessage.create({
+              type: result.message.getType(),
+              subject: verification.improvedSubject
+                ? CommitSubject.create(verification.improvedSubject)
+                : result.message.getSubject(),
+              scope: result.message.getScope(),
+              body: verification.improvedBody ?? result.message.getBody(),
+              breaking: result.message.isBreaking(),
+              breakingChangeDescription:
+                result.message.getBreakingChangeDescription(),
+            });
+
+            result = {
+              message: improvedMessage,
+              confidence: (result.confidence ?? 0.8) * 0.9, // Reduce confidence slightly
+              reasoning: verification.reasoning,
+            };
+            _iterationsCount = 2;
+          }
+        } catch (error) {
+          // If verification fails, continue with original result (graceful degradation)
+          if (process.env.GORTEX_DEBUG === "true") {
+            console.error("\n❌ [DEBUG] Self-Verification ERROR:");
+            console.error("─".repeat(80));
+            console.error(error);
+            console.error("─".repeat(80));
+          }
+          console.warn(
+            `Self-verification failed: ${error instanceof Error ? error.message : String(error)}. Continuing with original commit message.`,
+          );
         }
-
-        // Parse verification result with robust markdown/JSON extraction
-        const cleanedVerification = verificationResponse
-          .trim()
-          // Remove markdown code blocks (```json ... ``` or ``` ... ```)
-          .replace(/```json\s*/g, "")
-          .replace(/```\s*/g, "")
-          // Remove any leading/trailing markdown headers or text
-          .replace(/^#{1,6}\s+.*$/gm, "") // Remove markdown headers
-          .replace(/^[^{]*/g, "") // Remove everything before first {
-          .replace(/[^}]*$/g, "") // Remove everything after last }
-          .trim();
-
-        // DEBUG: Log cleaned verification JSON
-        if (process.env.GORTEX_DEBUG === "true") {
-          console.log("\n🔍 [DEBUG] Self-Verification CLEANED JSON:");
-          console.log("─".repeat(80));
-          console.log(cleanedVerification);
-          console.log("─".repeat(80));
-        }
-
-        const verification: VerificationResult = JSON.parse(
-          cleanedVerification,
-        ) as VerificationResult;
-
-        // If improvements are suggested, apply them
-        if (
-          !verification.isGoodQuality &&
-          (verification.improvedSubject || verification.improvedBody)
-        ) {
-          // Re-create CommitMessage with improvements
-          const improvedMessage = CommitMessage.create({
-            type: result.message.getType(),
-            subject: verification.improvedSubject
-              ? CommitSubject.create(verification.improvedSubject)
-              : result.message.getSubject(),
-            scope: result.message.getScope(),
-            body: verification.improvedBody ?? result.message.getBody(),
-            breaking: result.message.isBreaking(),
-            breakingChangeDescription:
-              result.message.getBreakingChangeDescription(),
-          });
-
-          result = {
-            message: improvedMessage,
-            confidence: (result.confidence ?? 0.8) * 0.9, // Reduce confidence slightly
-            reasoning: verification.reasoning,
-          };
-          _iterationsCount = 2;
-        }
-      } catch (error) {
-        // If verification fails, continue with original result (graceful degradation)
-        if (process.env.GORTEX_DEBUG === "true") {
-          console.error("\n❌ [DEBUG] Self-Verification ERROR:");
-          console.error("─".repeat(80));
-          console.error(error);
-          console.error("─".repeat(80));
-        }
-        console.warn(
-          `Self-verification failed: ${error instanceof Error ? error.message : String(error)}. Continuing with original commit message.`,
-        );
-      }
       } else if (process.env.GORTEX_DEBUG === "true") {
-        console.log("\n⏭️  [DEBUG] Self-Verification DISABLED (set GORTEX_ENABLE_VERIFICATION=true to enable)");
+        console.log(
+          "\n⏭️  [DEBUG] Self-Verification DISABLED (set GORTEX_ENABLE_VERIFICATION=true to enable)",
+        );
       }
 
       // Convert to DTO
