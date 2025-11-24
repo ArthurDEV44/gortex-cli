@@ -87,7 +87,7 @@ export class GenerateAICommitUseCase {
 
       // Analyze the diff to extract structured metadata
       // This analysis guides the AI to generate more precise commit messages
-      const diffAnalysis = this.diffAnalyzer.analyze(
+      const diffAnalysis = await this.diffAnalyzer.analyze(
         diffForAI,
         diffContext.files,
       );
@@ -145,7 +145,7 @@ export class GenerateAICommitUseCase {
               architecturalContext: reasoningAnalysis.architecturalContext,
               changeIntention: reasoningAnalysis.changeIntention,
               changeNature: reasoningAnalysis.changeNature,
-              keySymbols: reasoningAnalysis.keySymbols,
+              keySymbols: reasoningAnalysis.keySymbols || [],
               suggestedType: reasoningAnalysis.suggestedType,
             }
           : undefined,

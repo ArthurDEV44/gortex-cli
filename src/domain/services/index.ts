@@ -7,3 +7,5 @@ export {
   CommitMessageService,
   type ParsedCommit,
 } from "./CommitMessageService.js";
+export * from "./DiffAnalyzer.js";
+export * from "./ASTDiffAnalyzer.js";

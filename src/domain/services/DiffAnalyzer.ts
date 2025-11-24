@@ -43,6 +43,14 @@ export interface FileChange {
   changeType: "created" | "modified" | "deleted";
 }
 
+import type {
+  ASTAnalysis,
+  IASTDiffAnalyzer,
+  Refactoring,
+  StructuralChange,
+  SemanticImpact,
+} from "./ASTDiffAnalyzer.js";
+
 export interface DiffAnalysis {
   modifiedSymbols: ModifiedSymbol[];
   changePatterns: ChangePattern[];
@@ -55,19 +63,40 @@ export interface DiffAnalysis {
     linesRemoved: number;
     totalChanges: number;
   };
+  astAnalysis?: ASTAnalysis; // Optional AST-based analysis
 }
 
 export class DiffAnalyzer {
+  private astAnalyzer?: IASTDiffAnalyzer;
+
+  /**
+   * Sets the AST analyzer to use for enhanced analysis
+   * @param analyzer Optional AST-based analyzer
+   */
+  setASTAnalyzer(analyzer?: IASTDiffAnalyzer): void {
+    this.astAnalyzer = analyzer;
+  }
+
   /**
    * Analyzes a git diff and extracts structured metadata
+   * Optionally uses AST-based analysis if available
    */
-  analyze(diff: string, stagedFiles: string[]): DiffAnalysis {
+  async analyze(
+    diff: string,
+    stagedFiles: string[],
+  ): Promise<DiffAnalysis> {
     const modifiedSymbols = this.extractModifiedSymbols(diff);
     const changePatterns = this.detectChangePatterns(diff, stagedFiles);
     const fileRelationships = this.extractFileRelationships(diff);
     const fileChanges = this.analyzeFileChanges(diff, stagedFiles);
     const summary = this.calculateSummary(diff);
     const complexity = this.assessComplexity(summary, modifiedSymbols.length);
+
+    // Perform AST-based analysis if analyzer is available
+    let astAnalysis: ASTAnalysis | undefined;
+    if (this.astAnalyzer) {
+      astAnalysis = await this.analyzeFilesWithAST(diff, stagedFiles);
+    }
 
     return {
       modifiedSymbols,
@@ -76,6 +105,120 @@ export class DiffAnalyzer {
       fileChanges,
       complexity,
       summary,
+      astAnalysis,
+    };
+  }
+
+  /**
+   * Analyzes files using AST-based diff analyzer
+   */
+  private async analyzeFilesWithAST(
+    diff: string,
+    files: string[],
+  ): Promise<ASTAnalysis> {
+    if (!this.astAnalyzer) {
+      return {
+        refactorings: [],
+        structuralChanges: [],
+        semanticImpact: [],
+      };
+    }
+
+    const tsFiles = files.filter((f) => this.astAnalyzer!.supportsFile(f));
+
+    if (tsFiles.length === 0) {
+      return {
+        refactorings: [],
+        structuralChanges: [],
+        semanticImpact: [],
+      };
+    }
+
+    const allRefactorings: Refactoring[] = [];
+    const allStructuralChanges: StructuralChange[] = [];
+    const allSemanticImpact: SemanticImpact[] = [];
+
+    for (const file of tsFiles) {
+      try {
+        const { oldContent, newContent } = this.extractFileContents(diff, file);
+
+        if (oldContent && newContent) {
+          const fileAST = await this.astAnalyzer.analyzeFileAST(
+            file,
+            oldContent,
+            newContent,
+          );
+
+          allRefactorings.push(...fileAST.refactorings);
+          allStructuralChanges.push(...fileAST.structuralChanges);
+          allSemanticImpact.push(...fileAST.semanticImpact);
+        }
+      } catch (error) {
+        // If AST analysis fails for a file, continue with others
+        // Fallback to line-based analysis
+      }
+    }
+
+    return {
+      refactorings: allRefactorings,
+      structuralChanges: allStructuralChanges,
+      semanticImpact: allSemanticImpact,
+    };
+  }
+
+  /**
+   * Extracts old and new file contents from diff
+   */
+  private extractFileContents(
+    diff: string,
+    filePath: string,
+  ): { oldContent: string | null; newContent: string | null } {
+    const lines = diff.split("\n");
+    let currentFile = "";
+    let inFileDiff = false;
+    const oldLines: string[] = [];
+    const newLines: string[] = [];
+
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i];
+
+      // Track current file
+      if (line.startsWith("diff --git")) {
+        const match = line.match(/diff --git a\/(.+?) b\//);
+        currentFile = match ? match[1] : "";
+        inFileDiff = currentFile === filePath;
+        oldLines.length = 0;
+        newLines.length = 0;
+        continue;
+      }
+
+      if (!inFileDiff) {
+        continue;
+      }
+
+      // Extract content lines (skip diff headers)
+      if (line.startsWith("---") || line.startsWith("+++")) {
+        continue;
+      }
+
+      if (line.startsWith("@@")) {
+        continue; // Hunk header
+      }
+
+      if (line.startsWith("-") && !line.startsWith("---")) {
+        oldLines.push(line.substring(1));
+      } else if (line.startsWith("+") && !line.startsWith("+++")) {
+        newLines.push(line.substring(1));
+      } else if (line.startsWith(" ")) {
+        const content = line.substring(1);
+        oldLines.push(content);
+        newLines.push(content);
+      }
+    }
+
+    return {
+      oldContent: oldLines.length > 0 ? oldLines.join("\n") : null,
+      newContent: newLines.length > 0 ? newLines.join("\n") : null,
     };
   }
 

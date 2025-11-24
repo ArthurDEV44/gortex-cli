@@ -12,7 +12,7 @@ export interface ReasoningContext {
   architecturalContext: string;
   changeIntention: string;
   changeNature: string;
-  keySymbols: string[];
+  keySymbols?: string[]; // Optionnel car l'AI peut ne pas toujours le retourner
   suggestedType: string;
 }
 

@@ -13,8 +13,8 @@ Ce plan traduit les recommandations de `GENERATE_AI_AUDIT.md` en travaux aligné
 
 ## Priorité 2 · Analyse avancée (Semaine 2)
 
-- [ ] **ASTDiffAnalyzer**  
-  Ajouter `src/domain/services/ASTDiffAnalyzer.ts` basé sur Tree-Sitter, puis enrichir `DiffAnalyzer` pour fusionner l’analyse AST et l’analyse ligne.
+- [x] **ASTDiffAnalyzer**  
+  ✅ Implémenté : Création de `src/domain/services/ASTDiffAnalyzer.ts` avec interface `IASTDiffAnalyzer` et types (`Refactoring`, `StructuralChange`, `SemanticImpact`). Implémentation `TreeSitterASTDiffAnalyzer` dans `src/infrastructure/services/ast/`. Intégration dans `DiffAnalyzer` avec méthode `setASTAnalyzer()` et fusion des analyses AST et ligne. Support gracieux si Tree-Sitter n'est pas disponible (fallback sur analyse ligne). **Note** : Nécessite d'ajouter les dépendances `tree-sitter`, `tree-sitter-typescript`, `tree-sitter-javascript` dans `package.json`.
 - [ ] **Infrastructure Tree-Sitter**  
   Introduire l’adaptateur correspondant dans `src/infrastructure/services/ast/` + wiring DI (ServiceRegistry) et gérer la dépendance `tree-sitter` dans `package.json` (à valider avec mainteneur car fichier protégé).
 - [ ] **Semantic diff summarization**  

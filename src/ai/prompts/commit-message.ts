@@ -13,7 +13,7 @@ export interface ReasoningAnalysis {
   architecturalContext: string;
   changeIntention: string;
   changeNature: string;
-  keySymbols: string[];
+  keySymbols?: string[]; // Optionnel car l'AI peut ne pas toujours le retourner
   suggestedType: string;
   complexityJustification: string;
 }
@@ -136,10 +136,12 @@ export function generateUserPrompt(
 ): string {
   const parts = ["<context>"];
   parts.push(`  <branch>${context.branch}</branch>`);
-  parts.push(`  <files count="${context.files.length}">`);
-  context.files.forEach((file) => {
-    parts.push(`    <file>${file}</file>`);
-  });
+  parts.push(`  <files count="${context.files?.length || 0}">`);
+  if (context.files && Array.isArray(context.files)) {
+    context.files.forEach((file) => {
+      parts.push(`    <file>${file}</file>`);
+    });
+  }
   parts.push("  </files>");
 
   if (context.availableScopes && context.availableScopes.length > 0) {
@@ -184,9 +186,11 @@ export function generateUserPrompt(
     );
     parts.push(`  <change_nature>${reasoning.changeNature}</change_nature>`);
     parts.push("  <key_symbols>");
-    reasoning.keySymbols.forEach((symbol) => {
-      parts.push(`    <symbol>${symbol}</symbol>`);
-    });
+    if (reasoning.keySymbols && Array.isArray(reasoning.keySymbols)) {
+      reasoning.keySymbols.forEach((symbol) => {
+        parts.push(`    <symbol>${symbol}</symbol>`);
+      });
+    }
     parts.push("  </key_symbols>");
     parts.push(`  <suggested_type>${reasoning.suggestedType}</suggested_type>`);
     parts.push(
@@ -216,7 +220,7 @@ export function generateUserPrompt(
     parts.push("  </summary>");
 
     // Modified symbols (functions, classes, etc.)
-    if (analysis.modifiedSymbols.length > 0) {
+    if (analysis.modifiedSymbols && Array.isArray(analysis.modifiedSymbols) && analysis.modifiedSymbols.length > 0) {
       parts.push("  <modified_symbols>");
       parts.push(
         "    <!-- UTILISE ces NOMS EXACTS dans ton message de commit -->",
@@ -230,7 +234,7 @@ export function generateUserPrompt(
     }
 
     // Change patterns
-    if (analysis.changePatterns.length > 0) {
+    if (analysis.changePatterns && Array.isArray(analysis.changePatterns) && analysis.changePatterns.length > 0) {
       parts.push("  <change_patterns>");
       parts.push(
         "    <!-- Patterns détectés, triés par confiance (le premier est le dominant) -->",
@@ -246,7 +250,7 @@ export function generateUserPrompt(
     }
 
     // File relationships
-    if (analysis.fileRelationships.length > 0) {
+    if (analysis.fileRelationships && Array.isArray(analysis.fileRelationships) && analysis.fileRelationships.length > 0) {
       parts.push("  <file_relationships>");
       analysis.fileRelationships.slice(0, 10).forEach((rel) => {
         // Limit to 10
@@ -276,20 +280,30 @@ export function generateUserPrompt(
   // Enhanced instructions using the analysis
   if (analysis) {
     // Use file-level analysis (research-proven approach)
-    const highPriorityFiles = analysis.fileChanges.filter(
-      (f) => f.importance === "high",
-    );
-    const _newFiles = analysis.fileChanges.filter((f) => f.isNew);
+    const highPriorityFiles = analysis.fileChanges && Array.isArray(analysis.fileChanges)
+      ? analysis.fileChanges.filter(
+          (f) => f.importance === "high",
+        )
+      : [];
+    const _newFiles = analysis.fileChanges && Array.isArray(analysis.fileChanges)
+      ? analysis.fileChanges.filter((f) => f.isNew)
+      : [];
 
     // Smart pattern selection: prioritize feature_addition over technical patterns
-    let dominantPattern = analysis.changePatterns[0];
-    const featurePattern = analysis.changePatterns.find(
-      (p) => p.type === "feature_addition",
-    );
+    let dominantPattern = analysis.changePatterns && Array.isArray(analysis.changePatterns) && analysis.changePatterns.length > 0
+      ? analysis.changePatterns[0]
+      : undefined;
+    const featurePattern = analysis.changePatterns && Array.isArray(analysis.changePatterns)
+      ? analysis.changePatterns.find(
+          (p) => p.type === "feature_addition",
+        )
+      : undefined;
 
     if (
       featurePattern &&
       featurePattern.confidence >= 0.7 &&
+      analysis.changePatterns &&
+      Array.isArray(analysis.changePatterns) &&
       analysis.changePatterns.indexOf(featurePattern) <= 2
     ) {
       dominantPattern = featurePattern;
@@ -429,10 +443,12 @@ export function generateReasoningUserPrompt(
     parts.push(`- Complexité: ${analysis.complexity}`);
     parts.push(`- Fichiers modifiés: ${analysis.summary.filesChanged}`);
     parts.push(
-      `- Pattern dominant: ${analysis.changePatterns[0]?.description || "N/A"}`,
+      `- Pattern dominant: ${analysis.changePatterns && Array.isArray(analysis.changePatterns) && analysis.changePatterns.length > 0
+        ? analysis.changePatterns[0]?.description || "N/A"
+        : "N/A"}`,
     );
 
-    if (analysis.modifiedSymbols.length > 0) {
+    if (analysis.modifiedSymbols && Array.isArray(analysis.modifiedSymbols) && analysis.modifiedSymbols.length > 0) {
       parts.push("- Symboles modifiés:");
       analysis.modifiedSymbols.slice(0, 10).forEach((symbol) => {
         parts.push(`  * ${symbol.name} (${symbol.type}) dans ${symbol.file}`);
