@@ -32,6 +32,7 @@ import { CommitSubject } from "../../domain/value-objects/CommitSubject.js";
 import { GitRepositoryImpl } from "../../infrastructure/repositories/GitRepositoryImpl.js";
 import { getCommitTypeValues } from "../../shared/constants/commit-types.js";
 import { SIZE_LIMITS } from "../../shared/constants/limits.js";
+import { loadProjectCommitGuidelines } from "../../utils/projectGuidelines.js";
 import type { AIGenerationResultDTO } from "../dto/AIGenerationDTO.js";
 import { CommitMessageMapper } from "../mappers/CommitMessageMapper.js";
 
@@ -133,6 +134,18 @@ export class GenerateAICommitUseCase {
         }
       }
 
+      // Load project-specific commit guidelines
+      let projectGuidelines: string | undefined;
+      try {
+        // Use process.cwd() as the working directory (where the git repository is)
+        projectGuidelines = await loadProjectCommitGuidelines(process.cwd());
+      } catch (error) {
+        // If guidelines loading fails, continue without them (graceful degradation)
+        console.warn(
+          `Failed to load project commit guidelines: ${error instanceof Error ? error.message : String(error)}. Continuing without guidelines.`,
+        );
+      }
+
       // Semantic diff summarization for large diffs
       let semanticSummary: string | undefined;
       const summaryThreshold =
@@ -212,6 +225,8 @@ export class GenerateAICommitUseCase {
         semanticSummary,
         // Add project style analysis if available
         projectStyle,
+        // Add project-specific guidelines if available
+        projectGuidelines,
       };
 
       // Chain-of-Thought Step 2: Generate commit message using the reasoning analysis

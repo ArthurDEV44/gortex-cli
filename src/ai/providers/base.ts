@@ -46,6 +46,7 @@ export interface CommitContext {
   fewShotExamples?: CommitExample[]; // Optional few-shot learning examples
   semanticSummary?: string; // Optional semantic summary for large diffs
   projectStyle?: ProjectStyle; // Optional project style analysis from commit history
+  projectGuidelines?: string; // Optional project-specific commit guidelines
 }
 
 /**

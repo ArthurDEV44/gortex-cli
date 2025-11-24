@@ -121,6 +121,7 @@ export class OpenAIProvider extends BaseAIProvider {
               context.fewShotExamples,
               context.semanticSummary,
               context.projectStyle,
+              context.projectGuidelines,
             ),
           },
         ],

@@ -147,6 +147,7 @@ export function generateUserPrompt(
   fewShotExamples?: CommitExample[],
   semanticSummary?: string,
   projectStyle?: ProjectStyle,
+  projectGuidelines?: string,
 ): string {
   const parts = ["<context>"];
   parts.push(`  <branch>${context.branch}</branch>`);
@@ -231,6 +232,17 @@ export function generateUserPrompt(
       `  <convention_compliance>${projectStyle.conventionCompliance}%</convention_compliance>`,
     );
     parts.push("</project_style>");
+  }
+
+  // Add project-specific commit guidelines if available
+  if (projectGuidelines) {
+    parts.push("");
+    parts.push("<project_commit_guidelines>");
+    parts.push(
+      "  <!-- Ces règles priment sur les instructions génériques et doivent être strictement suivies -->",
+    );
+    parts.push(projectGuidelines);
+    parts.push("</project_commit_guidelines>");
   }
 
   // Add Chain-of-Thought reasoning if available
