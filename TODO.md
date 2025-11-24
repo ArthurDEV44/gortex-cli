@@ -28,16 +28,3 @@ Ce plan traduit les recommandations de `GENERATE_AI_AUDIT.md` en travaux aligné
   ✅ Implémenté : Création de l'interface `IProjectStyleAnalyzer` et du type `ProjectStyle` dans `src/domain/services/ProjectStyleAnalyzer.ts`. Implémentation `ProjectStyleAnalyzerImpl` dans `src/infrastructure/services/` qui analyse l'historique Git (100 commits par défaut) pour extraire : types préférés (top 3), longueur moyenne des subjects, scopes communs, niveau de détail (detailed/concise), templates de subjects, conformité aux conventional commits. Enregistrement dans `ServiceRegistry` comme singleton. Intégration dans `GenerateAICommitUseCase` avec fallback gracieux si l'analyse échoue. Ajout de `<project_style>` dans `generateUserPrompt()` avec toutes les métriques. Transmission via `AIGenerationContext` et `CommitContext` à tous les providers (Ollama, Mistral, OpenAI).
 - [x] **Support des guidelines projet**  
   ✅ Implémenté : Création de `src/utils/projectGuidelines.ts` avec `loadProjectCommitGuidelines()` qui cherche les fichiers dans l'ordre de priorité : `.claude/commands/commit.md`, `.gortex/commit-guidelines.md`, `COMMIT_GUIDELINES.md`, `.github/COMMIT_GUIDELINES.md`. Intégration dans `GenerateAICommitUseCase` avec chargement automatique depuis le répertoire de travail du projet Git. Ajout de `projectGuidelines` dans `AIGenerationContext` et `CommitContext`. Ajout de la section `<project_commit_guidelines>` dans `generateUserPrompt()` avec indication que ces règles priment sur les instructions génériques. Transmission via tous les adaptateurs et providers (Ollama, Mistral, OpenAI). Gestion d'erreur avec fallback gracieux si le chargement échoue.
-
-## Priorité 4 · Qualité & instrumentation (Semaine 4)
-
-- [ ] **Metrics & logging**  
-  Implémenter `CommitQualityMetrics` dans `src/evaluation/CommitQualityMetrics.ts` et un logger `logCommitGeneration()` qui écrit dans `.gortex/quality-metrics.jsonl`.
-- [ ] **Boucle de feedback utilisateur**  
-  Ajouter dans la présentation (Ink) une étape de notation/retour après génération, remonter les données aux métriques puis persister.
-
-## Suivi & risques
-
-- [ ] Documenter les nouveaux workflows dans `docs/` (architecture + READMEs) dès qu’une phase est livrée.
-- [ ] Mesurer la latence induite par CoT/self-verification et ajuster l’activation dynamique selon la confiance calculée.
-
