@@ -73,7 +73,10 @@ export function isValidProjectStyle(style: unknown): style is ProjectStyle {
   if (!Array.isArray(s.preferredTypes)) {
     return false;
   }
-  if (typeof s.avgSubjectLength !== "number" || !Number.isFinite(s.avgSubjectLength)) {
+  if (
+    typeof s.avgSubjectLength !== "number" ||
+    !Number.isFinite(s.avgSubjectLength)
+  ) {
     return false;
   }
   if (!Array.isArray(s.commonScopes)) {
@@ -95,19 +98,13 @@ export function isValidProjectStyle(style: unknown): style is ProjectStyle {
   }
 
   // Validate array contents
-  if (
-    !s.preferredTypes.every((item: unknown) => typeof item === "string")
-  ) {
+  if (!s.preferredTypes.every((item: unknown) => typeof item === "string")) {
     return false;
   }
-  if (
-    !s.commonScopes.every((item: unknown) => typeof item === "string")
-  ) {
+  if (!s.commonScopes.every((item: unknown) => typeof item === "string")) {
     return false;
   }
-  if (
-    !s.templates.every((item: unknown) => typeof item === "string")
-  ) {
+  if (!s.templates.every((item: unknown) => typeof item === "string")) {
     return false;
   }
 

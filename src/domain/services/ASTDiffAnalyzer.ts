@@ -122,7 +122,9 @@ const VALID_SEVERITY_LEVELS = ["low", "medium", "high"] as const;
  * @param refactoring The object to validate
  * @returns true if valid, false otherwise
  */
-export function isValidRefactoring(refactoring: unknown): refactoring is Refactoring {
+export function isValidRefactoring(
+  refactoring: unknown,
+): refactoring is Refactoring {
   if (!refactoring || typeof refactoring !== "object") {
     return false;
   }
@@ -130,7 +132,9 @@ export function isValidRefactoring(refactoring: unknown): refactoring is Refacto
   const r = refactoring as Record<string, unknown>;
 
   if (
-    !VALID_REFACTORING_TYPES.includes(r.type as (typeof VALID_REFACTORING_TYPES)[number])
+    !VALID_REFACTORING_TYPES.includes(
+      r.type as (typeof VALID_REFACTORING_TYPES)[number],
+    )
   ) {
     return false;
   }
@@ -222,7 +226,9 @@ export function isValidStructuralChange(
  * @param impact The object to validate
  * @returns true if valid, false otherwise
  */
-export function isValidSemanticImpact(impact: unknown): impact is SemanticImpact {
+export function isValidSemanticImpact(
+  impact: unknown,
+): impact is SemanticImpact {
   if (!impact || typeof impact !== "object") {
     return false;
   }
