@@ -113,7 +113,13 @@ export class OpenAIProvider extends BaseAIProvider {
           },
           {
             role: "user",
-            content: generateUserPrompt(diff, context, analysis, context.reasoning, context.fewShotExamples),
+            content: generateUserPrompt(
+              diff,
+              context,
+              analysis,
+              context.reasoning,
+              context.fewShotExamples,
+            ),
           },
         ],
         temperature: this.temperature,

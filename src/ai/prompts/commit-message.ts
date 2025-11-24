@@ -1,7 +1,10 @@
 import type { DiffAnalysis } from "../../domain/services/DiffAnalyzer.js";
 import type { AIGeneratedCommit } from "../../types.js";
-import type { CommitContext } from "../providers/base.js";
 import type { CommitExample } from "../examples/commit-samples.js";
+import type { CommitContext } from "../providers/base.js";
+
+// Re-export CommitExample for convenience
+export type { CommitExample } from "../examples/commit-samples.js";
 
 /**
  * Interface pour l'analyse de raisonnement Chain-of-Thought
@@ -98,7 +101,9 @@ export function formatFewShotExamples(examples: CommitExample[]): string {
   );
 
   examples.forEach((example, index) => {
-    parts.push(`  <example number="${index + 1}" quality="${example.qualityScore}/5">`);
+    parts.push(
+      `  <example number="${index + 1}" quality="${example.qualityScore}/5">`,
+    );
     parts.push(`    <change_summary>${example.diffSummary}</change_summary>`);
     parts.push(`    <commit_message>`);
     parts.push(`      <type>${example.message.type}</type>`);
@@ -158,7 +163,7 @@ export function generateUserPrompt(
     parts.push(
       "  <!-- Exemples de style de commits récents dans ce projet (fallback) -->",
     );
-    context.recentCommits.slice(0, 3).forEach((commit) => {
+    context.recentCommits.slice(0, 5).forEach((commit) => {
       parts.push(`  <commit>${commit}</commit>`);
     });
     parts.push("</recent_commits>");
@@ -171,8 +176,12 @@ export function generateUserPrompt(
     parts.push(
       "  <!-- Analyse structurée Chain-of-Thought pour guider la génération -->",
     );
-    parts.push(`  <architectural_context>${reasoning.architecturalContext}</architectural_context>`);
-    parts.push(`  <change_intention>${reasoning.changeIntention}</change_intention>`);
+    parts.push(
+      `  <architectural_context>${reasoning.architecturalContext}</architectural_context>`,
+    );
+    parts.push(
+      `  <change_intention>${reasoning.changeIntention}</change_intention>`,
+    );
     parts.push(`  <change_nature>${reasoning.changeNature}</change_nature>`);
     parts.push("  <key_symbols>");
     reasoning.keySymbols.forEach((symbol) => {
@@ -180,7 +189,9 @@ export function generateUserPrompt(
     });
     parts.push("  </key_symbols>");
     parts.push(`  <suggested_type>${reasoning.suggestedType}</suggested_type>`);
-    parts.push(`  <complexity_justification>${reasoning.complexityJustification}</complexity_justification>`);
+    parts.push(
+      `  <complexity_justification>${reasoning.complexityJustification}</complexity_justification>`,
+    );
     parts.push("</reasoning_analysis>");
   }
 
@@ -408,14 +419,18 @@ export function generateReasoningUserPrompt(
 ): string {
   const parts: string[] = [];
 
-  parts.push("Analyse ces changements de code et fournis une analyse structurée:");
+  parts.push(
+    "Analyse ces changements de code et fournis une analyse structurée:",
+  );
   parts.push("");
 
   if (analysis) {
     parts.push("ANALYSE AUTOMATIQUE:");
     parts.push(`- Complexité: ${analysis.complexity}`);
     parts.push(`- Fichiers modifiés: ${analysis.summary.filesChanged}`);
-    parts.push(`- Pattern dominant: ${analysis.changePatterns[0]?.description || "N/A"}`);
+    parts.push(
+      `- Pattern dominant: ${analysis.changePatterns[0]?.description || "N/A"}`,
+    );
 
     if (analysis.modifiedSymbols.length > 0) {
       parts.push("- Symboles modifiés:");
@@ -439,12 +454,22 @@ export function generateReasoningUserPrompt(
   parts.push("");
 
   parts.push("INSTRUCTIONS:");
-  parts.push("1. CONTEXTE ARCHITECTURAL: Identifie la couche/le module affecté et le rôle de chaque fichier");
-  parts.push("2. INTENTION DU CHANGEMENT: Explique pourquoi ce changement était nécessaire");
+  parts.push(
+    "1. CONTEXTE ARCHITECTURAL: Identifie la couche/le module affecté et le rôle de chaque fichier",
+  );
+  parts.push(
+    "2. INTENTION DU CHANGEMENT: Explique pourquoi ce changement était nécessaire",
+  );
   parts.push("3. NATURE DU CHANGEMENT: Décris le type et l'impact sur l'API");
-  parts.push("4. SYMBOLES CLÉS: Liste les classes/fonctions/interfaces principales modifiées");
-  parts.push("5. TYPE SUGGÉRÉ: Recommande un type de commit (feat, fix, refactor, etc.)");
-  parts.push("6. JUSTIFICATION COMPLEXITÉ: Explique pourquoi le changement est simple/moderate/complex");
+  parts.push(
+    "4. SYMBOLES CLÉS: Liste les classes/fonctions/interfaces principales modifiées",
+  );
+  parts.push(
+    "5. TYPE SUGGÉRÉ: Recommande un type de commit (feat, fix, refactor, etc.)",
+  );
+  parts.push(
+    "6. JUSTIFICATION COMPLEXITÉ: Explique pourquoi le changement est simple/moderate/complex",
+  );
 
   return parts.join("\n");
 }

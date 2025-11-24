@@ -248,7 +248,10 @@ export function selectRelevantExamples(
     let score = 0;
 
     // Pattern match (highest priority)
-    if (dominantPattern && example.analysis.changePattern === dominantPattern.type) {
+    if (
+      dominantPattern &&
+      example.analysis.changePattern === dominantPattern.type
+    ) {
       score += 10;
     }
 
@@ -277,4 +280,3 @@ export function selectRelevantExamples(
     .slice(0, count)
     .map((item) => item.example);
 }
-

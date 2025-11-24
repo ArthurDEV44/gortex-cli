@@ -3,6 +3,12 @@
  * Orchestrates AI generation with context from git repository
  */
 
+import { selectRelevantExamples } from "../../ai/examples/commit-samples.js";
+import {
+  generateReasoningSystemPrompt,
+  generateReasoningUserPrompt,
+  type ReasoningAnalysis,
+} from "../../ai/prompts/commit-message.js";
 import type {
   AIGenerationContext,
   IAIProvider,
@@ -14,14 +20,6 @@ import { getCommitTypeValues } from "../../shared/constants/commit-types.js";
 import { SIZE_LIMITS } from "../../shared/constants/limits.js";
 import type { AIGenerationResultDTO } from "../dto/AIGenerationDTO.js";
 import { CommitMessageMapper } from "../mappers/CommitMessageMapper.js";
-import {
-  generateReasoningSystemPrompt,
-  generateReasoningUserPrompt,
-  type ReasoningAnalysis,
-} from "../../ai/prompts/commit-message.js";
-import {
-  selectRelevantExamples,
-} from "../../ai/examples/commit-samples.js";
 
 export interface GenerateAICommitRequest {
   provider: IAIProvider;

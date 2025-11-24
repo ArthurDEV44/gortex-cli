@@ -4,9 +4,9 @@
  * Part of the Domain layer - contains no implementation details
  */
 
+import type { CommitExample } from "../../ai/examples/commit-samples.js";
 import type { CommitMessage } from "../entities/CommitMessage.js";
 import type { DiffAnalysis } from "../services/DiffAnalyzer.js";
-import type { CommitExample } from "../../ai/prompts/commit-message.js";
 
 export interface ReasoningContext {
   architecturalContext: string;
