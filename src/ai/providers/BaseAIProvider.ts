@@ -24,7 +24,8 @@ type PartialAIResponse = {
  */
 export abstract class BaseAIProvider implements AIProvider {
   protected model: string = "";
-  protected temperature: number = 0.3;
+  protected temperature: number = 0.5;
+  protected topP: number = 0.9;
   protected maxTokens: number = 500;
   /**
    * Abstract method to generate commit message - must be implemented by subclasses

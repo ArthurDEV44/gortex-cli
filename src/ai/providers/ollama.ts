@@ -21,6 +21,7 @@ interface OllamaRequest {
   format?: "json" | object; // 'json' for basic JSON mode, or JSON Schema object for structured outputs
   options?: {
     temperature?: number;
+    top_p?: number;
     num_predict?: number;
   };
 }
@@ -46,7 +47,8 @@ export class OllamaProvider extends BaseAIProvider {
     this.baseUrl = config.ollama?.baseUrl || "http://localhost:11434";
     this.model = config.ollama?.model || "devstral:24b";
     this.timeout = config.ollama?.timeout || 30000;
-    this.temperature = config.temperature ?? 0.3;
+    this.temperature = config.temperature ?? 0.5;
+    this.topP = config.topP ?? 0.9;
     this.maxTokens = config.maxTokens ?? 500;
   }
 
@@ -154,8 +156,14 @@ export class OllamaProvider extends BaseAIProvider {
         required: ["type", "subject", "breaking", "confidence"],
       };
 
-      // Construit la requête avec l'analyse du diff
-      const userPrompt = generateUserPrompt(diff, context, analysis);
+      // Construit la requête avec l'analyse du diff, le raisonnement CoT et les exemples few-shot
+      const userPrompt = generateUserPrompt(
+        diff,
+        context,
+        analysis,
+        context.reasoning,
+        context.fewShotExamples,
+      );
 
       const request: OllamaRequest = {
         model: this.model,
@@ -173,6 +181,7 @@ export class OllamaProvider extends BaseAIProvider {
         format: jsonSchema, // Utilise JSON Schema pour forcer la structure
         options: {
           temperature: this.temperature,
+          top_p: this.topP,
           num_predict: this.maxTokens,
         },
       };
@@ -236,6 +245,77 @@ export class OllamaProvider extends BaseAIProvider {
         confidence: parsed.confidence || 50,
         reasoning: parsed.reasoning || undefined,
       };
+    } catch (error) {
+      if (error instanceof ProviderNotAvailableError) {
+        throw error;
+      }
+      throw new GenerationError("Ollama", error);
+    }
+  }
+
+  /**
+   * Generates text from custom prompts (for Chain-of-Thought and other patterns)
+   */
+  async generateText(
+    systemPrompt: string,
+    userPrompt: string,
+    options?: {
+      temperature?: number;
+      maxTokens?: number;
+      format?: "json" | "text";
+    },
+  ): Promise<string> {
+    const available = await this.isAvailable();
+    if (!available) {
+      throw new ProviderNotAvailableError(
+        "Ollama",
+        `Serveur Ollama non accessible à ${this.baseUrl} ou modèle ${this.model} non trouvé.`,
+      );
+    }
+
+    try {
+      const request: OllamaRequest = {
+        model: this.model,
+        messages: [
+          {
+            role: "system",
+            content: systemPrompt,
+          },
+          {
+            role: "user",
+            content: userPrompt,
+          },
+        ],
+        stream: false,
+        format: options?.format === "json" ? "json" : undefined,
+        options: {
+          temperature: options?.temperature ?? this.temperature,
+          top_p: this.topP,
+          num_predict: options?.maxTokens ?? this.maxTokens,
+        },
+      };
+
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), this.timeout);
+
+      const response = await fetch(`${this.baseUrl}/api/chat`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(request),
+        signal: controller.signal,
+      });
+
+      clearTimeout(timeoutId);
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Ollama API error (${response.status}): ${errorText}`);
+      }
+
+      const data = (await response.json()) as OllamaResponse;
+      return data.message.content;
     } catch (error) {
       if (error instanceof ProviderNotAvailableError) {
         throw error;

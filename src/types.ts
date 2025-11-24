@@ -65,6 +65,7 @@ export interface AIConfig {
 
   // Generation parameters
   temperature?: number;
+  topP?: number; // Top-p sampling parameter (0.0-1.0)
   maxTokens?: number;
 
   // Behavior
@@ -109,7 +110,8 @@ export const DEFAULT_AI_CONFIG: AIConfig = {
     model: "gpt-4o-mini",
     baseUrl: "https://api.openai.com",
   },
-  temperature: 0.3,
+  temperature: 0.5,
+  topP: 0.9,
   maxTokens: 500,
   autoSuggest: false,
   requireConfirmation: true,

@@ -4,8 +4,17 @@
  * Part of the Domain layer - contains no implementation details
  */
 
+import type { CommitExample } from "../../ai/examples/commit-samples.js";
 import type { CommitMessage } from "../entities/CommitMessage.js";
 import type { DiffAnalysis } from "../services/DiffAnalyzer.js";
+
+export interface ReasoningContext {
+  architecturalContext: string;
+  changeIntention: string;
+  changeNature: string;
+  keySymbols?: string[]; // Optionnel car l'AI peut ne pas toujours le retourner
+  suggestedType: string;
+}
 
 export interface AIGenerationContext {
   diff: string;
@@ -15,6 +24,8 @@ export interface AIGenerationContext {
   availableTypes: string[];
   availableScopes?: string[];
   analysis?: DiffAnalysis; // Optional structured analysis of the diff
+  reasoning?: ReasoningContext; // Optional Chain-of-Thought reasoning analysis
+  fewShotExamples?: CommitExample[]; // Optional few-shot learning examples
 }
 
 export interface AIGenerationResult {
@@ -45,6 +56,24 @@ export interface IAIProvider {
   generateCommitMessage(
     context: AIGenerationContext,
   ): Promise<AIGenerationResult>;
+
+  /**
+   * Generates text from a custom prompt (for Chain-of-Thought and other advanced patterns)
+   * @param systemPrompt The system prompt/instructions
+   * @param userPrompt The user prompt/question
+   * @param options Optional generation parameters
+   * @returns The generated text response
+   * @throws Error if generation fails or provider is not available
+   */
+  generateText(
+    systemPrompt: string,
+    userPrompt: string,
+    options?: {
+      temperature?: number;
+      maxTokens?: number;
+      format?: "json" | "text";
+    },
+  ): Promise<string>;
 
   /**
    * Validates provider configuration
