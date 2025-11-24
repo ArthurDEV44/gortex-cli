@@ -18,6 +18,7 @@ interface OpenAIRequest {
   model: string;
   messages: OpenAIMessage[];
   temperature?: number;
+  top_p?: number;
   max_tokens?: number;
 }
 
@@ -57,7 +58,8 @@ export class OpenAIProvider extends BaseAIProvider {
     this.apiKey = apiKey;
     this.baseUrl = config.openai?.baseUrl || "https://api.openai.com";
     this.model = config.openai?.model || "gpt-4o-mini";
-    this.temperature = config.temperature ?? 0.3;
+    this.temperature = config.temperature ?? 0.5;
+    this.topP = config.topP ?? 0.9;
     this.maxTokens = config.maxTokens ?? 500;
   }
 
@@ -111,10 +113,17 @@ export class OpenAIProvider extends BaseAIProvider {
           },
           {
             role: "user",
-            content: generateUserPrompt(diff, context, analysis),
+            content: generateUserPrompt(
+              diff,
+              context,
+              analysis,
+              context.reasoning,
+              context.fewShotExamples,
+            ),
           },
         ],
         temperature: this.temperature,
+        top_p: this.topP,
         max_tokens: this.maxTokens,
       };
 
@@ -155,6 +164,73 @@ export class OpenAIProvider extends BaseAIProvider {
         confidence: parsed.confidence || 50,
         reasoning: parsed.reasoning || undefined,
       };
+    } catch (error) {
+      if (error instanceof ProviderNotAvailableError) {
+        throw error;
+      }
+      throw new GenerationError("OpenAI", error);
+    }
+  }
+
+  /**
+   * Generates text from custom prompts (for Chain-of-Thought and other patterns)
+   */
+  async generateText(
+    systemPrompt: string,
+    userPrompt: string,
+    options?: {
+      temperature?: number;
+      maxTokens?: number;
+      format?: "json" | "text";
+    },
+  ): Promise<string> {
+    const available = await this.isAvailable();
+    if (!available) {
+      throw new ProviderNotAvailableError(
+        "OpenAI",
+        "API OpenAI non accessible. Vérifiez votre clé API et votre connexion internet.",
+      );
+    }
+
+    try {
+      const request: OpenAIRequest = {
+        model: this.model,
+        messages: [
+          {
+            role: "system",
+            content: systemPrompt,
+          },
+          {
+            role: "user",
+            content: userPrompt,
+          },
+        ],
+        temperature: options?.temperature ?? this.temperature,
+        top_p: this.topP,
+        max_tokens: options?.maxTokens ?? this.maxTokens,
+      };
+
+      const response = await fetch(`${this.baseUrl}/v1/chat/completions`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${this.apiKey}`,
+        },
+        body: JSON.stringify(request),
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`OpenAI API error (${response.status}): ${errorText}`);
+      }
+
+      const data = (await response.json()) as OpenAIResponse;
+
+      if (!data.choices || data.choices.length === 0) {
+        throw new Error("Aucune réponse de OpenAI");
+      }
+
+      return data.choices[0].message.content;
     } catch (error) {
       if (error instanceof ProviderNotAvailableError) {
         throw error;

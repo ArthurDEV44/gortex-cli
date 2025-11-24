@@ -32,12 +32,17 @@ export interface AIProvider {
   getName(): string;
 }
 
+import type { CommitExample } from "../examples/commit-samples.js";
+import type { ReasoningAnalysis } from "../prompts/commit-message.js";
+
 export interface CommitContext {
   files: string[];
   branch: string;
   availableTypes: string[];
   availableScopes?: string[];
   recentCommits?: string[];
+  reasoning?: ReasoningAnalysis; // Optional Chain-of-Thought reasoning
+  fewShotExamples?: CommitExample[]; // Optional few-shot learning examples
 }
 
 /**

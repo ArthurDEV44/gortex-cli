@@ -33,8 +33,11 @@ export const OPENAI_DEFAULTS = {
  * AI generation parameters
  */
 export const AI_GENERATION = {
-  /** Default temperature for AI responses */
-  TEMPERATURE: 0.3,
+  /** Default temperature for AI responses (0.5 recommended for better creativity/coherence balance) */
+  TEMPERATURE: 0.5,
+
+  /** Top-p sampling parameter (0.9 recommended for focused but diverse outputs) */
+  TOP_P: 0.9,
 
   /** Maximum tokens to generate */
   MAX_TOKENS: 500,

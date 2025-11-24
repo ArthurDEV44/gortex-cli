@@ -37,6 +37,17 @@ export class MistralProviderAdapter implements IAIProvider {
       recentCommits: context.recentCommits,
       availableTypes: context.availableTypes,
       availableScopes: context.availableScopes,
+      reasoning: context.reasoning
+        ? {
+            architecturalContext: context.reasoning.architecturalContext,
+            changeIntention: context.reasoning.changeIntention,
+            changeNature: context.reasoning.changeNature,
+            keySymbols: context.reasoning.keySymbols,
+            suggestedType: context.reasoning.suggestedType,
+            complexityJustification: "", // Not needed in legacy context
+          }
+        : undefined,
+      fewShotExamples: context.fewShotExamples,
     };
 
     // Call the legacy provider with diff analysis
@@ -59,6 +70,18 @@ export class MistralProviderAdapter implements IAIProvider {
       message: commitMessage,
       confidence: undefined, // Mistral doesn't provide confidence in current implementation
     };
+  }
+
+  async generateText(
+    systemPrompt: string,
+    userPrompt: string,
+    options?: {
+      temperature?: number;
+      maxTokens?: number;
+      format?: "json" | "text";
+    },
+  ): Promise<string> {
+    return await this.provider.generateText(systemPrompt, userPrompt, options);
   }
 
   async validateConfiguration(): Promise<boolean> {

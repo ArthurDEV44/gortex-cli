@@ -3,11 +3,18 @@
  * Orchestrates AI generation with context from git repository
  */
 
+import { selectRelevantExamples } from "../../ai/examples/commit-samples.js";
+import {
+  generateReasoningSystemPrompt,
+  generateReasoningUserPrompt,
+  type ReasoningAnalysis,
+} from "../../ai/prompts/commit-message.js";
 import type {
   AIGenerationContext,
   IAIProvider,
 } from "../../domain/repositories/IAIProvider.js";
 import type { IGitRepository } from "../../domain/repositories/IGitRepository.js";
+import type { IASTDiffAnalyzer } from "../../domain/services/ASTDiffAnalyzer.js";
 import { DiffAnalyzer } from "../../domain/services/DiffAnalyzer.js";
 import { GitRepositoryImpl } from "../../infrastructure/repositories/GitRepositoryImpl.js";
 import { getCommitTypeValues } from "../../shared/constants/commit-types.js";
@@ -23,8 +30,15 @@ export interface GenerateAICommitRequest {
 export class GenerateAICommitUseCase {
   private readonly diffAnalyzer: DiffAnalyzer;
 
-  constructor(private readonly gitRepository: IGitRepository) {
+  constructor(
+    private readonly gitRepository: IGitRepository,
+    astAnalyzer?: IASTDiffAnalyzer,
+  ) {
     this.diffAnalyzer = new DiffAnalyzer();
+    // Configure AST analyzer if available
+    if (astAnalyzer) {
+      this.diffAnalyzer.setASTAnalyzer(astAnalyzer);
+    }
   }
 
   /**
@@ -81,12 +95,50 @@ export class GenerateAICommitUseCase {
 
       // Analyze the diff to extract structured metadata
       // This analysis guides the AI to generate more precise commit messages
-      const diffAnalysis = this.diffAnalyzer.analyze(
+      const diffAnalysis = await this.diffAnalyzer.analyze(
         diffForAI,
         diffContext.files,
       );
 
-      // Build AI generation context with diff analysis
+      // Select relevant few-shot examples based on analysis
+      const fewShotExamples = selectRelevantExamples(diffAnalysis, 5);
+
+      // Chain-of-Thought Step 1: Generate structured reasoning analysis
+      let reasoningAnalysis: ReasoningAnalysis | undefined;
+      try {
+        const reasoningSystemPrompt = generateReasoningSystemPrompt();
+        const reasoningUserPrompt = generateReasoningUserPrompt(
+          diffForAI,
+          diffAnalysis,
+          diffContext.files,
+        );
+
+        const reasoningResponse = await request.provider.generateText(
+          reasoningSystemPrompt,
+          reasoningUserPrompt,
+          {
+            temperature: 0.4, // Lower temperature for more structured reasoning
+            maxTokens: 800,
+            format: "json",
+          },
+        );
+
+        // Parse the reasoning analysis
+        const cleanedReasoning = reasoningResponse
+          .trim()
+          .replace(/```json\s*/g, "")
+          .replace(/```\s*/g, "")
+          .trim();
+        reasoningAnalysis = JSON.parse(cleanedReasoning) as ReasoningAnalysis;
+      } catch (error) {
+        // If reasoning fails, continue without it (graceful degradation)
+        // Log the error but don't fail the entire generation
+        console.warn(
+          `Chain-of-Thought reasoning failed: ${error instanceof Error ? error.message : String(error)}. Continuing with standard generation.`,
+        );
+      }
+
+      // Build AI generation context with diff analysis, reasoning, and few-shot examples
       const aiContext: AIGenerationContext = {
         diff: diffForAI,
         files: diffContext.files,
@@ -95,9 +147,21 @@ export class GenerateAICommitUseCase {
         availableTypes: getCommitTypeValues(),
         availableScopes,
         analysis: diffAnalysis,
+        // Add reasoning analysis to context (will be used in prompt generation)
+        reasoning: reasoningAnalysis
+          ? {
+              architecturalContext: reasoningAnalysis.architecturalContext,
+              changeIntention: reasoningAnalysis.changeIntention,
+              changeNature: reasoningAnalysis.changeNature,
+              keySymbols: reasoningAnalysis.keySymbols || [],
+              suggestedType: reasoningAnalysis.suggestedType,
+            }
+          : undefined,
+        // Add few-shot examples for better guidance
+        fewShotExamples,
       };
 
-      // Generate commit message with AI
+      // Chain-of-Thought Step 2: Generate commit message using the reasoning analysis
       const result = await request.provider.generateCommitMessage(aiContext);
 
       // Convert to DTO

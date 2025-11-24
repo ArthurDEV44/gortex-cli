@@ -104,6 +104,7 @@ describe('Integration: AI Commit Message Generation', () => {
           message: mockCommitMessage,
           confidence: 0.92,
         }),
+        generateText: vi.fn().mockResolvedValue('Generated text'),
         validateConfiguration: vi.fn().mockResolvedValue(true),
       };
 
@@ -225,6 +226,7 @@ describe('Integration: AI Commit Message Generation', () => {
           message: mockCommitMessage,
           confidence: 0.8,
         }),
+        generateText: vi.fn().mockResolvedValue('Generated text'),
         validateConfiguration: vi.fn().mockResolvedValue(true),
       };
 
@@ -237,6 +239,7 @@ describe('Integration: AI Commit Message Generation', () => {
         getName: () => 'TestProvider',
         isAvailable: vi.fn().mockResolvedValue(false),
         generateCommitMessage: vi.fn(),
+        generateText: vi.fn().mockResolvedValue('Generated text'),
         validateConfiguration: vi.fn().mockResolvedValue(false),
       };
 
@@ -259,6 +262,7 @@ describe('Integration: AI Commit Message Generation', () => {
         generateCommitMessage: vi.fn().mockResolvedValue({
           message: mockCommitMessage,
         }),
+        generateText: vi.fn().mockResolvedValue('Generated text'),
         validateConfiguration: vi.fn().mockResolvedValue(true),
       };
 
@@ -288,6 +292,7 @@ describe('Integration: AI Commit Message Generation', () => {
           message: mockMessage,
           confidence: 0.98,
         }),
+        generateText: vi.fn().mockResolvedValue('Generated text'),
         validateConfiguration: vi.fn().mockResolvedValue(true),
       };
 
@@ -315,6 +320,7 @@ describe('Integration: AI Commit Message Generation', () => {
           message: mockMessage,
           confidence: 0.45,
         }),
+        generateText: vi.fn().mockResolvedValue('Generated text'),
         validateConfiguration: vi.fn().mockResolvedValue(true),
       };
 
@@ -341,6 +347,7 @@ describe('Integration: AI Commit Message Generation', () => {
           message: mockMessage,
           confidence: undefined,
         }),
+        generateText: vi.fn().mockResolvedValue('Generated text'),
         validateConfiguration: vi.fn().mockResolvedValue(true),
       };
 

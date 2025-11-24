@@ -48,6 +48,12 @@ export default defineConfig({
         "src/ai/prompts/**", // AI prompts (mostly string templates)
         "**/node_modules/**",
         "**/dist/**",
+        "**/*.node", // Native binary modules
+        // Tree-sitter implementation uses native C++ bindings that cannot be instrumented
+        // by JavaScript coverage tools (v8/istanbul). The code is tested but coverage
+        // reporting fails due to dynamic require() in native modules.
+        // See: https://github.com/tree-sitter/tree-sitter/issues/4320
+        "src/infrastructure/services/ast/TreeSitterASTDiffAnalyzer.ts",
       ],
     },
 

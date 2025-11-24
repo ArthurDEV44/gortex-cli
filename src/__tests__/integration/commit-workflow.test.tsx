@@ -71,6 +71,7 @@ describe('Integration: Complete Commit Workflow', () => {
         message: mockCommitMessage,
         confidence: 0.95,
       }),
+      generateText: vi.fn().mockResolvedValue('Generated text'),
       validateConfiguration: vi.fn().mockResolvedValue(true),
     };
 
