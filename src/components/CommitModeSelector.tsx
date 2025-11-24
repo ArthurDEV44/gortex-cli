@@ -5,12 +5,11 @@
  */
 
 import { Box, Text } from "ink";
-import Gradient from "ink-gradient";
 import { useEffect, useState } from "react";
 import { MistralProvider } from "../ai/providers/mistral.js";
 import { OllamaProvider } from "../ai/providers/ollama.js";
 import { OpenAIProvider } from "../ai/providers/openai.js";
-import { icons } from "../theme/colors.js";
+import { colors, createGradient, icons } from "../theme/colors.js";
 import type { AIProvider as AIProviderType, CommitConfig } from "../types.js";
 import { Select, type SelectItem } from "../ui/Select.js";
 
@@ -76,9 +75,11 @@ export const CommitModeSelector = ({ config, onComplete }: Props) => {
     return (
       <Box flexDirection="column" padding={1}>
         <Box marginBottom={1}>
-          <Gradient name="cristal">
-            <Text bold>{icons.settings} Mode de Génération du Commit</Text>
-          </Gradient>
+          <Text bold>
+            {createGradient.titanium(
+              `${icons.settings} Mode de Génération du Commit`,
+            )}
+          </Text>
         </Box>
 
         <Box>
@@ -139,21 +140,21 @@ export const CommitModeSelector = ({ config, onComplete }: Props) => {
   return (
     <Box flexDirection="column" padding={1}>
       <Box marginBottom={1}>
-        <Gradient name="cristal">
-          <Text bold>🤖 Mode de Génération du Commit</Text>
-        </Gradient>
+        <Text bold>
+          {createGradient.titanium("🤖 Mode de Génération du Commit")}
+        </Text>
       </Box>
 
       {!hasAIProviders && (
         <Box
           borderStyle="round"
-          borderColor="yellow"
+          borderColor={colors.warning}
           padding={1}
           marginBottom={1}
           flexDirection="column"
         >
           <Box marginBottom={1}>
-            <Text color="yellow" bold>
+            <Text color={colors.warning} bold>
               {icons.warning} Aucun provider AI disponible
             </Text>
           </Box>
@@ -162,14 +163,14 @@ export const CommitModeSelector = ({ config, onComplete }: Props) => {
             <Text dimColor>Pour utiliser l'IA, configurez un provider:</Text>
             <Box marginTop={1}>
               <Text dimColor>
-                • <Text color="cyan">Ollama</Text>: Installez Ollama et lancez
-                "ollama pull devstral:24b"
+                • <Text color={colors.info}>Ollama</Text>: Installez Ollama et
+                lancez "ollama pull devstral:24b"
               </Text>
             </Box>
             <Box>
               <Text dimColor>
-                • <Text color="cyan">Mistral/OpenAI</Text>: Configurez votre API
-                key dans l'onglet Credentials
+                • <Text color={colors.info}>Mistral/OpenAI</Text>: Configurez
+                votre API key dans l'onglet Credentials
               </Text>
             </Box>
           </Box>

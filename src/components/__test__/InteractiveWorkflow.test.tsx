@@ -34,10 +34,6 @@ vi.mock('../StatsTab.js', () => ({
   StatsTab: () => <Text>Stats Tab Content</Text>,
 }));
 
-vi.mock('../Brand.js', () => ({
-  Brand: () => <Text>GORTEX</Text>,
-}));
-
 describe('InteractiveWorkflow', () => {
   const defaultConfig: CommitConfig = {
     types: [],
@@ -57,13 +53,6 @@ describe('InteractiveWorkflow', () => {
     const output = stripAnsi(lastFrame() || '');
     expect(output).toContain('Commit Tab');
     expect(output).toContain('Stats Tab');
-  });
-
-  it('should render Brand component', () => {
-    const { lastFrame } = render(<InteractiveWorkflow config={defaultConfig} />);
-    
-    const output = stripAnsi(lastFrame() || '');
-    expect(output).toContain('GORTEX');
   });
 
   it('should render CommitTab when commit tab is active', () => {

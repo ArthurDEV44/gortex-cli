@@ -25,7 +25,7 @@ export const StepIndicator = ({
   return (
     <Box flexDirection="column" marginBottom={1}>
       <Box marginBottom={1}>
-        <Text bold>{createGradient.spice(`${icon} ${stepName}`)}</Text>
+        <Text bold>{createGradient.flow(`${icon} ${stepName}`)}</Text>
         <Text dimColor>
           {" "}
           [{currentStep}/{totalSteps}]
@@ -34,7 +34,7 @@ export const StepIndicator = ({
 
       <Box>
         <Box borderStyle="round" borderColor={colors.muted} paddingX={1}>
-          <Text>{createGradient.warmth(progressBar)}</Text>
+          <Text>{createGradient.titanium(progressBar)}</Text>
         </Box>
         <Box marginLeft={1}>
           <Text color={colors.primary} bold>

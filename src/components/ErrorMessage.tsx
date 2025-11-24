@@ -1,5 +1,5 @@
 import { Box, Text } from "ink";
-import { icons } from "../theme/colors.js";
+import { colors, icons } from "../theme/colors.js";
 
 interface ErrorMessageProps {
   title: string;
@@ -16,13 +16,13 @@ export const ErrorMessage = ({
     <Box flexDirection="column" marginY={1}>
       <Box
         borderStyle="round"
-        borderColor="red"
+        borderColor={colors.error}
         paddingX={2}
         paddingY={1}
         flexDirection="column"
       >
         <Box marginBottom={message || suggestions ? 1 : 0}>
-          <Text bold color="red">
+          <Text bold color={colors.error}>
             {icons.error} {title}
           </Text>
         </Box>
@@ -36,13 +36,13 @@ export const ErrorMessage = ({
         {suggestions && suggestions.length > 0 && (
           <Box flexDirection="column">
             <Box marginBottom={1}>
-              <Text bold color="yellow">
+              <Text bold color={colors.warning}>
                 {icons.info} Suggestions:
               </Text>
             </Box>
             {suggestions.map((suggestion, index) => (
               <Box key={`suggestion-${index}-${suggestion.substring(0, 20)}`}>
-                <Text color="yellow">{icons.pointer}</Text>
+                <Text color={colors.warning}>{icons.pointer}</Text>
                 <Text dimColor> {suggestion}</Text>
               </Box>
             ))}

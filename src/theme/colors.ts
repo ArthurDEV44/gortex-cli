@@ -2,78 +2,84 @@ import gradient from "gradient-string";
 import { COMMIT_TYPE_ICONS } from "../shared/constants/index.js";
 
 /**
- * Thème de couleurs Gortex CLI
- * Inspiré de l'univers de Dune avec des tons orangés haut de gamme et élégants
+ * Thème de couleurs Gortex CLI - Titanium & Gradient Edition
+ * Un design moderne, épuré et vibrant.
  */
 
-// Palette de couleurs du gradient héro Dune
-export const duneColors = {
+// Palette de base (Teintes Titane - Neutres)
+export const titaniumColors = {
   white: "#ffffff",
-  sand1: "#ffedb2", // Sable clair
-  sand2: "#ffce86", // Sable moyen
-  sand3: "#ffaf5a", // Sable foncé
-  spice: "#f28236", // Orange épice
-  deep: "#b53800", // Orange profond
-  highlight: "#f97316", // Orange vif
+  titanium100: "#eeeef2", // Texte secondaire
+  titanium200: "#cccdd4", // Muted, Placeholders
+  titanium300: "#9c9ea8", // Icones, Séparateurs
+  titanium400: "#6f717d", // Bordures sombres
+  titanium500: "#454655", // Backgrounds, Panels
 };
 
-// Couleurs principales
-export const colors = {
-  // Primaires (tons orangés Dune)
-  primary: duneColors.spice, // #f28236
-  primaryLight: duneColors.sand3, // #ffaf5a
-  primaryDark: duneColors.deep, // #b53800
+// Palette d'accentuation (Gradients - Fonctionnels)
+export const accentColors = {
+  blue: "#4796e2", // Info, Primaire
+  indigo: "#6680de", // Focus, Secondaire
+  purple: "#8c77c8", // Succès, Highlights
+  rose: "#c66678", // Erreur, Warning
+};
 
-  // Secondaires (tons dorés)
-  secondary: duneColors.sand2, // #ffce86
-  secondaryLight: duneColors.sand1, // #ffedb2
+// Couleurs principales mappées
+export const colors = {
+  // Primaires
+  primary: accentColors.blue, // #4796e2
+  primaryLight: accentColors.indigo, // #6680de
+  primaryDark: titaniumColors.titanium500, // #454655
+
+  // Secondaires
+  secondary: accentColors.purple, // #8c77c8
+  secondaryLight: titaniumColors.titanium200, // #cccdd4
 
   // Accentuation
-  accent: duneColors.highlight, // #f97316
+  accent: accentColors.rose, // #c66678
 
   // Statuts
-  success: "#10b981", // Vert émeraude
-  error: "#ef4444", // Rouge
-  warning: "#f59e0b", // Ambre
-  info: "#3b82f6", // Bleu
+  success: accentColors.purple, // #8c77c8 (Modern Success)
+  error: accentColors.rose, // #c66678
+  warning: accentColors.indigo, // #6680de (Used as notice/warning)
+  info: accentColors.blue, // #4796e2
 
-  // Neutres (tons sombres élégants)
-  background: "#0a0a0a", // Noir profond
-  foreground: "#fafafa", // Blanc cassé
-  muted: "#737373", // Gris
-  mutedLight: "#a3a3a3", // Gris clair
-  mutedDark: "#525252", // Gris foncé
-  border: "#262626", // Bordure sombre
-  borderLight: "#404040", // Bordure claire
+  // Neutres
+  background: titaniumColors.titanium500, // #454655
+  foreground: titaniumColors.white, // #ffffff
+  muted: titaniumColors.titanium300, // #9c9ea8
+  mutedLight: titaniumColors.titanium200, // #cccdd4
+  mutedDark: titaniumColors.titanium400, // #6f717d
+  border: titaniumColors.titanium400, // #6f717d
+  borderLight: titaniumColors.titanium200, // #cccdd4
 
-  // Dégradés de l'univers Dune
+  // Dégradés
   gradients: {
-    // Gradient principal (sable du désert)
-    dune: [
-      duneColors.white,
-      duneColors.sand1,
-      duneColors.sand2,
-      duneColors.sand3,
-      duneColors.spice,
-      duneColors.deep,
+    // Gradient principal
+    titanium: [
+      titaniumColors.white,
+      titaniumColors.titanium100,
+      titaniumColors.titanium200,
+      titaniumColors.titanium300,
     ],
-    // Gradient chaleur
-    warmth: [
-      duneColors.sand1,
-      duneColors.sand2,
-      duneColors.sand3,
-      duneColors.spice,
-    ],
-    // Gradient épice
-    spice: [duneColors.spice, duneColors.deep],
-    // Gradient aube du désert
-    dawn: [duneColors.sand2, duneColors.sand3, duneColors.spice],
-    // Gradient or
-    gold: [duneColors.sand1, duneColors.sand2],
-    // Gradients pour les statuts
-    success: ["#10b981", "#059669"],
-    error: ["#ef4444", "#dc2626"],
-    info: [duneColors.sand3, duneColors.spice],
+    // Gradient fonctionnel (Blue -> Indigo)
+    flow: [accentColors.blue, accentColors.indigo],
+    // Gradient créatif (Purple -> Rose)
+    nebula: [accentColors.purple, accentColors.rose],
+    // Gradient aube (Blue -> Purple)
+    aurora: [accentColors.blue, accentColors.purple],
+
+    // Mapped standard gradients
+    dune: [accentColors.blue, accentColors.indigo], // Replaces old dune
+    warmth: [accentColors.purple, accentColors.rose], // Replaces old warmth
+    spice: [accentColors.rose, accentColors.purple], // Replaces old spice
+    dawn: [accentColors.blue, accentColors.purple], // Replaces old dawn
+    gold: [titaniumColors.white, titaniumColors.titanium100], // Replaces old gold
+
+    // Statuts
+    success: [accentColors.purple, "#a78bfa"],
+    error: [accentColors.rose, "#f43f5e"],
+    info: [accentColors.blue, "#60a5fa"],
   },
 };
 
@@ -88,33 +94,38 @@ export const createGradient = {
   success: gradient(colors.gradients.success) as any,
   error: gradient(colors.gradients.error) as any,
   info: gradient(colors.gradients.info) as any,
+  // New ones
+  titanium: gradient(colors.gradients.titanium) as any,
+  flow: gradient(colors.gradients.flow) as any,
+  nebula: gradient(colors.gradients.nebula) as any,
+  aurora: gradient(colors.gradients.aurora) as any,
 };
 
 // Palette pour les types de commit (conventional commits)
 export const commitColors = {
-  feat: colors.accent, // ✨ Features - Orange vif
-  fix: colors.error, // 🐛 Fixes - Rouge
-  docs: colors.info, // 📝 Documentation - Bleu
-  style: colors.secondary, // 💄 Style - Doré
-  refactor: colors.warning, // ♻️  Refactor - Ambre
-  perf: colors.primaryLight, // ⚡ Performance - Orange clair
-  test: colors.success, // ✅ Tests - Vert
-  build: colors.muted, // 📦 Build - Gris
-  ci: colors.info, // 👷 CI - Bleu
-  chore: colors.mutedLight, // 🔧 Chores - Gris clair
+  feat: accentColors.blue, // ✨ Features
+  fix: accentColors.rose, // 🐛 Fixes
+  docs: accentColors.indigo, // 📝 Documentation
+  style: accentColors.purple, // 💄 Style
+  refactor: titaniumColors.titanium200, // ♻️  Refactor
+  perf: accentColors.blue, // ⚡ Performance
+  test: accentColors.purple, // ✅ Tests
+  build: titaniumColors.titanium300, // 📦 Build
+  ci: accentColors.indigo, // 👷 CI
+  chore: titaniumColors.titanium300, // 🔧 Chores
 };
 
 // Palette pour les branches
 export const branchColors = {
-  main: colors.primary, // Branche principale - Orange épice
-  master: colors.primary, // Master - Orange épice
-  dev: colors.accent, // Développement - Orange vif
-  develop: colors.accent, // Develop - Orange vif
-  feature: colors.info, // Feature - Bleu
-  fix: colors.error, // Fix - Rouge
-  hotfix: colors.error, // Hotfix - Rouge
-  release: colors.success, // Release - Vert
-  default: colors.secondary, // Défaut - Doré
+  main: accentColors.blue,
+  master: accentColors.blue,
+  dev: accentColors.purple,
+  develop: accentColors.purple,
+  feature: accentColors.indigo,
+  fix: accentColors.rose,
+  hotfix: accentColors.rose,
+  release: accentColors.purple,
+  default: titaniumColors.titanium200,
 };
 
 // Styles de bordures
@@ -215,11 +226,6 @@ export const icons = {
   separator: "─", // Ligne horizontale
   ellipsis: "…", // Points de suspension
   middot: "·", // Point médian
-
-  // Thème Dune (caractères élégants)
-  sand: "∼", // Vague de sable
-  spice: "✦", // Étoile à 4 branches (épice)
-  desert: "▭", // Désert stylisé
 };
 
 /**

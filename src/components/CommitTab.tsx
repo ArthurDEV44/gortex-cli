@@ -2,7 +2,7 @@ import { Box, Text, useApp } from "ink";
 import Spinner from "ink-spinner";
 import { useEffect, useState } from "react";
 import { useStageFiles } from "../infrastructure/di/hooks.js";
-import { commitIcons, icons } from "../theme/colors.js";
+import { colors, commitIcons, icons } from "../theme/colors.js";
 import type { AIProvider, CommitConfig } from "../types.js";
 import { AICommitGenerator } from "./AICommitGenerator.js";
 import { BranchSelector } from "./BranchSelector.js";
@@ -194,7 +194,7 @@ export const CommitTab = ({ config, onWorkflowStateChange }: Props) => {
         {/* Step 3: Staging Files */}
         {step === "staging" && (
           <Box padding={1}>
-            <Text color="cyan">
+            <Text color={colors.info}>
               <Spinner type="dots" /> Staging {selectedFiles.length} file(s)...
             </Text>
           </Box>

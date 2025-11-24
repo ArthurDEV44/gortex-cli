@@ -1,6 +1,6 @@
 import { Box, Text } from "ink";
-import Gradient from "ink-gradient";
 import Spinner from "ink-spinner";
+import { colors } from "../theme/colors.js";
 
 interface LoadingSpinnerProps {
   message?: string;
@@ -11,19 +11,19 @@ export const LoadingSpinner = ({
   message = "Loading...",
   variant = "primary",
 }: LoadingSpinnerProps) => {
-  const gradientName =
+  const color =
     variant === "success"
-      ? "summer"
+      ? colors.success
       : variant === "warning"
-        ? "fruit"
-        : "cristal";
+        ? colors.warning
+        : colors.primary;
 
   return (
     <Box>
       <Box marginRight={1}>
-        <Gradient name={gradientName}>
+        <Text color={color}>
           <Spinner type="dots" />
-        </Gradient>
+        </Text>
       </Box>
       <Text dimColor>{message}</Text>
     </Box>

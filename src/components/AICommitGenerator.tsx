@@ -1,11 +1,10 @@
 import { Box, Text } from "ink";
-import Gradient from "ink-gradient";
 import Spinner from "ink-spinner";
 import { useCallback, useEffect, useState } from "react";
 import type { CommitMessageDTO } from "../application/dto/CommitMessageDTO.js";
 import { useGenerateAICommit } from "../infrastructure/di/hooks.js";
 import { AIProviderFactory } from "../infrastructure/factories/AIProviderFactory.js";
-import { commitIcons, icons } from "../theme/colors.js";
+import { colors, commitIcons, createGradient, icons } from "../theme/colors.js";
 import type { AIProvider as AIProviderType, CommitConfig } from "../types.js";
 import { Confirm } from "../ui/Confirm.js";
 
@@ -88,7 +87,7 @@ export const AICommitGenerator = ({ provider, config, onComplete }: Props) => {
     return (
       <Box flexDirection="column" padding={1}>
         <Box>
-          <Text color="magenta">
+          <Text color={colors.secondary}>
             <Spinner type="dots" /> Génération du message avec{" "}
             {providerName || "AI"}...
           </Text>
@@ -105,12 +104,12 @@ export const AICommitGenerator = ({ provider, config, onComplete }: Props) => {
       <Box flexDirection="column" padding={1}>
         <Box
           borderStyle="round"
-          borderColor="red"
+          borderColor={colors.error}
           padding={1}
           flexDirection="column"
         >
           <Box marginBottom={1}>
-            <Text color="red" bold>
+            <Text color={colors.error} bold>
               {icons.error} Erreur lors de la génération
             </Text>
           </Box>
@@ -131,16 +130,16 @@ export const AICommitGenerator = ({ provider, config, onComplete }: Props) => {
     return (
       <Box flexDirection="column" padding={1}>
         <Box marginBottom={1}>
-          <Gradient name="cristal">
-            <Text bold>
-              {commitIcons.feat} Suggestion AI ({providerName})
-            </Text>
-          </Gradient>
+          <Text bold>
+            {createGradient.titanium(
+              `${commitIcons.feat} Suggestion AI (${providerName})`,
+            )}
+          </Text>
         </Box>
 
         <Box
           borderStyle="round"
-          borderColor="green"
+          borderColor={colors.success}
           padding={1}
           flexDirection="column"
         >
@@ -150,7 +149,7 @@ export const AICommitGenerator = ({ provider, config, onComplete }: Props) => {
 
           <Box
             borderStyle="single"
-            borderColor="gray"
+            borderColor={colors.border}
             padding={1}
             flexDirection="column"
           >

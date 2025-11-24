@@ -23,7 +23,7 @@ export const CommitWelcome = ({ onStart }: CommitWelcomeProps) => {
       >
         <Box justifyContent="center" marginBottom={1}>
           <Text bold color={colors.primary}>
-            {createGradient.warmth(
+            {createGradient.nebula(
               `${icons.commit} Create a Conventional Commit`,
             )}
           </Text>

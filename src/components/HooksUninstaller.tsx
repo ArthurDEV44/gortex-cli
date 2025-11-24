@@ -3,7 +3,7 @@ import path from "node:path";
 import { Box, Text } from "ink";
 import { useEffect, useState } from "react";
 import { useGitRepository } from "../infrastructure/di/hooks.js";
-import { icons } from "../theme/colors.js";
+import { colors, icons } from "../theme/colors.js";
 import { Confirm } from "../ui/index.js";
 
 interface HooksUninstallerProps {
@@ -69,7 +69,9 @@ export const HooksUninstaller = ({ onComplete }: HooksUninstallerProps) => {
   if (!hookExists) {
     return (
       <Box flexDirection="column">
-        <Text color="yellow">{icons.warning}Aucun hook commit-msg trouvé</Text>
+        <Text color={colors.warning}>
+          {icons.warning}Aucun hook commit-msg trouvé
+        </Text>
       </Box>
     );
   }
@@ -81,14 +83,14 @@ export const HooksUninstaller = ({ onComplete }: HooksUninstallerProps) => {
   return (
     <Box flexDirection="column">
       <Box marginBottom={1}>
-        <Text bold color="cyan">
+        <Text bold color={colors.primary}>
           Désinstallation du hook Git
         </Text>
       </Box>
 
       {!isGortexHook && (
         <Box marginBottom={1}>
-          <Text color="yellow">
+          <Text color={colors.warning}>
             {icons.warning}Le hook commit-msg n'a pas été créé par gortex
           </Text>
         </Box>

@@ -3,7 +3,7 @@ import path from "node:path";
 import { Box, Text } from "ink";
 import { useEffect, useState } from "react";
 import { useGitRepository } from "../infrastructure/di/hooks.js";
-import { icons } from "../theme/colors.js";
+import { colors, icons } from "../theme/colors.js";
 import { Confirm } from "../ui/index.js";
 
 const COMMIT_MSG_HOOK = `#!/bin/sh
@@ -106,14 +106,14 @@ export const HooksInstaller = ({ onComplete }: HooksInstallerProps) => {
   return (
     <Box flexDirection="column">
       <Box marginBottom={1}>
-        <Text bold color="cyan">
+        <Text bold color={colors.primary}>
           Installation du hook Git
         </Text>
       </Box>
 
       {hookExists && (
         <Box marginBottom={1}>
-          <Text color="yellow">
+          <Text color={colors.warning}>
             {icons.warning} Un hook commit-msg existe déjà
           </Text>
         </Box>

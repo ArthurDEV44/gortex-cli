@@ -9,6 +9,7 @@ import { useEffect, useState } from "react";
 import type { RepositoryStatsDTO } from "../application/dto/GitStatusDTO.js";
 import { useCommitHistory } from "../infrastructure/di/hooks.js";
 import { getCommitTypeEmoji } from "../shared/constants/index.js";
+import { colors, icons } from "../theme/colors.js";
 
 interface Props {
   maxCount?: number;
@@ -38,7 +39,7 @@ export function StatsDisplay({ maxCount = 100 }: Props) {
   if (loading) {
     return (
       <Box flexDirection="column" padding={1}>
-        <Text color="cyan">
+        <Text color={colors.info}>
           <Spinner type="dots" /> Analyse des {maxCount} derniers commits...
         </Text>
       </Box>
@@ -48,7 +49,7 @@ export function StatsDisplay({ maxCount = 100 }: Props) {
   if (error) {
     return (
       <Box flexDirection="column" padding={1}>
-        <Text color="red">❌ Erreur: {error}</Text>
+        <Text color={colors.error}>❌ Erreur: {error}</Text>
       </Box>
     );
   }
@@ -56,7 +57,7 @@ export function StatsDisplay({ maxCount = 100 }: Props) {
   if (!stats) {
     return (
       <Box flexDirection="column" padding={1}>
-        <Text color="yellow">Aucune statistique disponible</Text>
+        <Text color={colors.warning}>Aucune statistique disponible</Text>
       </Box>
     );
   }
@@ -64,14 +65,18 @@ export function StatsDisplay({ maxCount = 100 }: Props) {
   const percentage = stats.conventionalPercentage.toFixed(1);
   const percentageNum = Number.parseFloat(percentage);
   const color =
-    percentageNum >= 80 ? "green" : percentageNum >= 50 ? "yellow" : "red";
+    percentageNum >= 80
+      ? colors.success
+      : percentageNum >= 50
+        ? colors.warning
+        : colors.error;
   const nonConventional = stats.totalCommits - stats.conventionalCommits;
 
   return (
     <Box flexDirection="column" padding={1}>
       {/* Title */}
       <Box marginBottom={1}>
-        <Text color="blue" bold>
+        <Text color={colors.primary} bold>
           📊 Analyse des {maxCount} derniers commits
         </Text>
       </Box>
@@ -79,17 +84,18 @@ export function StatsDisplay({ maxCount = 100 }: Props) {
       {/* Summary */}
       <Box flexDirection="column" marginBottom={1}>
         <Text bold>Résumé:</Text>
-        <Text color="gray">{"─".repeat(50)}</Text>
+        <Text color={colors.muted}>{"─".repeat(50)}</Text>
         <Text>
           Total de commits analysés:{" "}
-          <Text color="cyan">{stats.totalCommits}</Text>
+          <Text color={colors.info}>{stats.totalCommits}</Text>
         </Text>
         <Text>
           Commits conventionnels:{" "}
-          <Text color="green">{stats.conventionalCommits}</Text>
+          <Text color={colors.success}>{stats.conventionalCommits}</Text>
         </Text>
         <Text>
-          Commits non-conventionnels: <Text color="red">{nonConventional}</Text>
+          Commits non-conventionnels:{" "}
+          <Text color={colors.error}>{nonConventional}</Text>
         </Text>
       </Box>
 
@@ -105,7 +111,7 @@ export function StatsDisplay({ maxCount = 100 }: Props) {
       {Object.keys(stats.typeBreakdown).length > 0 && (
         <Box flexDirection="column" marginBottom={1}>
           <Text bold>Répartition par type:</Text>
-          <Text color="gray">{"─".repeat(50)}</Text>
+          <Text color={colors.muted}>{"─".repeat(50)}</Text>
           <Box flexDirection="column">
             {Object.entries(stats.typeBreakdown)
               .sort((a, b) => b[1] - a[1])
@@ -122,7 +128,7 @@ export function StatsDisplay({ maxCount = 100 }: Props) {
                   <Text key={type}>
                     {getCommitTypeEmoji(type)} {type.padEnd(10)}{" "}
                     {count.toString().padStart(3)} ({typePercentage}%){" "}
-                    <Text color="gray">{bar}</Text>
+                    <Text color={colors.muted}>{bar}</Text>
                   </Text>
                 );
               })}
@@ -133,19 +139,19 @@ export function StatsDisplay({ maxCount = 100 }: Props) {
       {/* Recommendations */}
       {percentageNum < 80 ? (
         <Box flexDirection="column">
-          <Text color="yellow" bold>
-            💡 Recommandations:
+          <Text color={colors.warning} bold>
+            {icons.info} Recommandations:
           </Text>
-          <Text color="gray">{"─".repeat(50)}</Text>
+          <Text color={colors.muted}>{"─".repeat(50)}</Text>
           <Text> • Utilisez "npx gortex" pour créer des commits guidés</Text>
           <Text> • Installez le hook Git: "npx gortex hooks install"</Text>
           <Text> • Partagez les bonnes pratiques avec votre équipe</Text>
         </Box>
       ) : (
         <Box>
-          <Text color="green" bold>
-            🎉 Excellent travail ! Votre repo suit bien les conventions de
-            commits.
+          <Text color={colors.success} bold>
+            {icons.success} Excellent travail ! Votre repo suit bien les
+            conventions de commits.
           </Text>
         </Box>
       )}

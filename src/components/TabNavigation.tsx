@@ -72,7 +72,7 @@ export const TabNavigation = ({
               >
                 {isActive ? (
                   <Text bold color={colors.primary}>
-                    {createGradient.spice(`${tab.icon} ${tab.label}`)}
+                    {createGradient.flow(`${tab.icon} ${tab.label}`)}
                   </Text>
                 ) : (
                   <Text dimColor>

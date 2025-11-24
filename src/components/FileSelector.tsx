@@ -2,7 +2,7 @@ import chalk from "chalk";
 import { Box, Text } from "ink";
 import { useEffect, useState } from "react";
 import { useRepositoryStatus } from "../infrastructure/di/hooks.js";
-import { icons } from "../theme/colors.js";
+import { colors, icons } from "../theme/colors.js";
 import { MultiSelect, Select, type SelectItem } from "../ui/index.js";
 import { FileDiffPreview } from "./FileDiffPreview.js";
 import { LoadingSpinner } from "./LoadingSpinner.js";
@@ -71,11 +71,11 @@ export const FileSelector = ({ onComplete }: FileSelectorProps) => {
   const getStatusColor = (status: string) => {
     switch (status) {
       case "nouveau":
-        return "green";
+        return colors.success;
       case "supprimé":
-        return "red";
+        return colors.error;
       default:
-        return "yellow";
+        return colors.warning;
     }
   };
 
@@ -86,9 +86,14 @@ export const FileSelector = ({ onComplete }: FileSelectorProps) => {
   if (error) {
     return (
       <Box flexDirection="column">
-        <Box paddingX={2} paddingY={1} borderStyle="round" borderColor="red">
+        <Box
+          paddingX={2}
+          paddingY={1}
+          borderStyle="round"
+          borderColor={colors.error}
+        >
           <Box>
-            <Text>
+            <Text color={colors.error}>
               {icons.error} Error: {error}
             </Text>
           </Box>
@@ -136,7 +141,7 @@ export const FileSelector = ({ onComplete }: FileSelectorProps) => {
         <MultiSelect
           message="Select files to include in commit"
           items={files.map((f) => ({
-            label: `${chalk[getStatusColor(f.status)](f.status)} ${f.path}`,
+            label: `${chalk.hex(getStatusColor(f.status))(f.status)} ${f.path}`,
             value: f.path,
             checked: true,
           }))}

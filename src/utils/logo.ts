@@ -12,12 +12,7 @@ const LOGO_FONTS = {
 } as const;
 
 // Polices alternatives à essayer si la police principale n'est pas disponible
-const FALLBACK_FONTS = [
-  "ANSI Shadow",
-  "Big",
-  "Standard",
-  "Small",
-] as const;
+const FALLBACK_FONTS = ["ANSI Shadow", "Big", "Standard", "Small"] as const;
 
 /**
  * Génère le logo ASCII de GORTEX avec une police figlet
@@ -45,9 +40,8 @@ export function generateLogo(
       if (logo && logo.trim().length > 0) {
         return logo;
       }
-    } catch (error) {
+    } catch (_error) {
       // Essayer la police suivante
-      continue;
     }
   }
 
@@ -60,7 +54,7 @@ export function generateLogo(
  * Style tech/cyberpunk avec caractères Unicode avancés
  */
 function generateFallbackLogo(
-  text: string = "GORTEX",
+  _text: string = "GORTEX",
   size: keyof typeof LOGO_FONTS = "large",
 ): string {
   if (size === "small") {
@@ -80,9 +74,7 @@ function generateFallbackLogo(
 ║                                                           ║
 ╚═══════════════════════════════════════════════════════════╝
 `.trim();
-  }
-
-  // Large version avec design moderne et élégant - Style tech premium
+  } // Large version avec design moderne et élégant - Style tech premium
   return `
 ╔═══════════════════════════════════════════════════════════════════════════╗
 ║                                                                           ║
@@ -151,4 +143,3 @@ export function generatePremiumLogo(): string {
 ╚═══════════════════════════════════════════════════════════════════════════╝
 `.trim();
 }
-

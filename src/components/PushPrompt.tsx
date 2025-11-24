@@ -3,7 +3,7 @@ import Spinner from "ink-spinner";
 import { useEffect, useState } from "react";
 import { usePushOperations } from "../infrastructure/di/hooks.js";
 import { UI_DELAYS } from "../shared/constants/index.js";
-import { icons } from "../theme/colors.js";
+import { colors, icons } from "../theme/colors.js";
 import { Confirm } from "../ui/index.js";
 
 interface PushPromptProps {
@@ -86,11 +86,11 @@ export const PushPrompt = ({ branch, onComplete }: PushPromptProps) => {
     return (
       <Box flexDirection="column">
         <Box marginBottom={1}>
-          <Text bold color="blue">
+          <Text bold color={colors.primary}>
             {icons.push} Étape 5/5: Push vers le remote
           </Text>
         </Box>
-        <Text color="cyan">
+        <Text color={colors.info}>
           <Spinner type="dots" /> Vérification du remote...
         </Text>
       </Box>
@@ -102,11 +102,11 @@ export const PushPrompt = ({ branch, onComplete }: PushPromptProps) => {
     return (
       <Box flexDirection="column">
         <Box marginBottom={1}>
-          <Text bold color="blue">
+          <Text bold color={colors.primary}>
             {icons.push} Étape 5/5: Push vers le remote
           </Text>
         </Box>
-        <Text color="yellow">
+        <Text color={colors.warning}>
           {icons.warning} Aucun remote configuré, impossible de push
         </Text>
         <Box marginTop={1}>
@@ -124,7 +124,7 @@ export const PushPrompt = ({ branch, onComplete }: PushPromptProps) => {
     return (
       <Box flexDirection="column">
         <Box marginBottom={1}>
-          <Text bold color="blue">
+          <Text bold color={colors.primary}>
             {icons.push} Étape 5/5: Push vers le remote
           </Text>
         </Box>
@@ -147,11 +147,11 @@ export const PushPrompt = ({ branch, onComplete }: PushPromptProps) => {
     return (
       <Box flexDirection="column">
         <Box marginBottom={1}>
-          <Text bold color="blue">
+          <Text bold color={colors.primary}>
             {icons.push} Étape 5/5: Push vers le remote
           </Text>
         </Box>
-        <Text color="cyan">
+        <Text color={colors.info}>
           <Spinner type="dots" /> Push en cours vers {remoteUrl}...
         </Text>
       </Box>
@@ -163,11 +163,11 @@ export const PushPrompt = ({ branch, onComplete }: PushPromptProps) => {
     return (
       <Box flexDirection="column">
         <Box marginBottom={1}>
-          <Text bold color="blue">
+          <Text bold color={colors.primary}>
             {icons.push} Étape 5/5: Push vers le remote
           </Text>
         </Box>
-        <Text color="green">
+        <Text color={colors.success}>
           {icons.success} Push réussi vers {remoteUrl}
         </Text>
       </Box>
@@ -179,15 +179,15 @@ export const PushPrompt = ({ branch, onComplete }: PushPromptProps) => {
     return (
       <Box flexDirection="column">
         <Box marginBottom={1}>
-          <Text bold color="blue">
+          <Text bold color={colors.primary}>
             {icons.push} Étape 5/5: Push vers le remote
           </Text>
         </Box>
-        <Text color="red">
+        <Text color={colors.error}>
           {icons.error} Erreur lors du push: {error}
         </Text>
         <Box marginTop={1} flexDirection="column">
-          <Text color="yellow">
+          <Text color={colors.warning}>
             {icons.info} Push manuellement avec: git push origin {branch}
           </Text>
           <Box marginTop={1}>

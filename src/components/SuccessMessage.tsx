@@ -35,7 +35,7 @@ export const SuccessMessage = ({
       >
         <Box marginBottom={1} justifyContent="center">
           <Text bold color={colors.success}>
-            {createGradient.gold(`${icon} ${title}`)}
+            {createGradient.nebula(`${icon} ${title}`)}
           </Text>
         </Box>
 

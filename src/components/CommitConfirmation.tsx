@@ -1,9 +1,8 @@
 import { Box, Text } from "ink";
-import Gradient from "ink-gradient";
 import { useState } from "react";
 import { CommitMessageMapper } from "../application/mappers/CommitMessageMapper.js";
 import { useCreateCommit } from "../infrastructure/di/hooks.js";
-import { icons } from "../theme/colors.js";
+import { colors, createGradient, icons } from "../theme/colors.js";
 import { Confirm } from "../ui/index.js";
 import { LoadingSpinner } from "./LoadingSpinner.js";
 
@@ -62,7 +61,7 @@ export const CommitConfirmation = ({
   if (error) {
     return (
       <Box flexDirection="column">
-        <Text color="red">
+        <Text color={colors.error}>
           {icons.error} Error: {error}
         </Text>
       </Box>
@@ -74,22 +73,22 @@ export const CommitConfirmation = ({
       <Box
         flexDirection="column"
         borderStyle="round"
-        borderColor="cyan"
+        borderColor={colors.info}
         paddingX={2}
         paddingY={1}
         marginBottom={1}
       >
         <Box marginBottom={1}>
-          <Gradient name="cristal">
-            <Text bold>{icons.file} Commit Preview</Text>
-          </Gradient>
+          <Text bold>
+            {createGradient.titanium(`${icons.file} Commit Preview`)}
+          </Text>
         </Box>
 
         <Box flexDirection="column" marginBottom={1}>
           <Text dimColor>Files ({files.length}):</Text>
           {files.slice(0, 3).map((file) => (
             <Box key={file} marginLeft={2}>
-              <Text color="green">{icons.success}</Text>
+              <Text color={colors.success}>{icons.success}</Text>
               <Text dimColor> {file}</Text>
             </Box>
           ))}
@@ -105,9 +104,7 @@ export const CommitConfirmation = ({
         <Box flexDirection="column">
           <Text dimColor>Message:</Text>
           <Box marginLeft={2} marginTop={1}>
-            <Gradient name="passion">
-              <Text bold>{message.split("\n")[0]}</Text>
-            </Gradient>
+            <Text bold>{createGradient.flow(message.split("\n")[0])}</Text>
           </Box>
           {message.split("\n").length > 1 && (
             <Box marginLeft={2} marginTop={1}>

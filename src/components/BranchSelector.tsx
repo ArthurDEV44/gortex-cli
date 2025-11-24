@@ -1,8 +1,7 @@
 import { Box, Text } from "ink";
-import Gradient from "ink-gradient";
 import { useEffect, useState } from "react";
 import { useBranchOperations } from "../infrastructure/di/hooks.js";
-import { commitIcons, icons } from "../theme/colors.js";
+import { colors, commitIcons, createGradient, icons } from "../theme/colors.js";
 import { Confirm, Select, type SelectItem, TextInput } from "../ui/index.js";
 import { LoadingSpinner } from "./LoadingSpinner.js";
 
@@ -53,13 +52,18 @@ export const BranchSelector = ({ onComplete }: BranchSelectorProps) => {
   if (error) {
     return (
       <Box flexDirection="column">
-        <Box paddingX={2} paddingY={1} borderStyle="round" borderColor="red">
+        <Box
+          paddingX={2}
+          paddingY={1}
+          borderStyle="round"
+          borderColor={colors.error}
+        >
           <Box>
             <Box marginRight={1}>
-              <Text>{icons.error}</Text>
+              <Text color={colors.error}>{icons.error}</Text>
             </Box>
             <Box>
-              <Text>Error: {error}</Text>
+              <Text color={colors.error}>Error: {error}</Text>
             </Box>
           </Box>
         </Box>
@@ -135,9 +139,7 @@ export const BranchSelector = ({ onComplete }: BranchSelectorProps) => {
     <Box flexDirection="column">
       <Box marginBottom={1}>
         <Text dimColor>Current: </Text>
-        <Gradient name="passion">
-          <Text bold>{currentBranch}</Text>
-        </Gradient>
+        <Text bold>{createGradient.flow(currentBranch)}</Text>
       </Box>
 
       {step === "select" && (
@@ -172,10 +174,8 @@ export const BranchSelector = ({ onComplete }: BranchSelectorProps) => {
       {step === "confirm" && (
         <Box flexDirection="column">
           <Box marginBottom={1}>
-            <Text color="green">{icons.success} Selected: </Text>
-            <Gradient name="summer">
-              <Text bold>{selectedBranch}</Text>
-            </Gradient>
+            <Text color={colors.success}>{icons.success} Selected: </Text>
+            <Text bold>{createGradient.success(selectedBranch)}</Text>
           </Box>
           <Confirm
             message="Continue with this branch?"
