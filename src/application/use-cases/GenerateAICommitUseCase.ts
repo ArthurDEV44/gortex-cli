@@ -7,8 +7,12 @@ import { selectRelevantExamples } from "../../ai/examples/commit-samples.js";
 import {
   generateReasoningSystemPrompt,
   generateReasoningUserPrompt,
+  generateVerificationSystemPrompt,
+  generateVerificationUserPrompt,
   type ReasoningAnalysis,
+  type VerificationResult,
 } from "../../ai/prompts/commit-message.js";
+import { CommitMessage } from "../../domain/entities/CommitMessage.js";
 import type {
   AIGenerationContext,
   IAIProvider,
@@ -20,9 +24,15 @@ import {
   DiffAnalyzer,
   type ModifiedSymbol,
 } from "../../domain/services/DiffAnalyzer.js";
+import type {
+  IProjectStyleAnalyzer,
+  ProjectStyle,
+} from "../../domain/services/ProjectStyleAnalyzer.js";
+import { CommitSubject } from "../../domain/value-objects/CommitSubject.js";
 import { GitRepositoryImpl } from "../../infrastructure/repositories/GitRepositoryImpl.js";
 import { getCommitTypeValues } from "../../shared/constants/commit-types.js";
 import { SIZE_LIMITS } from "../../shared/constants/limits.js";
+import { loadProjectCommitGuidelines } from "../../utils/projectGuidelines.js";
 import type { AIGenerationResultDTO } from "../dto/AIGenerationDTO.js";
 import { CommitMessageMapper } from "../mappers/CommitMessageMapper.js";
 
@@ -37,6 +47,7 @@ export class GenerateAICommitUseCase {
   constructor(
     private readonly gitRepository: IGitRepository,
     astAnalyzer?: IASTDiffAnalyzer,
+    private readonly projectStyleAnalyzer?: IProjectStyleAnalyzer,
   ) {
     this.diffAnalyzer = new DiffAnalyzer();
     // Configure AST analyzer if available
@@ -106,6 +117,34 @@ export class GenerateAICommitUseCase {
 
       // Select relevant few-shot examples based on analysis
       const fewShotExamples = selectRelevantExamples(diffAnalysis, 5);
+
+      // Analyze project style from commit history
+      let projectStyle: ProjectStyle | undefined;
+      if (this.projectStyleAnalyzer) {
+        try {
+          projectStyle = await this.projectStyleAnalyzer.analyzeProjectStyle(
+            this.gitRepository,
+            100,
+          );
+        } catch (error) {
+          // If style analysis fails, continue without it (graceful degradation)
+          console.warn(
+            `Project style analysis failed: ${error instanceof Error ? error.message : String(error)}. Continuing without project style.`,
+          );
+        }
+      }
+
+      // Load project-specific commit guidelines
+      let projectGuidelines: string | undefined;
+      try {
+        // Use process.cwd() as the working directory (where the git repository is)
+        projectGuidelines = await loadProjectCommitGuidelines(process.cwd());
+      } catch (error) {
+        // If guidelines loading fails, continue without them (graceful degradation)
+        console.warn(
+          `Failed to load project commit guidelines: ${error instanceof Error ? error.message : String(error)}. Continuing without guidelines.`,
+        );
+      }
 
       // Semantic diff summarization for large diffs
       let semanticSummary: string | undefined;
@@ -184,10 +223,84 @@ export class GenerateAICommitUseCase {
         fewShotExamples,
         // Add semantic summary if available (for large diffs)
         semanticSummary,
+        // Add project style analysis if available
+        projectStyle,
+        // Add project-specific guidelines if available
+        projectGuidelines,
       };
 
       // Chain-of-Thought Step 2: Generate commit message using the reasoning analysis
-      const result = await request.provider.generateCommitMessage(aiContext);
+      let result = await request.provider.generateCommitMessage(aiContext);
+      let _iterationsCount = 1;
+
+      // Self-Verification Loop: Let AI evaluate and improve its own proposal
+      try {
+        const verificationSystemPrompt = generateVerificationSystemPrompt();
+        const verificationUserPrompt = generateVerificationUserPrompt(
+          {
+            type: result.message.getType().toString(),
+            scope: result.message.getScope().isEmpty()
+              ? undefined
+              : result.message.getScope().toString(),
+            subject: result.message.getSubject().toString(),
+            body: result.message.getBody(),
+          },
+          diffAnalysis,
+          reasoningAnalysis?.suggestedType,
+        );
+
+        const verificationResponse = await request.provider.generateText(
+          verificationSystemPrompt,
+          verificationUserPrompt,
+          {
+            temperature: 0.4, // Lower temperature for more structured verification
+            maxTokens: 500,
+            format: "json",
+          },
+        );
+
+        // Parse verification result
+        const cleanedVerification = verificationResponse
+          .trim()
+          .replace(/```json\s*/g, "")
+          .replace(/```\s*/g, "")
+          .trim();
+
+        const verification: VerificationResult = JSON.parse(
+          cleanedVerification,
+        ) as VerificationResult;
+
+        // If improvements are suggested, apply them
+        if (
+          !verification.isGoodQuality &&
+          (verification.improvedSubject || verification.improvedBody)
+        ) {
+          // Re-create CommitMessage with improvements
+          const improvedMessage = CommitMessage.create({
+            type: result.message.getType(),
+            subject: verification.improvedSubject
+              ? CommitSubject.create(verification.improvedSubject)
+              : result.message.getSubject(),
+            scope: result.message.getScope(),
+            body: verification.improvedBody ?? result.message.getBody(),
+            breaking: result.message.isBreaking(),
+            breakingChangeDescription:
+              result.message.getBreakingChangeDescription(),
+          });
+
+          result = {
+            message: improvedMessage,
+            confidence: (result.confidence ?? 0.8) * 0.9, // Reduce confidence slightly
+            reasoning: verification.reasoning,
+          };
+          _iterationsCount = 2;
+        }
+      } catch (error) {
+        // If verification fails, continue with original result (graceful degradation)
+        console.warn(
+          `Self-verification failed: ${error instanceof Error ? error.message : String(error)}. Continuing with original commit message.`,
+        );
+      }
 
       // Convert to DTO
       const commitDTO = CommitMessageMapper.toDTO(result.message);

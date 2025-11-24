@@ -156,7 +156,7 @@ export class OllamaProvider extends BaseAIProvider {
         required: ["type", "subject", "breaking", "confidence"],
       };
 
-      // Construit la requête avec l'analyse du diff, le raisonnement CoT, les exemples few-shot et le résumé sémantique
+      // Construit la requête avec l'analyse du diff, le raisonnement CoT, les exemples few-shot, le résumé sémantique, le style du projet et les guidelines
       const userPrompt = generateUserPrompt(
         diff,
         context,
@@ -164,6 +164,8 @@ export class OllamaProvider extends BaseAIProvider {
         context.reasoning,
         context.fewShotExamples,
         context.semanticSummary,
+        context.projectStyle,
+        context.projectGuidelines,
       );
 
       const request: OllamaRequest = {

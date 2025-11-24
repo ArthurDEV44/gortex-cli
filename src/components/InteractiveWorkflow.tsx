@@ -1,7 +1,6 @@
 import { Box } from "ink";
 import { useState } from "react";
 import type { CommitConfig } from "../types.js";
-import { Brand } from "./Brand.js";
 import { CommitTab } from "./CommitTab.js";
 import { StatsTab } from "./StatsTab.js";
 import { type TabId, TabNavigation } from "./TabNavigation.js";
@@ -25,9 +24,6 @@ export const InteractiveWorkflow = ({ config: initialConfig }: Props) => {
 
   return (
     <Box flexDirection="column" paddingY={1}>
-      {/* Brand */}
-      <Brand variant="small" />
-
       {/* Tab Navigation */}
       <TabNavigation
         activeTab={activeTab}

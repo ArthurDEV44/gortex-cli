@@ -20,6 +20,7 @@ import {
 } from "../factories/AIProviderFactory.js";
 import { ASTAnalyzerFactory } from "../factories/ASTAnalyzerFactory.js";
 import { RepositoryFactory } from "../factories/RepositoryFactory.js";
+import { ProjectStyleAnalyzerImpl } from "../services/ProjectStyleAnalyzerImpl.js";
 import { DIContainer } from "./DIContainer.js";
 
 /**
@@ -47,6 +48,9 @@ export const ServiceIdentifiers = {
 
   // AST Analyzer
   ASTDiffAnalyzer: "IASTDiffAnalyzer",
+
+  // Project Style Analyzer
+  ProjectStyleAnalyzer: "IProjectStyleAnalyzer",
 } as const;
 
 /**
@@ -103,6 +107,9 @@ export class ServiceRegistry {
 
     // Register AST analyzer
     ServiceRegistry.registerASTAnalyzer(container);
+
+    // Register Project Style Analyzer
+    ServiceRegistry.registerProjectStyleAnalyzer(container);
 
     // Register use cases
     ServiceRegistry.registerUseCases(container);
@@ -175,6 +182,18 @@ export class ServiceRegistry {
     // Returns undefined if Tree-Sitter is not available (graceful degradation)
     container.registerSingleton(ServiceIdentifiers.ASTDiffAnalyzer, () =>
       ASTAnalyzerFactory.createASTDiffAnalyzerIfAvailable(),
+    );
+  }
+
+  /**
+   * Registers project style analyzer services
+   * @param container DI container
+   */
+  private static registerProjectStyleAnalyzer(container: DIContainer): void {
+    // Register ProjectStyleAnalyzer as singleton (can be reused)
+    container.registerSingleton(
+      ServiceIdentifiers.ProjectStyleAnalyzer,
+      () => new ProjectStyleAnalyzerImpl(),
     );
   }
 

@@ -16,6 +16,8 @@ export interface ReasoningContext {
   suggestedType: string;
 }
 
+import type { ProjectStyle } from "../services/ProjectStyleAnalyzer.js";
+
 export interface AIGenerationContext {
   diff: string;
   files: string[];
@@ -27,6 +29,8 @@ export interface AIGenerationContext {
   reasoning?: ReasoningContext; // Optional Chain-of-Thought reasoning analysis
   fewShotExamples?: CommitExample[]; // Optional few-shot learning examples
   semanticSummary?: string; // Optional semantic summary for large diffs
+  projectStyle?: ProjectStyle; // Optional project style analysis from commit history
+  projectGuidelines?: string; // Optional project-specific commit guidelines
 }
 
 export interface AIGenerationResult {
