@@ -8,6 +8,17 @@
 export const SIZE_LIMITS = {
   /** Maximum diff size in characters before truncation */
   MAX_DIFF_LENGTH: 30000,
+
+  /**
+   * Threshold for semantic diff summarization (as fraction of MAX_DIFF_LENGTH)
+   * If diff exceeds this threshold, a semantic summary is generated before sending to AI
+   */
+  SEMANTIC_SUMMARY_THRESHOLD: 0.5, // 50% of MAX_DIFF_LENGTH
+
+  /**
+   * Maximum tokens for semantic summary generation
+   */
+  MAX_SEMANTIC_SUMMARY_TOKENS: 300,
 } as const;
 
 /**

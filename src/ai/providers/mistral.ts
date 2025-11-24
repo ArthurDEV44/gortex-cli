@@ -119,6 +119,7 @@ export class MistralProvider extends BaseAIProvider {
               analysis,
               context.reasoning,
               context.fewShotExamples,
+              context.semanticSummary,
             ),
           },
         ],
