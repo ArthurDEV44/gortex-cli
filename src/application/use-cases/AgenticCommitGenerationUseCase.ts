@@ -368,14 +368,29 @@ export class AgenticCommitGenerationUseCase {
         // Only refine if we haven't reached max iterations yet
         if (iterations < maxIterations) {
           const refinStart = Date.now();
-          currentResult = await this.performRefinement(
-            currentResult,
-            reflection,
-            diffAnalysis,
-            aiContext,
-            request.provider,
-          );
-          refinementTime += Date.now() - refinStart;
+          try {
+            const refinedResult = await this.performRefinement(
+              currentResult,
+              reflection,
+              diffAnalysis,
+              aiContext,
+              request.provider,
+            );
+            currentResult = refinedResult;
+            refinementTime += Date.now() - refinStart;
+          } catch (refinementError) {
+            // If refinement fails, keep the current result and log the error
+            refinementTime += Date.now() - refinStart;
+            if (process.env.GORTEX_DEBUG === "true") {
+              console.warn(
+                "[AgenticCommitGenerationUseCase] Refinement failed, keeping current result:",
+                refinementError instanceof Error ? refinementError.message : String(refinementError)
+              );
+            }
+            // Force accept current result since refinement failed
+            shouldContinue = false;
+            break;
+          }
         }
 
         iterations++;
