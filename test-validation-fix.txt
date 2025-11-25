@@ -1,0 +1,9 @@
+Test de validation des corrections agentiques
+
+Ce fichier sert à tester les 3 corrections critiques :
+- FIX #1 : Limite d'itérations <= 2
+- FIX #2 : Fallback automatique
+- FIX #3 : Précision factuelle >= 60
+
+Date : 2025-11-25
+Commit : 866b5f5
