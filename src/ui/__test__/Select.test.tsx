@@ -29,7 +29,7 @@ describe('Select', () => {
       <Select message="Choose" items={items} onSelect={onSelect} />
     );
 
-    const output = lastFrame();
+    const output = stripAnsi(lastFrame() || '');
     expect(output).toContain('First option');
   });
 
@@ -39,7 +39,7 @@ describe('Select', () => {
       <Select message="Choose" items={items} onSelect={onSelect} />
     );
 
-    const output = lastFrame();
+    const output = stripAnsi(lastFrame() || '');
     expect(output).toContain('Option 1');
   });
 
@@ -49,7 +49,7 @@ describe('Select', () => {
       <Select message="Choose" items={items} initialIndex={1} onSelect={onSelect} />
     );
 
-    const output = lastFrame();
+    const output = stripAnsi(lastFrame() || '');
     expect(output).toContain('Second option');
   });
 
@@ -71,7 +71,7 @@ describe('Select', () => {
       <Select message="Choose" items={items} onSelect={onSelect} />
     );
 
-    const output = lastFrame();
+    const output = stripAnsi(lastFrame() || '');
     expect(output).toContain('navigate');
     expect(output).toContain('select');
     expect(output).toContain('vim keys');
@@ -88,7 +88,7 @@ describe('Select', () => {
       <Select message="Choose" items={itemsNoDesc} onSelect={onSelect} />
     );
 
-    const output = lastFrame();
+    const output = stripAnsi(lastFrame() || '');
     expect(output).toContain('Item 1');
     expect(output).toContain('Item 2');
   });
@@ -99,7 +99,7 @@ describe('Select', () => {
       <Select message="Choose" items={items} onSelect={onSelect} />
     );
 
-    const output = lastFrame();
+    const output = stripAnsi(lastFrame() || '');
     items.forEach(item => {
       expect(output).toContain(item.label);
     });

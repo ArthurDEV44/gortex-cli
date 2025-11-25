@@ -76,7 +76,7 @@ export const CommitModeSelector = ({ config, onComplete }: Props) => {
       <Box flexDirection="column" padding={1}>
         <Box marginBottom={1}>
           <Text bold>
-            {createGradient.titanium(
+            {createGradient.commitMessage(
               `${icons.settings} Mode de Génération du Commit`,
             )}
           </Text>
@@ -141,15 +141,16 @@ export const CommitModeSelector = ({ config, onComplete }: Props) => {
     <Box flexDirection="column" padding={1}>
       <Box marginBottom={1}>
         <Text bold>
-          {createGradient.titanium("🤖 Mode de Génération du Commit")}
+          {createGradient.commitMessage("🤖 Mode de Génération du Commit")}
         </Text>
       </Box>
 
       {!hasAIProviders && (
         <Box
           borderStyle="round"
-          borderColor={colors.warning}
-          padding={1}
+          borderColor={colors.borderLight}
+          paddingX={2}
+          paddingY={1}
           marginBottom={1}
           flexDirection="column"
         >

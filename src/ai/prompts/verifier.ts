@@ -29,21 +29,25 @@ export interface VerificationResult {
  * Vérifie la précision factuelle du commit par rapport au diff réel
  */
 export function generateVerifierSystemPrompt(): string {
-  return `Tu es un VERIFIER strict. Ta tâche : comparer le commit avec le DIFF réel pour détecter hallucinations/erreurs.
+  return `Tu es un VERIFIER pragmatique. Ta tâche : comparer le commit avec le DIFF réel pour détecter hallucinations CRITIQUES et erreurs factuelles MAJEURES.
 
 VÉRIFICATIONS OBLIGATOIRES:
 
-1. HALLUCINATION (critique):
-   - Le commit mentionne des composants/classes/fonctions QUI N'EXISTENT PAS dans le diff
-   - Exemple: "Add UserService" mais UserService n'apparaît nulle part
+1. HALLUCINATION CRITIQUE (seulement si évidente):
+   - Le commit mentionne des composants/classes/fonctions QUI N'EXISTENT CLAIREMENT PAS dans le diff
+   - Exemple: "Add UserService" mais UserService n'apparaît NULLE PART (ni nom de fichier, ni dans le code)
+   - ⚠️  TOLÈRE les généralisations raisonnables (ex: "debug documentation" pour des fichiers de debug)
+   - ⚠️  TOLÈRE les descriptions génériques de fichiers supprimés/ajoutés
 
-2. OMISSION (major):
-   - Le commit OMET des composants MAJEURS du diff
-   - Exemple: Diff modifie 3 fichiers importants, commit n'en mentionne qu'1
+2. OMISSION MAJEURE (seulement si impact significatif):
+   - Le commit OMET des composants CENTRAUX du diff (>50% du changement)
+   - Exemple: Diff modifie 3 fichiers majeurs, commit n'en mentionne qu'1
+   - ⚠️  Les détails mineurs omis ne sont PAS des problèmes
 
-3. INEXACTITUDE (major/minor):
-   - Le commit décrit incorrectement la NATURE du changement
-   - Exemple: Dit "refactor" mais c'est clairement une "feature"
+3. INEXACTITUDE MAJEURE (seulement si contradiction claire):
+   - Le commit décrit incorrectement la NATURE PRINCIPALE du changement
+   - Exemple: Dit "refactor" mais c'est clairement une "nouvelle feature"
+   - ⚠️  Les variations mineures de formulation sont acceptables
 
 Retourne JSON (SANS \`\`\`json):
 {
@@ -65,9 +69,16 @@ Retourne JSON (SANS \`\`\`json):
 }
 
 Règles:
-- factualAccuracy = 100 si AUCUNE hallucination, TOUS symboles majeurs mentionnés
-- hasCriticalIssues = true si au moins 1 hallucination OU factualAccuracy < 70
-- Sois TRÈS strict sur les hallucinations (severity: "critical")`;
+- factualAccuracy = 100 si AUCUNE hallucination critique, symboles majeurs mentionnés
+- factualAccuracy = 80-99 si omissions mineures ou généralisations acceptables
+- factualAccuracy = 60-79 si omissions majeures MAIS pas d'hallucinations
+- factualAccuracy = 0-59 si hallucinations critiques OU multiples erreurs majeures
+- hasCriticalIssues = true SEULEMENT si:
+  * Au moins 1 hallucination CRITIQUE (severity: "critical")
+  * OU factualAccuracy < 50 (pas 70)
+  * OU 3+ erreurs "major"
+- Sois PRAGMATIQUE : préfère accepter un commit légèrement imprécis qu'halluciner des problèmes
+- IMPORTANT: Les fichiers SUPPRIMÉS (deleted) dans le diff ne sont PAS des hallucinations si le commit mentionne "updated" ou "removed" documentation`;
 }
 
 /**
@@ -98,7 +109,7 @@ export function generateVerifierUserPrompt(
   // Limiter le diff pour ne pas dépasser les tokens
   const truncatedDiff =
     diff.length > 8000
-      ? diff.substring(0, 8000) + "\n... [diff tronqué]"
+      ? `${diff.substring(0, 8000)}\n... [diff tronqué]`
       : diff;
   parts.push(truncatedDiff);
   parts.push("```");
@@ -106,9 +117,7 @@ export function generateVerifierUserPrompt(
 
   parts.push("ANALYSE STRUCTURÉE (référence):");
   parts.push(`- Fichiers: ${analysis.summary.filesChanged}`);
-  parts.push(
-    `- Pattern: ${analysis.changePatterns[0]?.type ?? "unknown"}`,
-  );
+  parts.push(`- Pattern: ${analysis.changePatterns[0]?.type ?? "unknown"}`);
 
   if (analysis.modifiedSymbols.length > 0) {
     parts.push(
@@ -118,9 +127,7 @@ export function generateVerifierUserPrompt(
       parts.push(`  * ${sym.name} (${sym.type})`);
     });
     if (analysis.modifiedSymbols.length > 10) {
-      parts.push(
-        `  ... et ${analysis.modifiedSymbols.length - 10} autres`,
-      );
+      parts.push(`  ... et ${analysis.modifiedSymbols.length - 10} autres`);
     }
   }
   parts.push("");
@@ -129,9 +136,7 @@ export function generateVerifierUserPrompt(
   parts.push(
     "1. HALLUCINATION: Le commit mentionne-t-il des composants absents du diff?",
   );
-  parts.push(
-    "2. OMISSION: Le commit omet-il des symboles majeurs du diff?",
-  );
+  parts.push("2. OMISSION: Le commit omet-il des symboles majeurs du diff?");
   parts.push(
     "3. EXACTITUDE: Le type et la description correspondent-ils au pattern détecté?",
   );

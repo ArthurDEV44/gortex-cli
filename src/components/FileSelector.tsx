@@ -91,12 +91,11 @@ export const FileSelector = ({ onComplete }: FileSelectorProps) => {
           paddingY={1}
           borderStyle="round"
           borderColor={colors.error}
+          flexDirection="column"
         >
-          <Box>
-            <Text color={colors.error}>
-              {icons.error} Error: {error}
-            </Text>
-          </Box>
+          <Text color={colors.error} bold>
+            {icons.error} Error: {error}
+          </Text>
         </Box>
       </Box>
     );

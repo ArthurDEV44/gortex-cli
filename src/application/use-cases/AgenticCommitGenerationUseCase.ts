@@ -23,7 +23,6 @@ import {
   generateVerifierUserPrompt,
   type VerificationResult,
 } from "../../ai/prompts/verifier.js";
-import { CommitMessage } from "../../domain/entities/CommitMessage.js";
 import type {
   AIGenerationContext,
   AIGenerationResult,
@@ -32,15 +31,14 @@ import type {
 import type { IGitRepository } from "../../domain/repositories/IGitRepository.js";
 import type { IASTDiffAnalyzer } from "../../domain/services/ASTDiffAnalyzer.js";
 import {
-  DiffAnalyzer,
   type DiffAnalysis,
+  DiffAnalyzer,
   type ModifiedSymbol,
 } from "../../domain/services/DiffAnalyzer.js";
 import type {
   IProjectStyleAnalyzer,
   ProjectStyle,
 } from "../../domain/services/ProjectStyleAnalyzer.js";
-import { CommitSubject } from "../../domain/value-objects/CommitSubject.js";
 import { GitRepositoryImpl } from "../../infrastructure/repositories/GitRepositoryImpl.js";
 import { getCommitTypeValues } from "../../shared/constants/commit-types.js";
 import { SIZE_LIMITS } from "../../shared/constants/limits.js";
@@ -174,12 +172,16 @@ export class AgenticCommitGenerationUseCase {
     try {
       // Validate repository
       if (process.env.GORTEX_DEBUG === "true") {
-        console.log("[AgenticCommitGenerationUseCase] Validating repository...");
+        console.log(
+          "[AgenticCommitGenerationUseCase] Validating repository...",
+        );
       }
       const isRepo = await this.gitRepository.isRepository();
       if (!isRepo) {
         if (process.env.GORTEX_DEBUG === "true") {
-          console.log("[AgenticCommitGenerationUseCase] Error: Not a git repository");
+          console.log(
+            "[AgenticCommitGenerationUseCase] Error: Not a git repository",
+          );
         }
         return this.errorResult(
           request.provider.getName(),
@@ -190,12 +192,17 @@ export class AgenticCommitGenerationUseCase {
 
       // Check provider availability
       if (process.env.GORTEX_DEBUG === "true") {
-        console.log("[AgenticCommitGenerationUseCase] Checking provider availability:", request.provider.getName());
+        console.log(
+          "[AgenticCommitGenerationUseCase] Checking provider availability:",
+          request.provider.getName(),
+        );
       }
       const isAvailable = await request.provider.isAvailable();
       if (!isAvailable) {
         if (process.env.GORTEX_DEBUG === "true") {
-          console.log("[AgenticCommitGenerationUseCase] Error: Provider not available");
+          console.log(
+            "[AgenticCommitGenerationUseCase] Error: Provider not available",
+          );
         }
         return this.errorResult(
           request.provider.getName(),
@@ -206,10 +213,12 @@ export class AgenticCommitGenerationUseCase {
 
       // Prepare context (same as GenerateAICommitUseCase)
       if (process.env.GORTEX_DEBUG === "true") {
-        console.log("[AgenticCommitGenerationUseCase] Preparing diff context...");
+        console.log(
+          "[AgenticCommitGenerationUseCase] Preparing diff context...",
+        );
       }
       const diffContext = await this.gitRepository.getStagedChangesContext();
-      let diffForAI = this.truncateDiffIfNeeded(diffContext.diff);
+      const diffForAI = this.truncateDiffIfNeeded(diffContext.diff);
 
       const availableScopes = request.includeScope
         ? await this.gitRepository.getExistingScopes()
@@ -259,20 +268,24 @@ export class AgenticCommitGenerationUseCase {
       // STEP 1: GENERATE - Initial commit message
       // ==========================================
       if (process.env.GORTEX_DEBUG === "true") {
-        console.log("[AgenticCommitGenerationUseCase] Generating initial commit message...");
+        console.log(
+          "[AgenticCommitGenerationUseCase] Generating initial commit message...",
+        );
       }
       const genStart = Date.now();
-      let currentResult = await request.provider.generateCommitMessage(
-        aiContext,
-      );
+      let currentResult =
+        await request.provider.generateCommitMessage(aiContext);
       generationTime = Date.now() - genStart;
 
       if (process.env.GORTEX_DEBUG === "true") {
-        console.log("[AgenticCommitGenerationUseCase] Initial generation complete:", {
-          message: currentResult.message,
-          confidence: currentResult.confidence,
-          generationTime: generationTime
-        });
+        console.log(
+          "[AgenticCommitGenerationUseCase] Initial generation complete:",
+          {
+            message: currentResult.message,
+            confidence: currentResult.confidence,
+            generationTime: generationTime,
+          },
+        );
       }
 
       const reflections: ReflectionFeedback[] = [];
@@ -324,8 +337,9 @@ export class AgenticCommitGenerationUseCase {
         // - OR if accuracy >= 80 (even with minor issues)
         // This reduces false rejections while maintaining quality
         const factuallyAccurate =
-          (!verification.hasCriticalIssues && verification.factualAccuracy >= 60) ||
-          (verification.factualAccuracy >= 80);
+          (!verification.hasCriticalIssues &&
+            verification.factualAccuracy >= 60) ||
+          verification.factualAccuracy >= 80;
 
         if (process.env.GORTEX_DEBUG === "true") {
           console.log(
@@ -351,13 +365,18 @@ export class AgenticCommitGenerationUseCase {
         // FIX #2: Enhanced acceptance logic with fallback
         // Accept if quality criteria met OR max iterations reached (prevents infinite loops)
         const shouldAccept =
-          (reflection.decision === "accept" && qualityAcceptable && factuallyAccurate) ||
-          (iterations >= maxIterations);
+          (reflection.decision === "accept" &&
+            qualityAcceptable &&
+            factuallyAccurate) ||
+          iterations >= maxIterations;
 
         if (shouldAccept) {
-          if (process.env.GORTEX_DEBUG === "true" && iterations >= maxIterations) {
+          if (
+            process.env.GORTEX_DEBUG === "true" &&
+            iterations >= maxIterations
+          ) {
             console.log(
-              "[AgenticCommitGenerationUseCase] Max iterations reached, accepting current result as fallback"
+              "[AgenticCommitGenerationUseCase] Max iterations reached, accepting current result as fallback",
             );
           }
           shouldContinue = false;
@@ -368,14 +387,31 @@ export class AgenticCommitGenerationUseCase {
         // Only refine if we haven't reached max iterations yet
         if (iterations < maxIterations) {
           const refinStart = Date.now();
-          currentResult = await this.performRefinement(
-            currentResult,
-            reflection,
-            diffAnalysis,
-            aiContext,
-            request.provider,
-          );
-          refinementTime += Date.now() - refinStart;
+          try {
+            const refinedResult = await this.performRefinement(
+              currentResult,
+              reflection,
+              diffAnalysis,
+              aiContext,
+              request.provider,
+            );
+            currentResult = refinedResult;
+            refinementTime += Date.now() - refinStart;
+          } catch (refinementError) {
+            // If refinement fails, keep the current result and log the error
+            refinementTime += Date.now() - refinStart;
+            if (process.env.GORTEX_DEBUG === "true") {
+              console.warn(
+                "[AgenticCommitGenerationUseCase] Refinement failed, keeping current result:",
+                refinementError instanceof Error
+                  ? refinementError.message
+                  : String(refinementError),
+              );
+            }
+            // Force accept current result since refinement failed
+            shouldContinue = false;
+            break;
+          }
         }
 
         iterations++;
@@ -414,7 +450,10 @@ export class AgenticCommitGenerationUseCase {
       };
     } catch (error) {
       if (process.env.GORTEX_DEBUG === "true") {
-        console.error("[AgenticCommitGenerationUseCase] Exception caught:", error);
+        console.error(
+          "[AgenticCommitGenerationUseCase] Exception caught:",
+          error,
+        );
       }
       return this.errorResult(
         request.provider.getName(),
@@ -498,9 +537,8 @@ export class AgenticCommitGenerationUseCase {
     };
 
     // Generate refined commit message
-    const refinedResult = await provider.generateCommitMessage(
-      refinementContext,
-    );
+    const refinedResult =
+      await provider.generateCommitMessage(refinementContext);
 
     return refinedResult;
   }
@@ -580,7 +618,8 @@ export class AgenticCommitGenerationUseCase {
         missingSymbols: [],
         hallucinatedSymbols: [],
         recommendations: [],
-        reasoning: "Failed to parse verification, assuming acceptable accuracy.",
+        reasoning:
+          "Failed to parse verification, assuming acceptable accuracy.",
       };
     }
   }

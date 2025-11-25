@@ -131,7 +131,7 @@ export const AICommitGenerator = ({ provider, config, onComplete }: Props) => {
       <Box flexDirection="column" padding={1}>
         <Box marginBottom={1}>
           <Text bold>
-            {createGradient.titanium(
+            {createGradient.commitMessage(
               `${commitIcons.feat} Suggestion AI (${providerName})`,
             )}
           </Text>
@@ -139,33 +139,29 @@ export const AICommitGenerator = ({ provider, config, onComplete }: Props) => {
 
         <Box
           borderStyle="round"
-          borderColor={colors.success}
-          padding={1}
+          borderColor={colors.border}
+          paddingX={2}
+          paddingY={1}
           flexDirection="column"
         >
           <Box marginBottom={1}>
             <Text dimColor>Message de commit proposé:</Text>
           </Box>
 
-          <Box
-            borderStyle="single"
-            borderColor={colors.border}
-            padding={1}
-            flexDirection="column"
-          >
-            {suggestion.formattedMessage.split("\n").map((line, index) => (
-              <Text key={`line-${index}-${line.substring(0, 10)}`}>
-                {line || " "}
-              </Text>
-            ))}
-          </Box>
-
-          <Box marginTop={1}>
-            <Text dimColor>
-              Confiance: {suggestion.confidence || 50}%{" "}
-              {getConfidenceEmoji(suggestion.confidence || 50)}
+          <Box marginBottom={1}>
+            <Text bold>
+              {createGradient.commitMessage(suggestion.formattedMessage)}
             </Text>
           </Box>
+
+          {suggestion.confidence !== undefined && (
+            <Box>
+              <Text dimColor>
+                Confiance: {suggestion.confidence}%{" "}
+                {getConfidenceEmoji(suggestion.confidence)}
+              </Text>
+            </Box>
+          )}
         </Box>
 
         <Box marginTop={2}>

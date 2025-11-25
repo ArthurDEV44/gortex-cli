@@ -28,15 +28,13 @@ export const SuccessMessage = ({
     <Box flexDirection="column" marginY={1}>
       <Box
         borderStyle="round"
-        borderColor={colors.success}
+        borderColor={colors.border}
         paddingX={2}
         paddingY={1}
         flexDirection="column"
       >
         <Box marginBottom={1} justifyContent="center">
-          <Text bold color={colors.success}>
-            {createGradient.nebula(`${icon} ${title}`)}
-          </Text>
+          <Text bold>{createGradient.commitMessage(`${icon} ${title}`)}</Text>
         </Box>
 
         {subtitle && (
@@ -49,8 +47,9 @@ export const SuccessMessage = ({
           <Box flexDirection="column" marginTop={1}>
             {details.map((detail, index) => (
               <Box key={`detail-${index}-${detail.substring(0, 20)}`}>
-                <Text color={colors.success}>{icons.pointer}</Text>
-                <Text dimColor> {detail}</Text>
+                <Text dimColor>
+                  {icons.pointer} {detail}
+                </Text>
               </Box>
             ))}
           </Box>

@@ -68,6 +68,13 @@ export const colors = {
     nebula: [accentColors.purple, accentColors.rose],
     // Gradient aube (Blue -> Purple)
     aurora: [accentColors.blue, accentColors.purple],
+    // Gradient message de commit (Blue -> Indigo -> Purple -> Rose)
+    commitMessage: [
+      accentColors.blue, // #4796e2
+      accentColors.indigo, // #6680de
+      accentColors.purple, // #8c77c8
+      accentColors.rose, // #c66678
+    ],
 
     // Mapped standard gradients
     dune: [accentColors.blue, accentColors.indigo], // Replaces old dune
@@ -99,6 +106,7 @@ export const createGradient = {
   flow: gradient(colors.gradients.flow) as any,
   nebula: gradient(colors.gradients.nebula) as any,
   aurora: gradient(colors.gradients.aurora) as any,
+  commitMessage: gradient(colors.gradients.commitMessage) as any,
 };
 
 // Palette pour les types de commit (conventional commits)

@@ -11,19 +11,14 @@
  */
 
 import { Box, Text } from "ink";
-import Spinner from "ink-spinner";
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { AgenticGenerationResult } from "../application/use-cases/AgenticCommitGenerationUseCase.js";
 import { useAgenticCommitGeneration } from "../infrastructure/di/hooks.js";
 import { AIProviderFactory } from "../infrastructure/factories/AIProviderFactory.js";
-import {
-  colors,
-  commitIcons,
-  createGradient,
-  icons,
-} from "../theme/colors.js";
+import { colors, commitIcons, createGradient, icons } from "../theme/colors.js";
 import type { AIProvider as AIProviderType, CommitConfig } from "../types.js";
 import { Confirm } from "../ui/Confirm.js";
+import { LoadingSpinner } from "./LoadingSpinner.js";
 
 type Step =
   | "generating"
@@ -62,13 +57,18 @@ export const AgenticAICommitGenerator = ({
 
   const generate = useCallback(async () => {
     // Prevent duplicate calls (local and global check)
-    if (isGenerating.current || hasGenerated.current || !isMounted.current || globalGenerationInProgress) {
+    if (
+      isGenerating.current ||
+      hasGenerated.current ||
+      !isMounted.current ||
+      globalGenerationInProgress
+    ) {
       if (process.env.GORTEX_DEBUG === "true") {
         console.log("[AgenticAICommitGenerator] Skipping generation:", {
           isGenerating: isGenerating.current,
           hasGenerated: hasGenerated.current,
           isMounted: isMounted.current,
-          globalInProgress: globalGenerationInProgress
+          globalInProgress: globalGenerationInProgress,
         });
       }
       return;
@@ -86,7 +86,10 @@ export const AgenticAICommitGenerator = ({
 
       // Debug logging
       if (process.env.GORTEX_DEBUG === "true") {
-        console.log("[AgenticAICommitGenerator] Starting generation with provider:", aiProvider.getName());
+        console.log(
+          "[AgenticAICommitGenerator] Starting generation with provider:",
+          aiProvider.getName(),
+        );
       }
 
       // Execute agentic workflow with reflection
@@ -99,19 +102,28 @@ export const AgenticAICommitGenerator = ({
       // Check if component is still mounted
       if (!isMounted.current) {
         if (process.env.GORTEX_DEBUG === "true") {
-          console.log("[AgenticAICommitGenerator] Component unmounted, ignoring result");
+          console.log(
+            "[AgenticAICommitGenerator] Component unmounted, ignoring result",
+          );
         }
         return;
       }
 
       // Debug logging
       if (process.env.GORTEX_DEBUG === "true") {
-        console.log("[AgenticAICommitGenerator] Result:", JSON.stringify({
-          success: agenticResult.success,
-          iterations: agenticResult.iterations,
-          hasError: !!agenticResult.error,
-          errorMessage: agenticResult.error || null
-        }, null, 2));
+        console.log(
+          "[AgenticAICommitGenerator] Result:",
+          JSON.stringify(
+            {
+              success: agenticResult.success,
+              iterations: agenticResult.iterations,
+              hasError: !!agenticResult.error,
+              errorMessage: agenticResult.error || null,
+            },
+            null,
+            2,
+          ),
+        );
       }
 
       if (!agenticResult.success) {
@@ -159,7 +171,11 @@ export const AgenticAICommitGenerator = ({
   };
 
   // Render generating state
-  if (step === "generating" || step.startsWith("reflecting") || step.startsWith("refining")) {
+  if (
+    step === "generating" ||
+    step.startsWith("reflecting") ||
+    step.startsWith("refining")
+  ) {
     const messages: Record<Step, string> = {
       generating: "Génération initiale du message...",
       "reflecting-1": "Réflexion sur la qualité (1/2)...",
@@ -172,18 +188,18 @@ export const AgenticAICommitGenerator = ({
 
     return (
       <Box flexDirection="column" padding={1}>
-        <Box>
+        <Box marginBottom={1}>
           <Text color={colors.secondary}>
-            <Spinner type="dots" />{" "}
             {createGradient.titanium("🤖 Mode Agentique (Reflection Pattern)")}
           </Text>
         </Box>
-        <Box marginTop={1}>
-          <Text>
-            {icons.star} {messages[step] || "Traitement..."}
-          </Text>
+        <Box marginBottom={1}>
+          <LoadingSpinner
+            message={`${icons.star} ${messages[step] || "Traitement..."}`}
+            variant="primary"
+          />
         </Box>
-        <Box marginTop={1}>
+        <Box>
           <Text dimColor>
             L'IA analyse, réfléchit et améliore le message de commit...
           </Text>
@@ -237,8 +253,9 @@ export const AgenticAICommitGenerator = ({
         {/* Main commit message preview */}
         <Box
           borderStyle="round"
-          borderColor={colors.success}
-          padding={1}
+          borderColor={colors.info}
+          paddingX={2}
+          paddingY={1}
           flexDirection="column"
           marginBottom={1}
         >
@@ -246,17 +263,15 @@ export const AgenticAICommitGenerator = ({
             <Text dimColor>Message de commit proposé:</Text>
           </Box>
 
-          <Box marginBottom={1}>
-            <Text color={colors.success} bold>
-              {result.formattedMessage}
+          <Box marginBottom={result.confidence !== undefined ? 1 : 0}>
+            <Text bold>
+              {createGradient.commitMessage(result.formattedMessage)}
             </Text>
           </Box>
 
           {result.confidence !== undefined && (
-            <Box>
-              <Text dimColor>
-                Confiance: {Math.round(result.confidence)}%
-              </Text>
+            <Box marginTop={0}>
+              <Text dimColor>Confiance: {Math.round(result.confidence)}%</Text>
             </Box>
           )}
         </Box>
@@ -264,37 +279,36 @@ export const AgenticAICommitGenerator = ({
         {/* Agentic workflow metadata */}
         <Box
           borderStyle="round"
-          borderColor={colors.info}
+          borderColor={colors.borderLight}
           padding={1}
           flexDirection="column"
           marginBottom={1}
         >
           <Box marginBottom={1}>
-            <Text color={colors.info} bold>
-              {icons.star} Métadonnées Agentiques
-            </Text>
+            <Text dimColor>{icons.star} Métadonnées Agentiques</Text>
           </Box>
 
           <Box flexDirection="column">
-            <Text>
+            <Text dimColor>
               {icons.tick} Itérations: {iterations}{" "}
               {iterations === 1 ? "(accepté 1ère génération)" : "(raffiné)"}
             </Text>
 
             {finalQualityScore !== undefined && (
-              <Text>
+              <Text dimColor>
                 {icons.tick} Score qualité: {finalQualityScore}/100
               </Text>
             )}
 
             {/* Phase 2: Display factual accuracy */}
             {result.finalFactualAccuracy !== undefined && (
-              <Text>
-                {icons.tick} Précision factuelle: {result.finalFactualAccuracy}/100
+              <Text dimColor>
+                {icons.tick} Précision factuelle: {result.finalFactualAccuracy}
+                /100
               </Text>
             )}
 
-            <Text>
+            <Text dimColor>
               {icons.tick} Temps total:{" "}
               {(performance.totalLatency / 1000).toFixed(1)}s
             </Text>
@@ -310,161 +324,175 @@ export const AgenticAICommitGenerator = ({
             )}
 
             {/* Phase 2: Display verification time */}
-            {performance.verificationTime && performance.verificationTime > 0 && (
-              <Text dimColor>
-                - Vérification: {(performance.verificationTime / 1000).toFixed(1)}s
-              </Text>
-            )}
+            {performance.verificationTime &&
+              performance.verificationTime > 0 && (
+                <Text dimColor>
+                  - Vérification:{" "}
+                  {(performance.verificationTime / 1000).toFixed(1)}s
+                </Text>
+              )}
 
             {performance.refinementTime > 0 && (
               <Text dimColor>
-                - Raffinement: {(performance.refinementTime / 1000).toFixed(1)}
-                s
+                - Raffinement: {(performance.refinementTime / 1000).toFixed(1)}s
               </Text>
             )}
           </Box>
         </Box>
 
         {/* Display reflections if in debug mode */}
-        {process.env.GORTEX_DEBUG === "true" && result.reflections.length > 0 && (
-          <Box
-            borderStyle="round"
-            borderColor={colors.warning}
-            padding={1}
-            flexDirection="column"
-            marginBottom={1}
-          >
-            <Box marginBottom={1}>
-              <Text color={colors.warning} bold>
-                🔍 Réflexions (Mode Debug)
-              </Text>
-            </Box>
-
-            {result.reflections.map((reflection, index) => (
-              <Box key={index} flexDirection="column" marginBottom={1}>
-                <Text>
-                  Itération {index + 1}: {reflection.decision.toUpperCase()} (Score: {reflection.qualityScore}/100)
+        {process.env.GORTEX_DEBUG === "true" &&
+          result.reflections.length > 0 && (
+            <Box
+              borderStyle="round"
+              borderColor={colors.warning}
+              padding={1}
+              flexDirection="column"
+              marginBottom={1}
+            >
+              <Box marginBottom={1}>
+                <Text color={colors.warning} bold>
+                  🔍 Réflexions (Mode Debug)
                 </Text>
-
-                {/* Afficher les scores par critère si disponibles (Phase 1) */}
-                {reflection.criteriaScores && (
-                  <Box flexDirection="column" marginLeft={2} marginTop={1}>
-                    <Text dimColor>Scores détaillés:</Text>
-                    {Object.entries(reflection.criteriaScores).map(([key, score]) => (
-                      <Text key={key} dimColor>
-                        - {key}: {score}/100
-                      </Text>
-                    ))}
-                  </Box>
-                )}
-
-                {reflection.issues.length > 0 && (
-                  <Box flexDirection="column" marginLeft={2} marginTop={1}>
-                    <Text dimColor>Problèmes:</Text>
-                    {reflection.issues.map((issue, i) => (
-                      <Text key={i} dimColor>
-                        - {issue}
-                      </Text>
-                    ))}
-                  </Box>
-                )}
-
-                {reflection.improvements.length > 0 && (
-                  <Box flexDirection="column" marginLeft={2} marginTop={1}>
-                    <Text dimColor>Améliorations:</Text>
-                    {reflection.improvements.map((improvement, i) => (
-                      <Text key={i} dimColor>
-                        - {improvement}
-                      </Text>
-                    ))}
-                  </Box>
-                )}
-
-                {/* Afficher les issues détaillées si disponibles (Phase 1) */}
-                {reflection.detailedIssues && reflection.detailedIssues.length > 0 && (
-                  <Box flexDirection="column" marginLeft={2} marginTop={1}>
-                    <Text dimColor>Actions recommandées:</Text>
-                    {reflection.detailedIssues.map((issue, i) => (
-                      <Text key={i} dimColor>
-                        - {issue.criterion} ({issue.currentScore}→{issue.targetScore}): {issue.actionable}
-                      </Text>
-                    ))}
-                  </Box>
-                )}
               </Box>
-            ))}
-          </Box>
-        )}
+
+              {result.reflections.map((reflection, index) => (
+                <Box key={index} flexDirection="column" marginBottom={1}>
+                  <Text>
+                    Itération {index + 1}: {reflection.decision.toUpperCase()}{" "}
+                    (Score: {reflection.qualityScore}/100)
+                  </Text>
+
+                  {/* Afficher les scores par critère si disponibles (Phase 1) */}
+                  {reflection.criteriaScores && (
+                    <Box flexDirection="column" marginLeft={2} marginTop={1}>
+                      <Text dimColor>Scores détaillés:</Text>
+                      {Object.entries(reflection.criteriaScores).map(
+                        ([key, score]) => (
+                          <Text key={key} dimColor>
+                            - {key}: {score}/100
+                          </Text>
+                        ),
+                      )}
+                    </Box>
+                  )}
+
+                  {reflection.issues.length > 0 && (
+                    <Box flexDirection="column" marginLeft={2} marginTop={1}>
+                      <Text dimColor>Problèmes:</Text>
+                      {reflection.issues.map((issue, i) => (
+                        <Text key={i} dimColor>
+                          - {issue}
+                        </Text>
+                      ))}
+                    </Box>
+                  )}
+
+                  {reflection.improvements.length > 0 && (
+                    <Box flexDirection="column" marginLeft={2} marginTop={1}>
+                      <Text dimColor>Améliorations:</Text>
+                      {reflection.improvements.map((improvement, i) => (
+                        <Text key={i} dimColor>
+                          - {improvement}
+                        </Text>
+                      ))}
+                    </Box>
+                  )}
+
+                  {/* Afficher les issues détaillées si disponibles (Phase 1) */}
+                  {reflection.detailedIssues &&
+                    reflection.detailedIssues.length > 0 && (
+                      <Box flexDirection="column" marginLeft={2} marginTop={1}>
+                        <Text dimColor>Actions recommandées:</Text>
+                        {reflection.detailedIssues.map((issue, i) => (
+                          <Text key={i} dimColor>
+                            - {issue.criterion} ({issue.currentScore}→
+                            {issue.targetScore}): {issue.actionable}
+                          </Text>
+                        ))}
+                      </Box>
+                    )}
+                </Box>
+              ))}
+            </Box>
+          )}
 
         {/* Phase 2: Display verifications if in debug mode */}
-        {process.env.GORTEX_DEBUG === "true" && result.verifications && result.verifications.length > 0 && (
-          <Box
-            borderStyle="round"
-            borderColor={colors.error}
-            padding={1}
-            flexDirection="column"
-            marginBottom={1}
-          >
-            <Box marginBottom={1}>
-              <Text color={colors.error} bold>
-                🔍 Vérifications Factuelles (Mode Debug - Phase 2)
-              </Text>
-            </Box>
-
-            {result.verifications.map((verification, index) => (
-              <Box key={index} flexDirection="column" marginBottom={1}>
-                <Text>
-                  Vérification {index + 1}: Précision {verification.factualAccuracy}/100
-                  {verification.hasCriticalIssues && <Text color={colors.error}> (PROBLÈMES CRITIQUES)</Text>}
+        {process.env.GORTEX_DEBUG === "true" &&
+          result.verifications &&
+          result.verifications.length > 0 && (
+            <Box
+              borderStyle="round"
+              borderColor={colors.error}
+              padding={1}
+              flexDirection="column"
+              marginBottom={1}
+            >
+              <Box marginBottom={1}>
+                <Text color={colors.error} bold>
+                  🔍 Vérifications Factuelles (Mode Debug - Phase 2)
                 </Text>
-
-                {verification.hallucinatedSymbols.length > 0 && (
-                  <Box flexDirection="column" marginLeft={2} marginTop={1}>
-                    <Text color={colors.error}>Hallucinations détectées:</Text>
-                    {verification.hallucinatedSymbols.map((symbol, i) => (
-                      <Text key={i} color={colors.error}>
-                        - {symbol} (mentionné mais absent du diff)
-                      </Text>
-                    ))}
-                  </Box>
-                )}
-
-                {verification.missingSymbols.length > 0 && (
-                  <Box flexDirection="column" marginLeft={2} marginTop={1}>
-                    <Text color={colors.warning}>Symboles omis:</Text>
-                    {verification.missingSymbols.map((symbol, i) => (
-                      <Text key={i} color={colors.warning}>
-                        - {symbol} (dans le diff mais non mentionné)
-                      </Text>
-                    ))}
-                  </Box>
-                )}
-
-                {verification.issues.length > 0 && (
-                  <Box flexDirection="column" marginLeft={2} marginTop={1}>
-                    <Text dimColor>Problèmes détectés:</Text>
-                    {verification.issues.map((issue, i) => (
-                      <Text key={i} dimColor>
-                        - [{issue.severity}] {issue.type}: {issue.description}
-                      </Text>
-                    ))}
-                  </Box>
-                )}
-
-                {verification.recommendations.length > 0 && (
-                  <Box flexDirection="column" marginLeft={2} marginTop={1}>
-                    <Text dimColor>Recommandations:</Text>
-                    {verification.recommendations.map((rec, i) => (
-                      <Text key={i} dimColor>
-                        - {rec}
-                      </Text>
-                    ))}
-                  </Box>
-                )}
               </Box>
-            ))}
-          </Box>
-        )}
+
+              {result.verifications.map((verification, index) => (
+                <Box key={index} flexDirection="column" marginBottom={1}>
+                  <Text>
+                    Vérification {index + 1}: Précision{" "}
+                    {verification.factualAccuracy}/100
+                    {verification.hasCriticalIssues && (
+                      <Text color={colors.error}> (PROBLÈMES CRITIQUES)</Text>
+                    )}
+                  </Text>
+
+                  {verification.hallucinatedSymbols.length > 0 && (
+                    <Box flexDirection="column" marginLeft={2} marginTop={1}>
+                      <Text color={colors.error}>
+                        Hallucinations détectées:
+                      </Text>
+                      {verification.hallucinatedSymbols.map((symbol, i) => (
+                        <Text key={i} color={colors.error}>
+                          - {symbol} (mentionné mais absent du diff)
+                        </Text>
+                      ))}
+                    </Box>
+                  )}
+
+                  {verification.missingSymbols.length > 0 && (
+                    <Box flexDirection="column" marginLeft={2} marginTop={1}>
+                      <Text color={colors.warning}>Symboles omis:</Text>
+                      {verification.missingSymbols.map((symbol, i) => (
+                        <Text key={i} color={colors.warning}>
+                          - {symbol} (dans le diff mais non mentionné)
+                        </Text>
+                      ))}
+                    </Box>
+                  )}
+
+                  {verification.issues.length > 0 && (
+                    <Box flexDirection="column" marginLeft={2} marginTop={1}>
+                      <Text dimColor>Problèmes détectés:</Text>
+                      {verification.issues.map((issue, i) => (
+                        <Text key={i} dimColor>
+                          - [{issue.severity}] {issue.type}: {issue.description}
+                        </Text>
+                      ))}
+                    </Box>
+                  )}
+
+                  {verification.recommendations.length > 0 && (
+                    <Box flexDirection="column" marginLeft={2} marginTop={1}>
+                      <Text dimColor>Recommandations:</Text>
+                      {verification.recommendations.map((rec, i) => (
+                        <Text key={i} dimColor>
+                          - {rec}
+                        </Text>
+                      ))}
+                    </Box>
+                  )}
+                </Box>
+              ))}
+            </Box>
+          )}
 
         {/* Confirmation */}
         <Box marginTop={1}>

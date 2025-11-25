@@ -9,7 +9,7 @@ import { useEffect, useState } from "react";
 import type { RepositoryStatsDTO } from "../application/dto/GitStatusDTO.js";
 import { useCommitHistory } from "../infrastructure/di/hooks.js";
 import { getCommitTypeEmoji } from "../shared/constants/index.js";
-import { colors, icons } from "../theme/colors.js";
+import { colors, createGradient, icons } from "../theme/colors.js";
 
 interface Props {
   maxCount?: number;
@@ -75,33 +75,54 @@ export function StatsDisplay({ maxCount = 100 }: Props) {
   return (
     <Box flexDirection="column" padding={1}>
       {/* Title */}
-      <Box marginBottom={1}>
-        <Text color={colors.primary} bold>
-          📊 Analyse des {maxCount} derniers commits
+      <Box marginBottom={2}>
+        <Text bold>
+          {createGradient.commitMessage(
+            `${icons.stats} Analyse des ${maxCount} derniers commits`,
+          )}
         </Text>
       </Box>
 
       {/* Summary */}
-      <Box flexDirection="column" marginBottom={1}>
-        <Text bold>Résumé:</Text>
-        <Text color={colors.muted}>{"─".repeat(50)}</Text>
-        <Text>
-          Total de commits analysés:{" "}
-          <Text color={colors.info}>{stats.totalCommits}</Text>
-        </Text>
-        <Text>
-          Commits conventionnels:{" "}
-          <Text color={colors.success}>{stats.conventionalCommits}</Text>
-        </Text>
-        <Text>
-          Commits non-conventionnels:{" "}
-          <Text color={colors.error}>{nonConventional}</Text>
-        </Text>
+      <Box
+        borderStyle="round"
+        borderColor={colors.border}
+        paddingX={2}
+        paddingY={1}
+        flexDirection="column"
+        marginBottom={1}
+      >
+        <Box marginBottom={1}>
+          <Text bold>{createGradient.commitMessage("Résumé")}</Text>
+        </Box>
+        <Box flexDirection="column">
+          <Text>
+            Total de commits analysés:{" "}
+            <Text color={colors.info}>{stats.totalCommits}</Text>
+          </Text>
+          <Text>
+            Commits conventionnels:{" "}
+            <Text color={colors.success}>{stats.conventionalCommits}</Text>
+          </Text>
+          <Text>
+            Commits non-conventionnels:{" "}
+            <Text color={colors.error}>{nonConventional}</Text>
+          </Text>
+        </Box>
       </Box>
 
       {/* Compliance Rate */}
-      <Box flexDirection="column" marginBottom={1}>
-        <Text bold>Taux de conformité:</Text>
+      <Box
+        borderStyle="round"
+        borderColor={colors.border}
+        paddingX={2}
+        paddingY={1}
+        flexDirection="column"
+        marginBottom={1}
+      >
+        <Box marginBottom={1}>
+          <Text bold>{createGradient.commitMessage("Taux de conformité")}</Text>
+        </Box>
         <Text color={color}>
           {percentage}% {getProgressBar(percentageNum)}
         </Text>
@@ -109,9 +130,19 @@ export function StatsDisplay({ maxCount = 100 }: Props) {
 
       {/* Type Breakdown */}
       {Object.keys(stats.typeBreakdown).length > 0 && (
-        <Box flexDirection="column" marginBottom={1}>
-          <Text bold>Répartition par type:</Text>
-          <Text color={colors.muted}>{"─".repeat(50)}</Text>
+        <Box
+          borderStyle="round"
+          borderColor={colors.border}
+          paddingX={2}
+          paddingY={1}
+          flexDirection="column"
+          marginBottom={1}
+        >
+          <Box marginBottom={1}>
+            <Text bold>
+              {createGradient.commitMessage("Répartition par type")}
+            </Text>
+          </Box>
           <Box flexDirection="column">
             {Object.entries(stats.typeBreakdown)
               .sort((a, b) => b[1] - a[1])
@@ -128,7 +159,7 @@ export function StatsDisplay({ maxCount = 100 }: Props) {
                   <Text key={type}>
                     {getCommitTypeEmoji(type)} {type.padEnd(10)}{" "}
                     {count.toString().padStart(3)} ({typePercentage}%){" "}
-                    <Text color={colors.muted}>{bar}</Text>
+                    <Text dimColor>{bar}</Text>
                   </Text>
                 );
               })}
@@ -138,20 +169,41 @@ export function StatsDisplay({ maxCount = 100 }: Props) {
 
       {/* Recommendations */}
       {percentageNum < 80 ? (
-        <Box flexDirection="column">
-          <Text color={colors.warning} bold>
-            {icons.info} Recommandations:
-          </Text>
-          <Text color={colors.muted}>{"─".repeat(50)}</Text>
-          <Text> • Utilisez "npx gortex" pour créer des commits guidés</Text>
-          <Text> • Installez le hook Git: "npx gortex hooks install"</Text>
-          <Text> • Partagez les bonnes pratiques avec votre équipe</Text>
+        <Box
+          borderStyle="round"
+          borderColor={colors.borderLight}
+          paddingX={2}
+          paddingY={1}
+          flexDirection="column"
+        >
+          <Box marginBottom={1}>
+            <Text color={colors.warning} bold>
+              {icons.info} Recommandations:
+            </Text>
+          </Box>
+          <Box flexDirection="column">
+            <Text dimColor>
+              • Utilisez "npx gortex" pour créer des commits guidés
+            </Text>
+            <Text dimColor>
+              • Installez le hook Git: "npx gortex hooks install"
+            </Text>
+            <Text dimColor>
+              • Partagez les bonnes pratiques avec votre équipe
+            </Text>
+          </Box>
         </Box>
       ) : (
-        <Box>
-          <Text color={colors.success} bold>
-            {icons.success} Excellent travail ! Votre repo suit bien les
-            conventions de commits.
+        <Box
+          borderStyle="round"
+          borderColor={colors.borderLight}
+          paddingX={2}
+          paddingY={1}
+        >
+          <Text bold>
+            {createGradient.commitMessage(
+              `${icons.success} Excellent travail ! Votre repo suit bien les conventions de commits.`,
+            )}
           </Text>
         </Box>
       )}

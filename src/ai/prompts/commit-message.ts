@@ -779,21 +779,21 @@ export interface ReflectionFeedback {
 
   // Scoring détaillé par critère (nouveau pour Phase 1)
   criteriaScores?: {
-    subjectQuality: number;      // 0-100: Clarté et précision du subject
-    subjectSemantic: number;     // 0-100: Subject est sémantique (pas technique/chemins)
-    subjectLength: number;       // 0-100: Longueur appropriée (≤100 caractères)
-    bodyPresence: number;        // 0-100: Body présent si nécessaire (complexité > simple)
-    bodyExplainsWhy: number;     // 0-100: Body explique POURQUOI (pas juste QUOI)
-    symbolsMentioned: number;    // 0-100: Symboles/composants clés mentionnés
-    typeAccuracy: number;        // 0-100: Type correspond au pattern de changement
+    subjectQuality: number; // 0-100: Clarté et précision du subject
+    subjectSemantic: number; // 0-100: Subject est sémantique (pas technique/chemins)
+    subjectLength: number; // 0-100: Longueur appropriée (≤100 caractères)
+    bodyPresence: number; // 0-100: Body présent si nécessaire (complexité > simple)
+    bodyExplainsWhy: number; // 0-100: Body explique POURQUOI (pas juste QUOI)
+    symbolsMentioned: number; // 0-100: Symboles/composants clés mentionnés
+    typeAccuracy: number; // 0-100: Type correspond au pattern de changement
   };
 
   // Feedback actionable par critère (nouveau)
   detailedIssues?: Array<{
-    criterion: string;           // Nom du critère problématique
-    currentScore: number;        // Score actuel
-    targetScore: number;         // Score cible (généralement 80+)
-    actionable: string;          // Action concrète pour améliorer
+    criterion: string; // Nom du critère problématique
+    currentScore: number; // Score actuel
+    targetScore: number; // Score cible (généralement 80+)
+    actionable: string; // Action concrète pour améliorer
   }>;
 }
 
@@ -957,9 +957,7 @@ export function generateRefinementPrompt(
   parts.push("RAPPEL DU CONTEXTE:");
   parts.push(`- Complexité: ${analysis.complexity}`);
   parts.push(`- Fichiers: ${analysis.summary.filesChanged}`);
-  parts.push(
-    `- Pattern: ${analysis.changePatterns[0]?.description ?? "N/A"}`,
-  );
+  parts.push(`- Pattern: ${analysis.changePatterns[0]?.description ?? "N/A"}`);
   if (analysis.modifiedSymbols.length > 0) {
     parts.push("- Symboles clés:");
     analysis.modifiedSymbols.slice(0, 3).forEach((sym) => {
@@ -975,7 +973,9 @@ export function generateRefinementPrompt(
   parts.push("- Maintient les éléments déjà bons");
   parts.push("- Reste fidèle au format Conventional Commits");
   parts.push(`- Type parmi: ${availableTypes.join(", ")}`);
-  parts.push("- Subject ≤100 caractères, sémantique (pas de chemins de fichiers)");
+  parts.push(
+    "- Subject ≤100 caractères, sémantique (pas de chemins de fichiers)",
+  );
   parts.push(
     `- Body ${analysis.complexity !== "simple" ? "REQUIS" : "optionnel"} qui explique le POURQUOI`,
   );

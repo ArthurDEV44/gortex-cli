@@ -157,6 +157,7 @@ export class OllamaProvider extends BaseAIProvider {
           },
         },
         required: ["type", "subject", "breaking", "confidence"],
+        additionalProperties: false, // FIX: Prevent extra properties like "footer"
       };
 
       // Construit la requête avec l'analyse du diff, le raisonnement CoT, les exemples few-shot, le résumé sémantique, le style du projet et les guidelines

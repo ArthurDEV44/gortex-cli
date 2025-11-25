@@ -1,6 +1,6 @@
 import { Box, Text, useInput } from "ink";
 import { useState } from "react";
-import { colors, icons } from "../theme/colors.js";
+import { colors, createGradient, icons } from "../theme/colors.js";
 
 interface ContinuePromptProps {
   onComplete: (shouldContinue: boolean) => void;
@@ -24,14 +24,14 @@ export const ContinuePrompt = ({ onComplete }: ContinuePromptProps) => {
     <Box flexDirection="column" marginY={1}>
       <Box
         borderStyle="round"
-        borderColor={colors.primary}
+        borderColor={colors.border}
         paddingX={2}
         paddingY={1}
         flexDirection="column"
       >
         <Box marginBottom={1}>
-          <Text bold color={colors.primary}>
-            {icons.question} What's next?
+          <Text bold>
+            {createGradient.commitMessage(`${icons.question} What's next?`)}
           </Text>
         </Box>
 
@@ -39,14 +39,17 @@ export const ContinuePrompt = ({ onComplete }: ContinuePromptProps) => {
           <Text dimColor>Choose an option:</Text>
         </Box>
 
-        <Box flexDirection="column" gap={1}>
+        <Box flexDirection="column">
           <Box>
-            <Text
-              color={selected === "continue" ? colors.success : colors.muted}
-            >
-              {selected === "continue" ? icons.pointer : " "} Make another
-              commit
-            </Text>
+            {selected === "continue" ? (
+              <Text bold>
+                {createGradient.commitMessage(
+                  `${icons.pointer} Make another commit`,
+                )}
+              </Text>
+            ) : (
+              <Text dimColor> Make another commit</Text>
+            )}
           </Box>
           <Box>
             <Text color={selected === "quit" ? colors.error : colors.muted}>
