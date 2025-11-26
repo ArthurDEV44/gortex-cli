@@ -17,11 +17,12 @@ export const titaniumColors = {
 };
 
 // Palette d'accentuation (Gradients - Fonctionnels)
+// Inspirée de Gemini avec des teintes pastel plus douces
 export const accentColors = {
-  blue: "#4796e2", // Info, Primaire
-  indigo: "#6680de", // Focus, Secondaire
-  purple: "#8c77c8", // Succès, Highlights
-  rose: "#c66678", // Erreur, Warning
+  blue: "#6BA8E8", // Info, Primaire - Bleu pastel doux
+  indigo: "#8A9EE8", // Focus, Secondaire - Indigo lavande
+  purple: "#B5A5DD", // Succès, Highlights - Violet pastel
+  rose: "#E09DAA", // Erreur, Warning - Rose poudré
 };
 
 // Couleurs principales mappées
@@ -68,6 +69,13 @@ export const colors = {
     nebula: [accentColors.purple, accentColors.rose],
     // Gradient aube (Blue -> Purple)
     aurora: [accentColors.blue, accentColors.purple],
+    // Gradient message de commit (Blue -> Indigo -> Purple -> Rose)
+    commitMessage: [
+      accentColors.blue, // #4796e2
+      accentColors.indigo, // #6680de
+      accentColors.purple, // #8c77c8
+      accentColors.rose, // #c66678
+    ],
 
     // Mapped standard gradients
     dune: [accentColors.blue, accentColors.indigo], // Replaces old dune
@@ -99,6 +107,7 @@ export const createGradient = {
   flow: gradient(colors.gradients.flow) as any,
   nebula: gradient(colors.gradients.nebula) as any,
   aurora: gradient(colors.gradients.aurora) as any,
+  commitMessage: gradient(colors.gradients.commitMessage) as any,
 };
 
 // Palette pour les types de commit (conventional commits)

@@ -46,10 +46,13 @@ export class OllamaProvider extends BaseAIProvider {
     super();
     this.baseUrl = config.ollama?.baseUrl || "http://localhost:11434";
     this.model = config.ollama?.model || "magistral:24b";
-    this.timeout = config.ollama?.timeout || 30000;
+    // Default timeout increased to 120s to accommodate agentic workflows
+    // which make multiple sequential AI calls (generation + reflection + refinement)
+    this.timeout = config.ollama?.timeout || 120000;
     this.temperature = config.temperature ?? 0.5;
     this.topP = config.topP ?? 0.9;
-    this.maxTokens = config.maxTokens ?? 500;
+    // Increased default for agentic workflows (Magistral supports up to ~8k output tokens)
+    this.maxTokens = config.maxTokens ?? 1000;
   }
 
   getName(): string {
@@ -154,6 +157,7 @@ export class OllamaProvider extends BaseAIProvider {
           },
         },
         required: ["type", "subject", "breaking", "confidence"],
+        additionalProperties: false, // FIX: Prevent extra properties like "footer"
       };
 
       // Construit la requête avec l'analyse du diff, le raisonnement CoT, les exemples few-shot, le résumé sémantique, le style du projet et les guidelines

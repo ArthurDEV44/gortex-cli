@@ -30,7 +30,7 @@ describe('MultiSelect', () => {
       <MultiSelect message="Select" items={mockItems} onSubmit={onSubmit} />
     );
 
-    const output = lastFrame();
+    const output = stripAnsi(lastFrame() || '');
     expect(output).toContain('Selected:');
     expect(output).toContain('1'); // One item is checked by default
     expect(output).toContain('3'); // Total items
@@ -42,7 +42,7 @@ describe('MultiSelect', () => {
       <MultiSelect message="Select" items={mockItems} onSubmit={onSubmit} />
     );
 
-    const output = lastFrame();
+    const output = stripAnsi(lastFrame() || '');
     expect(output).toContain('Item 2');
   });
 
@@ -80,7 +80,7 @@ describe('MultiSelect', () => {
       <MultiSelect message="Select" items={items} onSubmit={onSubmit} minSelection={2} />
     );
 
-    const output = lastFrame();
+    const output = stripAnsi(lastFrame() || '');
     expect(output).toContain('min: 2');
   });
 
@@ -90,7 +90,7 @@ describe('MultiSelect', () => {
       <MultiSelect message="Select" items={mockItems} onSubmit={onSubmit} />
     );
 
-    const output = lastFrame();
+    const output = stripAnsi(lastFrame() || '');
     expect(output).toContain('navigate');
     expect(output).toContain('toggle');
     expect(output).toContain('submit');
@@ -110,7 +110,7 @@ describe('MultiSelect', () => {
       <MultiSelect message="Select" items={itemsNoDesc} onSubmit={onSubmit} />
     );
 
-    const output = lastFrame();
+    const output = stripAnsi(lastFrame() || '');
     expect(output).toContain('Item 1');
     expect(output).toContain('Item 2');
   });
@@ -148,7 +148,7 @@ describe('MultiSelect', () => {
       <MultiSelect message="Select" items={mockItems} onSubmit={onSubmit} />
     );
 
-    const output = lastFrame();
+    const output = stripAnsi(lastFrame() || '');
     // First item is at cursor initially
     expect(output).toContain('First item');
   });
@@ -165,7 +165,7 @@ describe('MultiSelect', () => {
       <MultiSelect message="Select" items={items} onSubmit={onSubmit} />
     );
 
-    const output = lastFrame();
+    const output = stripAnsi(lastFrame() || '');
     expect(output).toContain('Selected:');
     expect(output).toContain('2'); // Two items checked
   });

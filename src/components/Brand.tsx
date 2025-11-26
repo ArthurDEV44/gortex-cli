@@ -24,7 +24,7 @@ export const Brand = ({ variant = "small", tagline = false }: BrandProps) => {
         {tagline && (
           <Box marginTop={1}>
             <Text>
-              {createGradient.nebula(
+              {createGradient.commitMessage(
                 `${icons.star} Git Workflow, Elevated ${icons.star}`,
               )}
             </Text>

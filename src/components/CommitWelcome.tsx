@@ -16,51 +16,74 @@ export const CommitWelcome = ({ onStart }: CommitWelcomeProps) => {
     <Box flexDirection="column" padding={1}>
       <Box
         borderStyle="round"
-        borderColor={colors.primary}
+        borderColor={colors.border}
         paddingX={3}
         paddingY={2}
         flexDirection="column"
       >
-        <Box justifyContent="center" marginBottom={1}>
-          <Text bold color={colors.primary}>
-            {createGradient.nebula(
+        <Box justifyContent="center" marginBottom={2}>
+          <Text bold>
+            {createGradient.commitMessage(
               `${icons.commit} Create a Conventional Commit`,
             )}
           </Text>
         </Box>
 
-        <Box flexDirection="column" marginTop={1} marginBottom={1}>
-          <Text dimColor>
-            This workflow will guide you through creating a commit:
-          </Text>
-          <Box marginTop={1} flexDirection="column">
-            <Text dimColor> {icons.branch} Select or create a branch</Text>
-            <Text dimColor> {icons.fileChanged} Choose files to stage</Text>
-            <Text dimColor>
-              {" "}
-              {icons.step} Generate commit message (AI or Manual)
+        <Box flexDirection="column" marginBottom={2}>
+          <Box marginBottom={1}>
+            <Text>
+              {createGradient.titanium(
+                "This workflow will guide you through creating a commit:",
+              )}
             </Text>
-            <Text dimColor> {icons.success} Confirm and commit</Text>
-            <Text dimColor> {icons.push} Push to remote (optional)</Text>
+          </Box>
+          <Box marginTop={1} flexDirection="column">
+            <Text>
+              {createGradient.titanium(
+                `${icons.branch} Select or create a branch`,
+              )}
+            </Text>
+            <Text>
+              {createGradient.titanium(
+                `${icons.fileChanged} Choose files to stage`,
+              )}
+            </Text>
+            <Text>
+              {createGradient.titanium(
+                `${icons.step} Generate commit message (AI or Manual)`,
+              )}
+            </Text>
+            <Text>
+              {createGradient.titanium(
+                `${icons.success} Confirm and commit`,
+              )}
+            </Text>
+            <Text>
+              {createGradient.titanium(
+                `${icons.push} Push to remote (optional)`,
+              )}
+            </Text>
           </Box>
         </Box>
 
-        <Box marginTop={1} justifyContent="center">
+        <Box marginTop={1} marginBottom={1} justifyContent="center">
           <Box
             borderStyle="round"
-            borderColor={colors.success}
+            borderColor={colors.border}
             paddingX={2}
             paddingY={0}
           >
-            <Text bold color={colors.success}>
-              Press Enter or Space to start
+            <Text bold>
+              {createGradient.commitMessage("Press Enter or Space to start")}
             </Text>
           </Box>
         </Box>
 
         <Box marginTop={1} justifyContent="center">
-          <Text dimColor>
-            You can switch to the Stats tab anytime using ←/→ or 1/2
+          <Text>
+            {createGradient.titanium(
+              "You can switch to the Stats tab anytime using ←/→ or 1/2",
+            )}
           </Text>
         </Box>
       </Box>

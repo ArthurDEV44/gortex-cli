@@ -1,6 +1,7 @@
 import { describe, it, expect, vi } from 'vitest';
 import React from 'react';
 import { render } from 'ink-testing-library';
+import stripAnsi from 'strip-ansi';
 import { ContinuePrompt } from '../ContinuePrompt.js';
 
 describe('ContinuePrompt', () => {
@@ -8,7 +9,7 @@ describe('ContinuePrompt', () => {
     const onComplete = vi.fn();
     const { lastFrame } = render(<ContinuePrompt onComplete={onComplete} />);
     
-    const output = lastFrame() || '';
+    const output = stripAnsi(lastFrame() || '');
     expect(output).toContain("What's next?");
     expect(output).toContain('Make another commit');
     expect(output).toContain('Exit');
@@ -29,7 +30,7 @@ describe('ContinuePrompt', () => {
     const onComplete = vi.fn();
     const { lastFrame } = render(<ContinuePrompt onComplete={onComplete} />);
     
-    const output = lastFrame() || '';
+    const output = stripAnsi(lastFrame() || '');
     // Should show "Make another commit" as selected (with pointer)
     expect(output).toContain('Make another commit');
     expect(output).toContain('Exit');
@@ -39,7 +40,7 @@ describe('ContinuePrompt', () => {
     const onComplete = vi.fn();
     const { lastFrame } = render(<ContinuePrompt onComplete={onComplete} />);
     
-    const output = lastFrame() || '';
+    const output = stripAnsi(lastFrame() || '');
     expect(output).toContain('Use ←/→ or h/l to select, Enter to confirm');
   });
 });

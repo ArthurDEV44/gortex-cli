@@ -1,7 +1,6 @@
 import { Box, Text, useInput } from "ink";
-import Gradient from "ink-gradient";
 import { useState } from "react";
-import { icons } from "../theme/colors.js";
+import { colors, createGradient, icons } from "../theme/colors.js";
 
 interface ConfirmProps {
   message: string;
@@ -31,29 +30,27 @@ export const Confirm = ({
   return (
     <Box flexDirection="column">
       <Box marginBottom={1}>
-        <Gradient name="cristal">
-          <Text bold>? {message}</Text>
-        </Gradient>
+        <Text bold>{createGradient.commitMessage(`? ${message}`)}</Text>
       </Box>
 
       <Box
         borderStyle="round"
-        borderColor={value ? "green" : "red"}
+        borderColor={colors.border}
         paddingX={2}
         paddingY={1}
       >
         {value ? (
           <Box>
-            <Gradient name="summer">
-              <Text bold>{icons.success} Yes</Text>
-            </Gradient>
+            <Text bold>
+              {createGradient.commitMessage(`${icons.success} Yes`)}
+            </Text>
             <Text dimColor> / No</Text>
           </Box>
         ) : (
           <Box>
             <Text dimColor>Yes / </Text>
-            <Text color="red" bold>
-              {icons.error} No
+            <Text bold>
+              {createGradient.commitMessage(`${icons.error} No`)}
             </Text>
           </Box>
         )}

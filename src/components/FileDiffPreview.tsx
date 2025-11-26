@@ -26,7 +26,7 @@ export const FileDiffPreview = ({
     <Box flexDirection="column" marginY={1}>
       <Box marginBottom={1}>
         <Text bold>
-          {createGradient.titanium(`${icons.fileChanged} Changed Files`)}
+          {createGradient.commitMessage(`${icons.fileChanged} Changed Files`)}
         </Text>
         <Text dimColor> ({files.length} total)</Text>
       </Box>
@@ -34,7 +34,7 @@ export const FileDiffPreview = ({
       <Box
         flexDirection="column"
         borderStyle="round"
-        borderColor={colors.info}
+        borderColor={colors.border}
         paddingX={1}
         paddingY={1}
       >

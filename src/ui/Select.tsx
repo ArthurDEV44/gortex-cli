@@ -1,7 +1,6 @@
 import { Box, Text, useInput } from "ink";
-import Gradient from "ink-gradient";
 import { useState } from "react";
-import { icons } from "../theme/colors.js";
+import { colors, createGradient, icons } from "../theme/colors.js";
 
 export interface SelectItem {
   label: string;
@@ -37,15 +36,13 @@ export const Select = ({
   return (
     <Box flexDirection="column">
       <Box marginBottom={1}>
-        <Gradient name="cristal">
-          <Text bold>? {message}</Text>
-        </Gradient>
+        <Text bold>{createGradient.commitMessage(`? ${message}`)}</Text>
       </Box>
 
       <Box
         flexDirection="column"
         borderStyle="round"
-        borderColor="cyan"
+        borderColor={colors.border}
         paddingX={1}
         paddingY={1}
       >
@@ -55,14 +52,16 @@ export const Select = ({
             <Box key={index} flexDirection="column">
               <Box>
                 {isSelected ? (
-                  <Gradient name="passion">
-                    <Text bold>{icons.pointer} </Text>
-                  </Gradient>
+                  <Text bold>
+                    {createGradient.commitMessage(`${icons.pointer} `)}
+                  </Text>
                 ) : (
                   <Text dimColor> </Text>
                 )}
-                <Text color={isSelected ? "cyan" : undefined} bold={isSelected}>
-                  {item.label}
+                <Text bold={isSelected}>
+                  {isSelected
+                    ? createGradient.commitMessage(item.label)
+                    : item.label}
                 </Text>
               </Box>
               {isSelected && item.description && (

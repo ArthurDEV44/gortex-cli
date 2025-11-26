@@ -10,7 +10,7 @@ import {
   generateVerificationSystemPrompt,
   generateVerificationUserPrompt,
   type ReasoningAnalysis,
-  type VerificationResult,
+  type SelfVerificationResult,
 } from "../../ai/prompts/commit-message.js";
 import { CommitMessage } from "../../domain/entities/CommitMessage.js";
 import type {
@@ -344,9 +344,9 @@ export class GenerateAICommitUseCase {
             console.log("─".repeat(80));
           }
 
-          const verification: VerificationResult = JSON.parse(
+          const verification: SelfVerificationResult = JSON.parse(
             cleanedVerification,
-          ) as VerificationResult;
+          ) as SelfVerificationResult;
 
           // If improvements are suggested, apply them
           if (

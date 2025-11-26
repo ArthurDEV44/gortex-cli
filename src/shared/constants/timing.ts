@@ -16,4 +16,6 @@ export const UI_DELAYS = {
 export const TIMEOUTS = {
   /** Default timeout for AI API requests in milliseconds */
   AI_REQUEST: 30000,
+  /** Timeout for agentic workflow with multiple AI calls (reflection + refinement) */
+  AGENTIC_AI_REQUEST: 120000, // 2 minutes for multiple sequential AI calls
 } as const;

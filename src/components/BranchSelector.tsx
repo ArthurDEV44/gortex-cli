@@ -139,7 +139,7 @@ export const BranchSelector = ({ onComplete }: BranchSelectorProps) => {
     <Box flexDirection="column">
       <Box marginBottom={1}>
         <Text dimColor>Current: </Text>
-        <Text bold>{createGradient.flow(currentBranch)}</Text>
+        <Text bold>{createGradient.commitMessage(currentBranch)}</Text>
       </Box>
 
       {step === "select" && (
@@ -173,9 +173,15 @@ export const BranchSelector = ({ onComplete }: BranchSelectorProps) => {
 
       {step === "confirm" && (
         <Box flexDirection="column">
-          <Box marginBottom={1}>
-            <Text color={colors.success}>{icons.success} Selected: </Text>
-            <Text bold>{createGradient.success(selectedBranch)}</Text>
+          <Box
+            borderStyle="round"
+            borderColor={colors.border}
+            paddingX={2}
+            paddingY={1}
+            marginBottom={1}
+          >
+            <Text>{icons.success} Selected: </Text>
+            <Text bold>{createGradient.commitMessage(selectedBranch)}</Text>
           </Box>
           <Confirm
             message="Continue with this branch?"

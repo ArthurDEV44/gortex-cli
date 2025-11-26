@@ -52,7 +52,7 @@ describe('Confirm', () => {
       <Confirm message="Confirm?" defaultValue={false} onSubmit={onSubmit} />
     );
 
-    const output = lastFrame();
+    const output = stripAnsi(lastFrame() || '');
     expect(output).toContain('No');
   });
 
@@ -86,7 +86,7 @@ describe('Confirm', () => {
       <Confirm message="Confirm?" onSubmit={onSubmit} />
     );
 
-    const output = lastFrame();
+    const output = stripAnsi(lastFrame() || '');
     expect(output).toContain('toggle');
     expect(output).toContain('y/n');
     expect(output).toContain('h/l');

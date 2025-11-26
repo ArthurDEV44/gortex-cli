@@ -1,7 +1,6 @@
 import { Box, Text, useInput } from "ink";
-import Gradient from "ink-gradient";
 import { useState } from "react";
-import { icons } from "../theme/colors.js";
+import { colors, createGradient, icons } from "../theme/colors.js";
 
 export interface MultiSelectItem {
   label: string;
@@ -63,24 +62,22 @@ export const MultiSelect = ({
   return (
     <Box flexDirection="column">
       <Box marginBottom={1}>
-        <Gradient name="cristal">
-          <Text bold>? {message}</Text>
-        </Gradient>
+        <Text bold>{createGradient.commitMessage(`? ${message}`)}</Text>
       </Box>
 
       <Box marginBottom={1}>
         <Text dimColor>Selected: </Text>
-        <Text color={isValid ? "green" : "yellow"} bold>
+        <Text color={isValid ? colors.success : colors.warning} bold>
           {selectedCount}
         </Text>
         <Text dimColor> / {items.length}</Text>
-        {!isValid && <Text color="yellow"> (min: {minSelection})</Text>}
+        {!isValid && <Text color={colors.warning}> (min: {minSelection})</Text>}
       </Box>
 
       <Box
         flexDirection="column"
         borderStyle="round"
-        borderColor="cyan"
+        borderColor={colors.border}
         paddingX={1}
         paddingY={1}
       >
@@ -90,19 +87,19 @@ export const MultiSelect = ({
             <Box key={i} flexDirection="column">
               <Box>
                 {isCursor ? (
-                  <Gradient name="passion">
-                    <Text bold>{icons.pointer} </Text>
-                  </Gradient>
+                  <Text bold>
+                    {createGradient.commitMessage(`${icons.pointer} `)}
+                  </Text>
                 ) : (
                   <Text dimColor> </Text>
                 )}
-                <Text
-                  color={item.checked ? "green" : isCursor ? "cyan" : undefined}
-                >
+                <Text color={item.checked ? colors.success : undefined}>
                   {item.checked ? "◉ " : "◯ "}
                 </Text>
-                <Text color={isCursor ? "cyan" : undefined} bold={isCursor}>
-                  {item.label}
+                <Text bold={isCursor}>
+                  {isCursor
+                    ? createGradient.commitMessage(item.label)
+                    : item.label}
                 </Text>
               </Box>
               {isCursor && item.description && (

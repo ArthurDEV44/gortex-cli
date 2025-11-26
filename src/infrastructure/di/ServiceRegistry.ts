@@ -3,6 +3,7 @@
  * Centralized configuration of dependency bindings
  */
 
+import { AgenticCommitGenerationUseCase } from "../../application/use-cases/AgenticCommitGenerationUseCase.js";
 import { AnalyzeCommitHistoryUseCase } from "../../application/use-cases/AnalyzeCommitHistoryUseCase.js";
 import { BranchOperationsUseCase } from "../../application/use-cases/BranchOperationsUseCase.js";
 import { CreateCommitUseCase } from "../../application/use-cases/CreateCommitUseCase.js";
@@ -36,6 +37,7 @@ export const ServiceIdentifiers = {
   // Use Cases
   CreateCommitUseCase: "CreateCommitUseCase",
   GenerateAICommitUseCase: "GenerateAICommitUseCase",
+  AgenticCommitGenerationUseCase: "AgenticCommitGenerationUseCase",
   GetRepositoryStatusUseCase: "GetRepositoryStatusUseCase",
   AnalyzeCommitHistoryUseCase: "AnalyzeCommitHistoryUseCase",
   StageFilesUseCase: "StageFilesUseCase",
@@ -218,6 +220,17 @@ export class ServiceRegistry {
         new GenerateAICommitUseCase(
           c.resolve<IGitRepository>(ServiceIdentifiers.GitRepository),
           c.tryResolve<IASTDiffAnalyzer>(ServiceIdentifiers.ASTDiffAnalyzer),
+        ),
+    );
+
+    // Register AgenticCommitGenerationUseCase (Reflection Pattern)
+    container.registerTransient(
+      ServiceIdentifiers.AgenticCommitGenerationUseCase,
+      (c) =>
+        new AgenticCommitGenerationUseCase(
+          c.resolve<IGitRepository>(ServiceIdentifiers.GitRepository),
+          c.tryResolve<IASTDiffAnalyzer>(ServiceIdentifiers.ASTDiffAnalyzer),
+          c.tryResolve(ServiceIdentifiers.ProjectStyleAnalyzer),
         ),
     );
 

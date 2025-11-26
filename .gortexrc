@@ -1,0 +1,35 @@
+{
+  "types": [
+    { "value": "feat", "label": "✨ feat - New feature" },
+    { "value": "fix", "label": "🐛 fix - Bug fix" },
+    { "value": "docs", "label": "📚 docs - Documentation" },
+    { "value": "style", "label": "💄 style - Code style" },
+    { "value": "refactor", "label": "♻️  refactor - Code refactoring" },
+    { "value": "perf", "label": "⚡ perf - Performance improvement" },
+    { "value": "test", "label": "✅ test - Tests" },
+    { "value": "build", "label": "🔧 build - Build system" },
+    { "value": "ci", "label": "👷 ci - CI/CD" },
+    { "value": "chore", "label": "🔨 chore - Maintenance" }
+  ],
+  "scopes": ["agentic", "ai", "ui", "core", "domain", "infrastructure", "workflow"],
+  "allowCustomScopes": true,
+  "maxSubjectLength": 100,
+  "minSubjectLength": 3,
+  "ai": {
+    "enabled": true,
+    "provider": "ollama",
+    "ollama": {
+      "model": "magistral:24b-small-2506-q4_K_M",
+      "baseUrl": "http://localhost:11434",
+      "timeout": 120000
+    },
+    "temperature": 0.3,
+    "maxTokens": 1000,
+    "autoSuggest": false,
+    "requireConfirmation": true
+  },
+  "git": {
+    "autoStage": false,
+    "allowEmptyCommits": false
+  }
+}

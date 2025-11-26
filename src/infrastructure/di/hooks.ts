@@ -3,6 +3,7 @@
  * Convenient hooks to access specific use cases and repositories
  */
 
+import type { AgenticCommitGenerationUseCase } from "../../application/use-cases/AgenticCommitGenerationUseCase.js";
 import type { AnalyzeCommitHistoryUseCase } from "../../application/use-cases/AnalyzeCommitHistoryUseCase.js";
 import type { BranchOperationsUseCase } from "../../application/use-cases/BranchOperationsUseCase.js";
 import type { CreateCommitUseCase } from "../../application/use-cases/CreateCommitUseCase.js";
@@ -27,6 +28,19 @@ export function useCreateCommit(): CreateCommitUseCase {
  */
 export function useGenerateAICommit(): GenerateAICommitUseCase {
   return useUseCase<GenerateAICommitUseCase>("generateAICommitUseCase");
+}
+
+/**
+ * Hook to access AgenticCommitGenerationUseCase (Reflection Pattern)
+ * This is the recommended use case for high-quality commit message generation
+ */
+export function useAgenticCommitGeneration(): AgenticCommitGenerationUseCase {
+  const root = useCompositionRoot();
+  return root
+    .getContainer()
+    .resolve<AgenticCommitGenerationUseCase>(
+      ServiceIdentifiers.AgenticCommitGenerationUseCase,
+    );
 }
 
 /**

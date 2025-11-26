@@ -1,6 +1,6 @@
 import { Box, Text } from "ink";
 import { useEffect, useState } from "react";
-import { colors, icons } from "../theme/colors.js";
+import { createGradient, icons } from "../theme/colors.js";
 import type { CommitAnswers, CommitConfig } from "../types.js";
 import { Select, type SelectItem, TextInput } from "../ui/index.js";
 import { loadConfig } from "../utils/config.js";
@@ -104,8 +104,10 @@ export const CommitMessageBuilder = ({
   return (
     <Box flexDirection="column">
       <Box marginBottom={1}>
-        <Text bold color={colors.primary}>
-          {icons.step} Étape 3/5: Message de commit
+        <Text bold>
+          {createGradient.commitMessage(
+            `${icons.step} Étape 3/5: Message de commit`,
+          )}
         </Text>
       </Box>
 

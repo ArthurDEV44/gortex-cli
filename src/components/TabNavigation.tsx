@@ -66,13 +66,13 @@ export const TabNavigation = ({
             <Box key={tab.id} marginRight={1}>
               <Box
                 borderStyle="round"
-                borderColor={isActive ? colors.primary : colors.muted}
+                borderColor={isActive ? colors.border : colors.borderLight}
                 paddingX={2}
                 paddingY={0}
               >
                 {isActive ? (
-                  <Text bold color={colors.primary}>
-                    {createGradient.flow(`${tab.icon} ${tab.label}`)}
+                  <Text bold>
+                    {createGradient.commitMessage(`${tab.icon} ${tab.label}`)}
                   </Text>
                 ) : (
                   <Text dimColor>

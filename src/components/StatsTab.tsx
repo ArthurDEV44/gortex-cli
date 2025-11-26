@@ -2,7 +2,12 @@ import { Box, Text } from "ink";
 import Spinner from "ink-spinner";
 import { useEffect, useState } from "react";
 import { useCommitHistory } from "../infrastructure/di/hooks.js";
-import { colors, getCommitIcon, icons } from "../theme/colors.js";
+import {
+  colors,
+  createGradient,
+  getCommitIcon,
+  icons,
+} from "../theme/colors.js";
 
 interface StatsData {
   total: number;
@@ -94,14 +99,14 @@ export const StatsTab = () => {
       {/* Summary Section */}
       <Box
         borderStyle="round"
-        borderColor={colors.primary}
+        borderColor={colors.border}
         paddingX={2}
         paddingY={1}
         flexDirection="column"
       >
         <Box marginBottom={1}>
-          <Text bold color={colors.primary}>
-            {icons.stats} Summary
+          <Text bold>
+            {createGradient.commitMessage(`${icons.stats} Summary`)}
           </Text>
         </Box>
 
@@ -125,14 +130,14 @@ export const StatsTab = () => {
       <Box
         marginTop={1}
         borderStyle="round"
-        borderColor={percentageColor}
+        borderColor={colors.border}
         paddingX={2}
         paddingY={1}
         flexDirection="column"
       >
         <Box marginBottom={1}>
-          <Text bold color={percentageColor}>
-            {icons.arrowUp} Compliance Rate
+          <Text bold>
+            {createGradient.commitMessage(`${icons.arrowUp} Compliance Rate`)}
           </Text>
         </Box>
         <Box>
@@ -147,14 +152,14 @@ export const StatsTab = () => {
         <Box
           marginTop={1}
           borderStyle="round"
-          borderColor={colors.primaryLight}
+          borderColor={colors.border}
           paddingX={2}
           paddingY={1}
           flexDirection="column"
         >
           <Box marginBottom={1}>
-            <Text bold color={colors.primaryLight}>
-              {icons.menu} Type Breakdown
+            <Text bold>
+              {createGradient.commitMessage(`${icons.menu} Type Breakdown`)}
             </Text>
           </Box>
 
@@ -173,8 +178,8 @@ export const StatsTab = () => {
                 return (
                   <Box key={type}>
                     <Text>
-                      {getCommitIcon(type)} {type.padEnd(10)}{" "}
-                      {count.toString().padStart(3)} ({typePercentage}%){" "}
+                      {getCommitIcon(type)} {type.padEnd(10)}
+                      {count.toString().padStart(3)} ({typePercentage.padStart(4)}%){" "}
                       <Text dimColor>{bar}</Text>
                     </Text>
                   </Box>
@@ -185,17 +190,17 @@ export const StatsTab = () => {
       )}
 
       {/* Recommendations */}
-      <Box marginTop={1} flexDirection="column">
+      {/* <Box marginTop={1} flexDirection="column">
         {stats.percentage < 80 ? (
           <Box
             borderStyle="round"
-            borderColor={colors.warning}
+            borderColor={colors.borderLight}
             paddingX={2}
             paddingY={1}
             flexDirection="column"
           >
             <Box marginBottom={1}>
-              <Text bold color={colors.warning}>
+              <Text color={colors.warning} bold>
                 {icons.info} Recommendations
               </Text>
             </Box>
@@ -208,17 +213,18 @@ export const StatsTab = () => {
         ) : (
           <Box
             borderStyle="round"
-            borderColor={colors.success}
+            borderColor={colors.borderLight}
             paddingX={2}
             paddingY={1}
           >
-            <Text color={colors.success}>
-              {icons.success} Excellent work! Your repo follows commit
-              conventions well.
+            <Text bold>
+              {createGradient.commitMessage(
+                `${icons.success} Excellent work! Your repo follows commit conventions well.`,
+              )}
             </Text>
           </Box>
         )}
-      </Box>
+      </Box> */}
     </Box>
   );
 };

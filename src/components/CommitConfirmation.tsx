@@ -73,14 +73,14 @@ export const CommitConfirmation = ({
       <Box
         flexDirection="column"
         borderStyle="round"
-        borderColor={colors.info}
+        borderColor={colors.border}
         paddingX={2}
         paddingY={1}
         marginBottom={1}
       >
         <Box marginBottom={1}>
           <Text bold>
-            {createGradient.titanium(`${icons.file} Commit Preview`)}
+            {createGradient.commitMessage(`${icons.file} Commit Preview`)}
           </Text>
         </Box>
 
@@ -104,7 +104,9 @@ export const CommitConfirmation = ({
         <Box flexDirection="column">
           <Text dimColor>Message:</Text>
           <Box marginLeft={2} marginTop={1}>
-            <Text bold>{createGradient.flow(message.split("\n")[0])}</Text>
+            <Text bold>
+              {createGradient.commitMessage(message.split("\n")[0])}
+            </Text>
           </Box>
           {message.split("\n").length > 1 && (
             <Box marginLeft={2} marginTop={1}>

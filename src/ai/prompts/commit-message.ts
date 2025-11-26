@@ -20,9 +20,10 @@ export interface ReasoningAnalysis {
 }
 
 /**
- * Interface pour la réponse de vérification self-verification
+ * Interface pour la réponse de vérification self-verification (Legacy - Phase 1)
+ * @deprecated Use VerificationResult from verifier.ts for Phase 2
  */
-export interface VerificationResult {
+export interface SelfVerificationResult {
   isGoodQuality: boolean;
   issues?: string[]; // Liste des problèmes détectés
   improvedSubject?: string; // Subject amélioré si nécessaire
@@ -37,6 +38,23 @@ export function generateSystemPrompt(availableTypes: string[]): string {
   const systemPrompt = `Tu es un assistant expert en Git et Conventional Commits.
 Ta tâche est de générer un message de commit au format Conventional Commits.
 
+MÉTHODOLOGIE OBLIGATOIRE - CHAIN-OF-THOUGHT (CoT):
+Tu DOIS suivre cette séquence de raisonnement EXPLICITE avant de générer le commit:
+
+ÉTAPE 1 - ANALYSE DES CHANGEMENTS:
+- Identifie le pattern de changement DOMINANT (création, modification, refactoring, fix, etc.)
+- Liste les 3-5 symboles/composants les PLUS IMPORTANTS modifiés
+- Détermine l'intention ARCHITECTURALE (pourquoi ce changement existe)
+- Évalue la complexité réelle (simple, medium, complex)
+
+ÉTAPE 2 - DÉCISION JUSTIFIÉE:
+- Type de commit approprié: [ton choix] PARCE QUE [justification basée sur l'analyse]
+- Scope (si applicable): [ton choix] PARCE QUE [justification]
+- Essence du changement en 1 phrase: [formulation claire]
+
+ÉTAPE 3 - GÉNÉRATION STRUCTURÉE:
+Génère l'objet JSON avec le commit message final.
+
 Le format de réponse doit être un objet JSON valide contenant les champs suivants:
 - "type": string (doit être l'un de: ${availableTypes.join(", ")})
 - "scope": string (optionnel, concis)
@@ -45,7 +63,7 @@ Le format de réponse doit être un objet JSON valide contenant les champs suiva
 - "breaking": boolean
 - "breakingDescription": string (optionnel)
 - "confidence": integer (0-100)
-- "reasoning": string (ton raisonnement pour le commit)
+- "reasoning": string (ton raisonnement COMPLET suivant les 3 étapes CoT ci-dessus)
 
 IMPORTANT: Tu recevras une analyse structurée du diff qui identifie:
 - Les fonctions, classes et symboles modifiés (avec leurs NOMS EXACTS)
@@ -719,6 +737,251 @@ export function generateVerificationUserPrompt(
 
   parts.push(
     "\nRéponds en JSON avec isGoodQuality, issues, improvedSubject, improvedBody, reasoning.",
+  );
+
+  return parts.join("\n");
+}
+
+// ============================================================================
+// REFLECTION PATTERN - AGENTIC WORKFLOW
+// ============================================================================
+
+/**
+ * Interface pour le résultat de vérification factuelle (Verifier Agent - Phase 2)
+ * Note: This interface is also exported from verifier.ts and should be imported from there
+ * This export is kept for backward compatibility with existing code
+ */
+export interface VerificationResult {
+  factualAccuracy: number; // 0-100: Score de précision factuelle
+  hasCriticalIssues: boolean; // true si hallucinations ou erreurs critiques
+  issues: Array<{
+    type: "hallucination" | "omission" | "inaccuracy";
+    severity: "critical" | "major" | "minor";
+    description: string;
+    evidence: string; // Preuve depuis le diff
+  }>;
+  verifiedSymbols: string[]; // Symboles mentionnés ET présents dans le diff
+  missingSymbols: string[]; // Symboles importants dans le diff mais non mentionnés
+  hallucinatedSymbols: string[]; // Symboles mentionnés mais absents du diff
+  recommendations: string[]; // Actions pour corriger
+  reasoning: string; // Explication de la vérification
+}
+
+/**
+ * Interface pour le feedback de réflexion agentique avec scoring détaillé
+ */
+export interface ReflectionFeedback {
+  decision: "accept" | "refine";
+  issues: string[];
+  improvements: string[];
+  reasoning: string;
+  qualityScore: number; // 0-100 (score global)
+
+  // Scoring détaillé par critère (nouveau pour Phase 1)
+  criteriaScores?: {
+    subjectQuality: number; // 0-100: Clarté et précision du subject
+    subjectSemantic: number; // 0-100: Subject est sémantique (pas technique/chemins)
+    subjectLength: number; // 0-100: Longueur appropriée (≤100 caractères)
+    bodyPresence: number; // 0-100: Body présent si nécessaire (complexité > simple)
+    bodyExplainsWhy: number; // 0-100: Body explique POURQUOI (pas juste QUOI)
+    symbolsMentioned: number; // 0-100: Symboles/composants clés mentionnés
+    typeAccuracy: number; // 0-100: Type correspond au pattern de changement
+  };
+
+  // Feedback actionable par critère (nouveau)
+  detailedIssues?: Array<{
+    criterion: string; // Nom du critère problématique
+    currentScore: number; // Score actuel
+    targetScore: number; // Score cible (généralement 80+)
+    actionable: string; // Action concrète pour améliorer
+  }>;
+}
+
+/**
+ * Génère le prompt système pour la réflexion agentique (Reflection Pattern)
+ * Cette étape permet à l'AI de critiquer son propre travail et décider si des améliorations sont nécessaires
+ */
+export function generateAgenticReflectionSystemPrompt(): string {
+  return `Tu es un agent de réflexion expert. Évalue ce commit selon 7 critères (0-100 chacun):
+
+1. subjectQuality: Clarté du sujet
+2. subjectSemantic: Niveau sémantique (composants, pas chemins)
+3. subjectLength: ≤100 caractères
+4. bodyPresence: Body présent si complexité > simple
+5. bodyExplainsWhy: Body explique POURQUOI (pas juste QUOI)
+6. symbolsMentioned: Symboles/composants clés mentionnés
+7. typeAccuracy: Type correspond au pattern
+
+Retourne JSON (SANS \`\`\`json):
+{
+  "decision": "accept" | "refine",
+  "qualityScore": <moyenne>,
+  "criteriaScores": {
+    "subjectQuality": <0-100>,
+    "subjectSemantic": <0-100>,
+    "subjectLength": <0-100>,
+    "bodyPresence": <0-100>,
+    "bodyExplainsWhy": <0-100>,
+    "symbolsMentioned": <0-100>,
+    "typeAccuracy": <0-100>
+  },
+  "detailedIssues": [{"criterion": "<nom>", "currentScore": <X>, "targetScore": 80, "actionable": "<action>"}],
+  "issues": [<liste problèmes>],
+  "improvements": [<suggestions>],
+  "reasoning": "<explication courte>"
+}
+
+Règles:
+- accept si qualityScore ≥80 ET tous critères ≥60
+- refine sinon
+- Pour critère <80: ajoute detailedIssues avec action concrète`;
+}
+
+/**
+ * Génère le prompt utilisateur pour la réflexion agentique
+ */
+export function generateAgenticReflectionUserPrompt(
+  commit: {
+    type: string;
+    scope?: string;
+    subject: string;
+    body?: string;
+    reasoning?: string;
+  },
+  analysis: DiffAnalysis,
+): string {
+  const parts: string[] = [];
+
+  parts.push("Évalue ce message de commit généré:");
+  parts.push("");
+  parts.push(`Type: ${commit.type}`);
+  parts.push(`Scope: ${commit.scope ?? "(none)"}`);
+  parts.push(`Subject: ${commit.subject}`);
+  if (commit.body) {
+    parts.push(`Body:\n${commit.body}`);
+  } else {
+    parts.push("Body: (none)");
+  }
+  if (commit.reasoning) {
+    parts.push(`Reasoning: ${commit.reasoning}`);
+  }
+  parts.push("");
+
+  parts.push("CONTEXTE DE L'ANALYSE:");
+  parts.push(`- Complexité: ${analysis.complexity}`);
+  parts.push(`- Fichiers modifiés: ${analysis.summary.filesChanged}`);
+  parts.push(
+    `- Pattern dominant: ${analysis.changePatterns[0]?.description ?? "N/A"}`,
+  );
+
+  if (analysis.modifiedSymbols.length > 0) {
+    parts.push(
+      `- Symboles modifiés (${analysis.modifiedSymbols.length} total):`,
+    );
+    analysis.modifiedSymbols.slice(0, 5).forEach((sym) => {
+      parts.push(`  * ${sym.name} (${sym.type})`);
+    });
+    if (analysis.modifiedSymbols.length > 5) {
+      parts.push(`  ... et ${analysis.modifiedSymbols.length - 5} autres`);
+    }
+  }
+
+  parts.push("");
+  parts.push("QUESTIONS À TE POSER:");
+  parts.push(
+    "1. Le subject capture-t-il l'ESSENCE du changement (pas juste 'update X')?",
+  );
+  parts.push("2. Les symboles importants sont-ils mentionnés?");
+  parts.push(
+    `3. Le body explique-t-il le POURQUOI? (${analysis.complexity === "simple" ? "optionnel si simple" : "REQUIS car complexité > simple"})`,
+  );
+  parts.push(
+    `4. Le type "${commit.type}" correspond-il au pattern "${analysis.changePatterns[0]?.type ?? "unknown"}"?`,
+  );
+  parts.push(
+    "5. Le message est-il clair pour quelqu'un qui n'a pas vu le diff?",
+  );
+  parts.push("6. Le subject est-il ≤100 caractères?");
+  parts.push("");
+  parts.push("Décide: accept (≥80/100) ou refine (<80/100)?");
+
+  return parts.join("\n");
+}
+
+/**
+ * Génère le prompt pour le raffinement basé sur la réflexion
+ * Ce prompt guide l'AI pour améliorer le commit en tenant compte du feedback
+ */
+export function generateRefinementPrompt(
+  originalCommit: {
+    type: string;
+    scope?: string;
+    subject: string;
+    body?: string;
+    reasoning?: string;
+  },
+  reflection: ReflectionFeedback,
+  analysis: DiffAnalysis,
+  availableTypes: string[],
+): string {
+  const parts: string[] = [];
+
+  parts.push("Le commit précédent nécessite des améliorations:");
+  parts.push("");
+  parts.push("COMMIT ORIGINAL:");
+  parts.push(
+    `${originalCommit.type}${originalCommit.scope ? `(${originalCommit.scope})` : ""}: ${originalCommit.subject}`,
+  );
+  if (originalCommit.body) {
+    parts.push("");
+    parts.push(originalCommit.body);
+  }
+  parts.push("");
+
+  parts.push("PROBLÈMES IDENTIFIÉS:");
+  reflection.issues.forEach((issue, i) => {
+    parts.push(`${i + 1}. ${issue}`);
+  });
+  parts.push("");
+
+  parts.push("AMÉLIORATIONS SUGGÉRÉES:");
+  reflection.improvements.forEach((improvement, i) => {
+    parts.push(`${i + 1}. ${improvement}`);
+  });
+  parts.push("");
+
+  parts.push("RAISONNEMENT:");
+  parts.push(reflection.reasoning);
+  parts.push("");
+
+  parts.push("RAPPEL DU CONTEXTE:");
+  parts.push(`- Complexité: ${analysis.complexity}`);
+  parts.push(`- Fichiers: ${analysis.summary.filesChanged}`);
+  parts.push(`- Pattern: ${analysis.changePatterns[0]?.description ?? "N/A"}`);
+  if (analysis.modifiedSymbols.length > 0) {
+    parts.push("- Symboles clés:");
+    analysis.modifiedSymbols.slice(0, 3).forEach((sym) => {
+      parts.push(`  * ${sym.name} (${sym.type})`);
+    });
+  }
+  parts.push("");
+
+  parts.push("INSTRUCTIONS POUR LE RAFFINEMENT:");
+  parts.push("Génère une VERSION AMÉLIORÉE du commit qui:");
+  parts.push("- Corrige TOUS les problèmes identifiés");
+  parts.push("- Applique les améliorations suggérées");
+  parts.push("- Maintient les éléments déjà bons");
+  parts.push("- Reste fidèle au format Conventional Commits");
+  parts.push(`- Type parmi: ${availableTypes.join(", ")}`);
+  parts.push(
+    "- Subject ≤100 caractères, sémantique (pas de chemins de fichiers)",
+  );
+  parts.push(
+    `- Body ${analysis.complexity !== "simple" ? "REQUIS" : "optionnel"} qui explique le POURQUOI`,
+  );
+  parts.push("");
+  parts.push(
+    "Réponds au format JSON comme précédemment (type, scope, subject, body, breaking, breakingDescription, confidence, reasoning).",
   );
 
   return parts.join("\n");
