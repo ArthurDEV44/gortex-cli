@@ -17,11 +17,12 @@ export const titaniumColors = {
 };
 
 // Palette d'accentuation (Gradients - Fonctionnels)
+// Inspirée de Gemini avec des teintes pastel plus douces
 export const accentColors = {
-  blue: "#4796e2", // Info, Primaire
-  indigo: "#6680de", // Focus, Secondaire
-  purple: "#8c77c8", // Succès, Highlights
-  rose: "#c66678", // Erreur, Warning
+  blue: "#6BA8E8", // Info, Primaire - Bleu pastel doux
+  indigo: "#8A9EE8", // Focus, Secondaire - Indigo lavande
+  purple: "#B5A5DD", // Succès, Highlights - Violet pastel
+  rose: "#E09DAA", // Erreur, Warning - Rose poudré
 };
 
 // Couleurs principales mappées
