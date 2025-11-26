@@ -54,9 +54,7 @@ export const CommitWelcome = ({ onStart }: CommitWelcomeProps) => {
               )}
             </Text>
             <Text>
-              {createGradient.titanium(
-                `${icons.success} Confirm and commit`,
-              )}
+              {createGradient.titanium(`${icons.success} Confirm and commit`)}
             </Text>
             <Text>
               {createGradient.titanium(

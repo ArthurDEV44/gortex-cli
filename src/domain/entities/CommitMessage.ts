@@ -28,9 +28,14 @@ export class CommitMessage {
     this.type = props.type;
     this.subject = props.subject;
     this.scope = props.scope ?? Scope.empty();
-    this.body = props.body?.trim();
+    // Safely handle body - ensure it's a string before calling trim()
+    this.body = typeof props.body === "string" ? props.body.trim() : undefined;
     this.breaking = props.breaking ?? false;
-    this.breakingChangeDescription = props.breakingChangeDescription?.trim();
+    // Safely handle breakingChangeDescription
+    this.breakingChangeDescription =
+      typeof props.breakingChangeDescription === "string"
+        ? props.breakingChangeDescription.trim()
+        : undefined;
 
     // Validate body if provided
     if (

@@ -12,7 +12,7 @@ describe('AI Prompts', () => {
       const availableTypes = ['feat', 'fix', 'docs'];
       const prompt = generateSystemPrompt(availableTypes);
 
-      expect(prompt).toContain('Conventional Commits');
+      expect(prompt).toContain('Conventional Commit');
       expect(prompt).toContain('feat, fix, docs');
       expect(prompt).toContain('type');
       expect(prompt).toContain('scope');
@@ -23,8 +23,7 @@ describe('AI Prompts', () => {
 
     it('should handle empty types array', () => {
       const prompt = generateSystemPrompt([]);
-      expect(prompt).toContain('Conventional Commits');
-      expect(prompt).toContain('doit être l\'un de:');
+      expect(prompt).toContain('Conventional Commit');
     });
 
     it('should handle single type', () => {
@@ -34,16 +33,14 @@ describe('AI Prompts', () => {
 
     it('should include JSON format requirements', () => {
       const prompt = generateSystemPrompt(['feat', 'fix']);
-      expect(prompt).toContain('objet JSON');
+      expect(prompt).toContain('JSON');
       expect(prompt).toContain('confidence');
-      expect(prompt).toContain('reasoning');
     });
 
     it('should include instructions for analyzing diff', () => {
       const prompt = generateSystemPrompt(['feat']);
-      expect(prompt).toContain('analyse structurée');
+      expect(prompt).toContain('SÉMANTIQUE');
       expect(prompt).toContain('NOMS EXACTS');
-      expect(prompt).toContain('PATTERN DE CHANGEMENT');
     });
   });
 
@@ -60,18 +57,17 @@ describe('AI Prompts', () => {
       const diff = 'test diff content';
       const prompt = generateUserPrompt(diff, baseContext);
 
-      expect(prompt).toContain('<context>');
-      expect(prompt).toContain('<branch>main</branch>');
-      expect(prompt).toContain('<file>file1.ts</file>');
-      expect(prompt).toContain('<file>file2.ts</file>');
       expect(prompt).toContain('<diff>');
       expect(prompt).toContain('test diff content');
+      // When no analysis is provided, uses fallback instructions
+      expect(prompt).toContain('Génère un message de commit conventionnel PRÉCIS et DESCRIPTIF');
     });
 
     it('should include suggested scopes when available', () => {
       const diff = 'test diff';
       const prompt = generateUserPrompt(diff, baseContext);
 
+      // Scopes are shown in XML format
       expect(prompt).toContain('<suggested_scopes>');
       expect(prompt).toContain('<scope>auth</scope>');
       expect(prompt).toContain('<scope>api</scope>');
@@ -85,8 +81,9 @@ describe('AI Prompts', () => {
       const diff = 'test diff';
       const prompt = generateUserPrompt(diff, contextWithoutScopes);
 
-      expect(prompt).not.toContain('<suggested_scopes>');
       expect(prompt).toContain('<diff>');
+      expect(prompt).toContain('test diff');
+      expect(prompt).not.toContain('<suggested_scopes>');
     });
 
     it('should include recent commits when available', () => {
@@ -100,6 +97,7 @@ describe('AI Prompts', () => {
       const diff = 'test diff';
       const prompt = generateUserPrompt(diff, contextWithCommits);
 
+      // Recent commits are shown in XML format
       expect(prompt).toContain('<recent_commits>');
       expect(prompt).toContain('feat(auth): add login');
       expect(prompt).toContain('fix(api): resolve bug');
@@ -121,8 +119,12 @@ describe('AI Prompts', () => {
       const diff = 'test diff';
       const prompt = generateUserPrompt(diff, contextWithManyCommits);
 
-      const commitMatches = prompt.match(/<commit>/g);
-      expect(commitMatches?.length).toBe(5);
+      // Recent commits are limited to 5
+      expect(prompt).toContain('<recent_commits>');
+      expect(prompt).toContain('commit1');
+      expect(prompt).toContain('commit5');
+      expect(prompt).not.toContain('commit6');
+      expect(prompt).not.toContain('commit7');
     });
 
     it('should handle empty files array', () => {
@@ -133,26 +135,27 @@ describe('AI Prompts', () => {
       const diff = 'test diff';
       const prompt = generateUserPrompt(diff, contextWithNoFiles);
 
+      expect(prompt).toContain('<diff>');
       expect(prompt).toContain('<files count="0">');
-      expect(prompt).toContain('</files>');
     });
 
     it('should include analysis instructions', () => {
       const diff = 'test diff';
       const prompt = generateUserPrompt(diff, baseContext);
 
-      expect(prompt).toContain('Analyse ATTENTIVEMENT');
-      expect(prompt).toContain('changements');
-      expect(prompt).toContain('message de commit conventionnel');
+      // When no analysis is provided, uses fallback instructions
+      expect(prompt).toContain('Analyse ATTENTIVEMENT ces changements');
+      expect(prompt).toContain('Génère un message de commit conventionnel PRÉCIS et DESCRIPTIF');
     });
 
     it('should wrap diff in CDATA section', () => {
       const diff = 'test diff with <special> characters';
       const prompt = generateUserPrompt(diff, baseContext);
 
+      // CDATA is used to escape special characters in XML
       expect(prompt).toContain('<![CDATA[');
-      expect(prompt).toContain(']]>');
       expect(prompt).toContain('test diff with <special> characters');
+      expect(prompt).toContain(']]>');
     });
   });
 

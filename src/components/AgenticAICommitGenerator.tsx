@@ -18,7 +18,8 @@ import { AIProviderFactory } from "../infrastructure/factories/AIProviderFactory
 import { colors, commitIcons, createGradient, icons } from "../theme/colors.js";
 import type { AIProvider as AIProviderType, CommitConfig } from "../types.js";
 import { Confirm } from "../ui/Confirm.js";
-import { LoadingSpinner } from "./LoadingSpinner.js";
+import { AgenticLoadingAnimation } from "./AgenticLoadingAnimation.js";
+import { Skeleton } from "./Skeleton.js";
 
 type Step =
   | "generating"
@@ -97,6 +98,11 @@ export const AgenticAICommitGenerator = ({
         provider: aiProvider,
         includeScope: true,
         maxReflectionIterations: 2, // Default: max 2 reflection cycles
+        onProgress: (progressStep) => {
+          if (isMounted.current) {
+            setStep(progressStep);
+          }
+        },
       });
 
       // Check if component is still mounted
@@ -177,13 +183,36 @@ export const AgenticAICommitGenerator = ({
     step.startsWith("refining")
   ) {
     const messages: Record<Step, string> = {
-      generating: "Génération initiale du message...",
-      "reflecting-1": "Réflexion sur la qualité (1/2)...",
-      "refining-1": "Raffinement du message (1/2)...",
-      "reflecting-2": "Réflexion finale sur la qualité (2/2)...",
-      "refining-2": "Raffinement final du message (2/2)...",
+      generating: "Génération initiale du message... (1/5)",
+      "reflecting-1": "Réflexion sur la qualité (2/5)",
+      "refining-1": "Raffinement du message (3/5)",
+      "reflecting-2": "Réflexion finale sur la qualité (4/5)",
+      "refining-2": "Raffinement final du message (5/5)",
       preview: "",
       error: "",
+    };
+
+    // Different speeds for different steps to match perceived complexity
+    const stepSpeed: Record<Step, "slow" | "normal" | "fast"> = {
+      generating: "normal",
+      "reflecting-1": "slow",
+      "refining-1": "normal",
+      "reflecting-2": "slow",
+      "refining-2": "fast",
+      preview: "normal",
+      error: "normal",
+    };
+
+    // Use blue variant for reflection steps (analytical phase)
+    // Default variant for generation/refinement (creative phase)
+    const stepVariant: Record<Step, "default" | "blue"> = {
+      generating: "default",
+      "reflecting-1": "blue", // Analytical step → blue variant
+      "refining-1": "default",
+      "reflecting-2": "blue", // Analytical step → blue variant
+      "refining-2": "default",
+      preview: "default",
+      error: "default",
     };
 
     return (
@@ -193,16 +222,14 @@ export const AgenticAICommitGenerator = ({
             {createGradient.titanium("🤖 Mode Agentique (Reflection Pattern)")}
           </Text>
         </Box>
-        <Box marginBottom={1}>
-          <LoadingSpinner
-            message={`${icons.star} ${messages[step] || "Traitement..."}`}
-            variant="primary"
+        <AgenticLoadingAnimation message="" />
+        <Box flexDirection="column" gap={1}>
+          <Skeleton
+            text={`▸ ${messages[step] || "Traitement..."}`}
+            speed={stepSpeed[step]}
+            intensity="normal"
+            variant={stepVariant[step]}
           />
-        </Box>
-        <Box>
-          <Text dimColor>
-            L'IA analyse, réfléchit et améliore le message de commit...
-          </Text>
         </Box>
       </Box>
     );

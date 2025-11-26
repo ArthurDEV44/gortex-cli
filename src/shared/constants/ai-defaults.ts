@@ -4,11 +4,12 @@
 
 /**
  * Ollama default configuration
+ * OPTIMIZED: Switched to mistral-small for better speed, reduced timeout
  */
 export const OLLAMA_DEFAULTS = {
   BASE_URL: "http://localhost:11434",
-  MODEL: "magistral:24b",
-  TIMEOUT: 120000, // 120s for Chain-of-Thought + Verification mode
+  MODEL: "mistral-small:24b-instruct-2501-q4_K_M", // OPTIMIZATION: Faster than magistral, Q4 quantization
+  TIMEOUT: 45000, // OPTIMIZATION: Reduced from 120s (no CoT/Verification needed)
 } as const;
 
 /**
@@ -31,14 +32,15 @@ export const OPENAI_DEFAULTS = {
 
 /**
  * AI generation parameters
+ * OPTIMIZED: More deterministic and faster sampling
  */
 export const AI_GENERATION = {
-  /** Default temperature for AI responses (0.4 recommended for reasoning models like Magistral) */
-  TEMPERATURE: 0.4,
+  /** OPTIMIZATION: Lower temperature for more deterministic, faster generation */
+  TEMPERATURE: 0.3,
 
-  /** Top-p sampling parameter (0.9 recommended for focused but diverse outputs) */
-  TOP_P: 0.9,
+  /** OPTIMIZATION: Reduced top-p for faster sampling with minimal quality loss */
+  TOP_P: 0.85,
 
-  /** Maximum tokens to generate */
-  MAX_TOKENS: 500,
+  /** OPTIMIZATION: Reduced max tokens (commits are typically short) */
+  MAX_TOKENS: 300,
 } as const;
