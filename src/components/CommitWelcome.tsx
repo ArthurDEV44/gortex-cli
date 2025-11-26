@@ -31,18 +31,38 @@ export const CommitWelcome = ({ onStart }: CommitWelcomeProps) => {
 
         <Box flexDirection="column" marginBottom={2}>
           <Box marginBottom={1}>
-            <Text dimColor>
-              This workflow will guide you through creating a commit:
+            <Text>
+              {createGradient.titanium(
+                "This workflow will guide you through creating a commit:",
+              )}
             </Text>
           </Box>
           <Box marginTop={1} flexDirection="column">
-            <Text dimColor>{icons.branch} Select or create a branch</Text>
-            <Text dimColor>{icons.fileChanged} Choose files to stage</Text>
-            <Text dimColor>
-              {icons.step} Generate commit message (AI or Manual)
+            <Text>
+              {createGradient.titanium(
+                `${icons.branch} Select or create a branch`,
+              )}
             </Text>
-            <Text dimColor>{icons.success} Confirm and commit</Text>
-            <Text dimColor>{icons.push} Push to remote (optional)</Text>
+            <Text>
+              {createGradient.titanium(
+                `${icons.fileChanged} Choose files to stage`,
+              )}
+            </Text>
+            <Text>
+              {createGradient.titanium(
+                `${icons.step} Generate commit message (AI or Manual)`,
+              )}
+            </Text>
+            <Text>
+              {createGradient.titanium(
+                `${icons.success} Confirm and commit`,
+              )}
+            </Text>
+            <Text>
+              {createGradient.titanium(
+                `${icons.push} Push to remote (optional)`,
+              )}
+            </Text>
           </Box>
         </Box>
 
@@ -51,7 +71,7 @@ export const CommitWelcome = ({ onStart }: CommitWelcomeProps) => {
             borderStyle="round"
             borderColor={colors.border}
             paddingX={2}
-            paddingY={1}
+            paddingY={0}
           >
             <Text bold>
               {createGradient.commitMessage("Press Enter or Space to start")}
@@ -60,8 +80,10 @@ export const CommitWelcome = ({ onStart }: CommitWelcomeProps) => {
         </Box>
 
         <Box marginTop={1} justifyContent="center">
-          <Text dimColor>
-            You can switch to the Stats tab anytime using ←/→ or 1/2
+          <Text>
+            {createGradient.titanium(
+              "You can switch to the Stats tab anytime using ←/→ or 1/2",
+            )}
           </Text>
         </Box>
       </Box>
