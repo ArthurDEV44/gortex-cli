@@ -179,8 +179,8 @@ export const StatsTab = () => {
                   <Box key={type}>
                     <Text>
                       {getCommitIcon(type)} {type.padEnd(10)}
-                      {count.toString().padStart(3)} ({typePercentage.padStart(4)}%){" "}
-                      <Text dimColor>{bar}</Text>
+                      {count.toString().padStart(3)} (
+                      {typePercentage.padStart(4)}%) <Text dimColor>{bar}</Text>
                     </Text>
                   </Box>
                 );
@@ -190,7 +190,7 @@ export const StatsTab = () => {
       )}
 
       {/* Recommendations */}
-      {/* <Box marginTop={1} flexDirection="column">
+      <Box marginTop={1} flexDirection="column">
         {stats.percentage < 80 ? (
           <Box
             borderStyle="round"
@@ -224,7 +224,7 @@ export const StatsTab = () => {
             </Text>
           </Box>
         )}
-      </Box> */}
+      </Box>
     </Box>
   );
 };

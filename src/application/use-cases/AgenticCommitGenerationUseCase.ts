@@ -54,6 +54,17 @@ export interface AgenticGenerateRequest {
    * Default: 2 (based on research showing diminishing returns after 2 iterations)
    */
   maxReflectionIterations?: number;
+  /**
+   * Callback to report progress on the agentic workflow steps
+   */
+  onProgress?: (
+    step:
+      | "generating"
+      | "reflecting-1"
+      | "refining-1"
+      | "reflecting-2"
+      | "refining-2",
+  ) => void;
 }
 
 /**
@@ -267,6 +278,7 @@ export class AgenticCommitGenerationUseCase {
       // ==========================================
       // STEP 1: GENERATE - Initial commit message
       // ==========================================
+      request.onProgress?.("generating");
       if (process.env.GORTEX_DEBUG === "true") {
         console.log(
           "[AgenticCommitGenerationUseCase] Generating initial commit message...",
@@ -303,6 +315,9 @@ export class AgenticCommitGenerationUseCase {
       // This ensures exactly maxIterations cycles, preventing infinite loops
       while (shouldContinue && iterations <= maxIterations) {
         // REFLECT: Let AI evaluate its own work
+        request.onProgress?.(
+          `reflecting-${iterations}` as "reflecting-1" | "reflecting-2",
+        );
         const refStart = Date.now();
         const reflection = await this.performReflection(
           currentResult,
@@ -386,6 +401,9 @@ export class AgenticCommitGenerationUseCase {
         // REFINE: Improve the commit message based on feedback
         // Only refine if we haven't reached max iterations yet
         if (iterations < maxIterations) {
+          request.onProgress?.(
+            `refining-${iterations}` as "refining-1" | "refining-2",
+          );
           const refinStart = Date.now();
           try {
             const refinedResult = await this.performRefinement(

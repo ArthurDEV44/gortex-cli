@@ -84,6 +84,62 @@ export const colors = {
     dawn: [accentColors.blue, accentColors.purple], // Replaces old dawn
     gold: [titaniumColors.white, titaniumColors.titanium100], // Replaces old gold
 
+    /**
+     * Ultra-smooth shimmer gradient for loading animations
+     * Optimized for CLI skeleton loaders with 12 color stops
+     *
+     * Inspired by tech leaders (Claude, Gemini, OpenAI, GitHub Copilot):
+     * - Bell curve luminosity (dim → bright → dim)
+     * - Optimal contrast ratio (30% base → 100% peak → 30% base)
+     * - Smooth transitions every ~8-10% for imperceptible color shifts
+     * - Cool color temperature for modern, professional feel
+     *
+     * Color progression:
+     * 1. Base dim (titanium300) - Starting state
+     * 2-3. Gentle rise (titanium200 variants) - Pre-shimmer
+     * 4-5. Bright transition (titanium100 variants) - Entry to peak
+     * 6-7. Peak luminosity (white variants) - Maximum brightness
+     * 8-9. Bright transition (titanium100 variants) - Exit from peak
+     * 10-11. Gentle fall (titanium200 variants) - Post-shimmer
+     * 12. Base dim (titanium300) - Return to base
+     */
+    shimmer: [
+      titaniumColors.titanium300, // Base dim: #9c9ea8 (Step 1)
+      "#b0b2bb", // Rise 1: Lighter titanium
+      titaniumColors.titanium200, // Rise 2: #cccdd4
+      "#d9dade", // Transition 1: Between titanium200-100
+      titaniumColors.titanium100, // Bright 1: #eeeef2
+      "#f4f4f7", // Peak approach: Near white
+      titaniumColors.white, // Peak center: #ffffff (Maximum)
+      "#f4f4f7", // Peak exit: Near white
+      titaniumColors.titanium100, // Bright 2: #eeeef2
+      "#d9dade", // Transition 2: Between titanium100-200
+      titaniumColors.titanium200, // Fall 1: #cccdd4
+      "#b0b2bb", // Fall 2: Lighter titanium
+      titaniumColors.titanium300, // Base dim: #9c9ea8 (Step 12 - return)
+    ],
+
+    /**
+     * Premium shimmer gradient with subtle blue tint
+     * Alternative for environments where color richness is preferred
+     * Maintains same luminosity curve but with cool blue undertones
+     */
+    shimmerBlue: [
+      "#9da4b8", // Base: Titanium with blue tint
+      "#b2b8c8", // Rise 1
+      "#c8cdd9", // Rise 2
+      "#dce0e9", // Transition 1
+      "#eff1f7", // Bright 1
+      "#f7f8fc", // Peak approach
+      "#ffffff", // Peak center
+      "#f7f8fc", // Peak exit
+      "#eff1f7", // Bright 2
+      "#dce0e9", // Transition 2
+      "#c8cdd9", // Fall 1
+      "#b2b8c8", // Fall 2
+      "#9da4b8", // Base return
+    ],
+
     // Statuts
     success: [accentColors.purple, "#a78bfa"],
     error: [accentColors.rose, "#f43f5e"],
@@ -108,6 +164,9 @@ export const createGradient = {
   nebula: gradient(colors.gradients.nebula) as any,
   aurora: gradient(colors.gradients.aurora) as any,
   commitMessage: gradient(colors.gradients.commitMessage) as any,
+  // Premium shimmer gradients for loading animations
+  shimmer: gradient(colors.gradients.shimmer) as any,
+  shimmerBlue: gradient(colors.gradients.shimmerBlue) as any,
 };
 
 // Palette pour les types de commit (conventional commits)

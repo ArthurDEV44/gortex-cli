@@ -23,7 +23,9 @@ interface OllamaRequest {
     temperature?: number;
     top_p?: number;
     num_predict?: number;
+    num_ctx?: number; // Context window size
   };
+  keep_alive?: number | string; // Keep model in memory (number in ms, or -1 for indefinitely)
 }
 
 interface OllamaResponse {
@@ -190,7 +192,9 @@ export class OllamaProvider extends BaseAIProvider {
           temperature: this.temperature,
           top_p: this.topP,
           num_predict: this.maxTokens,
+          num_ctx: 4096, // OPTIMIZATION: Limit context window for faster processing
         },
+        keep_alive: -1, // OPTIMIZATION: Keep model in memory indefinitely (no reload delay)
       };
 
       // Appel à l'API Ollama
@@ -221,7 +225,44 @@ export class OllamaProvider extends BaseAIProvider {
 
       try {
         // Si le contenu est déjà un objet JSON (grâce au schema)
-        parsed = JSON.parse(data.message.content) as AIGeneratedCommit;
+        const rawParsed = JSON.parse(data.message.content);
+
+        // FIX: Handle incorrect field names from AI (common mistakes)
+        // The AI sometimes returns "message" instead of "subject", "description" instead of "body"
+        const subject =
+          rawParsed.subject || rawParsed.message || rawParsed.title || "";
+        const body =
+          rawParsed.body ||
+          rawParsed.description ||
+          rawParsed.details ||
+          undefined;
+
+        // Ensure body and breakingDescription are strings (or undefined)
+        // Sometimes the AI returns arrays or objects instead of strings
+        parsed = {
+          type: rawParsed.type || "chore",
+          scope: rawParsed.scope || undefined,
+          subject: subject,
+          body:
+            typeof body === "string"
+              ? body
+              : Array.isArray(body)
+                ? body.join("\n")
+                : body
+                  ? String(body)
+                  : undefined,
+          breaking: rawParsed.breaking ?? false,
+          breakingDescription:
+            typeof rawParsed.breakingDescription === "string"
+              ? rawParsed.breakingDescription
+              : Array.isArray(rawParsed.breakingDescription)
+                ? rawParsed.breakingDescription.join("\n")
+                : rawParsed.breakingDescription
+                  ? String(rawParsed.breakingDescription)
+                  : undefined,
+          confidence: rawParsed.confidence || 50,
+          reasoning: rawParsed.reasoning || undefined,
+        } as AIGeneratedCommit;
       } catch (_parseError) {
         // Fallback sur notre parsing robuste si nécessaire
         parsed = parseAIResponse(data.message.content);
@@ -299,7 +340,9 @@ export class OllamaProvider extends BaseAIProvider {
           temperature: options?.temperature ?? this.temperature,
           top_p: this.topP,
           num_predict: options?.maxTokens ?? this.maxTokens,
+          num_ctx: 4096, // OPTIMIZATION: Limit context window for faster processing
         },
+        keep_alive: -1, // OPTIMIZATION: Keep model in memory indefinitely (no reload delay)
       };
 
       const controller = new AbortController();

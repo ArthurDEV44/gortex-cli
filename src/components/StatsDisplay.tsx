@@ -168,7 +168,7 @@ export function StatsDisplay({ maxCount = 100 }: Props) {
       )}
 
       {/* Recommendations */}
-      {/* {percentageNum < 80 ? (
+      {percentageNum < 80 ? (
         <Box
           borderStyle="round"
           borderColor={colors.borderLight}
@@ -206,7 +206,7 @@ export function StatsDisplay({ maxCount = 100 }: Props) {
             )}
           </Text>
         </Box>
-      )} */}
+      )}
     </Box>
   );
 }
